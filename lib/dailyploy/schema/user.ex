@@ -1,7 +1,8 @@
-defmodule DailyPloy.Schema.User do
+defmodule Dailyploy.Schema.User do
   use Ecto.Schema
   import Ecto.Changeset
-  alias DailyPloy.Model.User
+
+  import Comeonin.Bcrypt, only: [hashpwsalt: 1]
 
 
   schema "users" do
@@ -17,6 +18,22 @@ defmodule DailyPloy.Schema.User do
   @doc false
   def changeset(user, attrs) do
     user
-    |> cast(attrs, [:email, :password, :password_confirmation])
+    |> cast(attrs, [:name, :email, :password, :password_confirmation])
+    |> validate_required([:name, :email, :password, :password_confirmation])
+    |> validate_format(:email, ~r/@/)
+    |> validate_length(:password, min: 8)
+    |> validate_confirmation(:password)
+    |> unique_constraint(:email)
+    |> put_password_hash
+  end
+
+  defp put_password_hash(changeset) do
+    case changeset do
+      %Ecto.Changeset{valid?: true, changes: %{password: pass}}
+        ->
+          put_change(changeset, :password_hash, hashpwsalt(pass))
+      _ ->
+          changeset
+    end
   end
 end

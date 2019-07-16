@@ -5,7 +5,9 @@ defmodule DailyployWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/api", DailyployWeb do
+  scope "/api/v1", DailyployWeb do
     pipe_through :api
+
+    resources "/users", UserController, only: [:create, :show]
   end
 end
