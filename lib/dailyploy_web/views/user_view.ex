@@ -16,4 +16,14 @@ defmodule DailyployWeb.UserView do
       email: user.email,
      }
   end
+
+  def render("access_token.json", %{access_token: access_token}) do
+    %{access_token: access_token}
+  end
+
+  def render("signup_error.json", %{user: user}) do
+    require IEx
+    IEx.pry
+    %{errors: Enum.into(user.errors, %{})}
+  end
 end
