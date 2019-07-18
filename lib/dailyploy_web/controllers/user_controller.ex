@@ -6,7 +6,6 @@ defmodule DailyployWeb.UserController do
 
   action_fallback DailyployWeb.FallbackController
 
-
   def index(conn, _params) do
     users = UserModel.list_users()
     render(conn, "index.json", users: users)
@@ -20,7 +19,7 @@ defmodule DailyployWeb.UserController do
         |> render("show.json", user: user)
       {:error, user} ->
         conn
-        |> put_status(400)
+        |> put_status(422)
         |> render("signup_error.json", %{user: user})
     end
   end
