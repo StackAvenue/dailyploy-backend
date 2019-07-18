@@ -1,6 +1,7 @@
 defmodule DailyployWeb.UserView do
   use DailyployWeb, :view
   alias DailyployWeb.UserView
+  alias DailyployWeb.ErrorHelpers
 
   def render("index.json", %{users: users}) do
     %{user: render_many(users, UserView, "user.json")}
@@ -22,8 +23,6 @@ defmodule DailyployWeb.UserView do
   end
 
   def render("signup_error.json", %{user: user}) do
-    require IEx
-    IEx.pry
-    %{errors: Enum.into(user.errors, %{})}
+    %{errors: ErrorHelpers.changeset_error_to_map(user.errors)}
   end
 end

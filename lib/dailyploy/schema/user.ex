@@ -4,7 +4,6 @@ defmodule Dailyploy.Schema.User do
 
   import Comeonin.Bcrypt, only: [hashpwsalt: 1]
 
-
   schema "users" do
     field :name, :string
     field :email, :string
@@ -20,11 +19,11 @@ defmodule Dailyploy.Schema.User do
     user
     |> cast(attrs, [:name, :email, :password, :password_confirmation])
     |> validate_required([:name, :email, :password, :password_confirmation])
-    |> validate_format(:email, ~r/@/)
+    |> validate_format(:email, ~r/^[A-Za-z0-9._%+-+']+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/)
     |> validate_length(:password, min: 8)
     |> validate_confirmation(:password)
-    |> unique_constraint(:email)
     |> put_password_hash
+    |> unique_constraint(:email)
   end
 
   defp put_password_hash(changeset) do
