@@ -17,6 +17,7 @@ defmodule DailyployWeb.UserController do
         conn
         |> put_status(:created)
         |> render("show.json", user: user)
+
       {:error, user} ->
         conn
         |> put_status(422)
@@ -49,6 +50,7 @@ defmodule DailyployWeb.UserController do
     case UserModel.token_sign_in(email, password) do
       {:ok, token, _claims} ->
         conn |> render("access_token.json", access_token: token)
+
       _ ->
         {:error, :unauthorized}
     end

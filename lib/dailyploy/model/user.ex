@@ -1,9 +1,8 @@
 defmodule Dailyploy.Model.User do
   alias Dailyploy.Repo
 
-  alias Dailyploy.Schema.User
-  #alias Dailyploy.Model.User, as: UserModel
   alias Auth.Guardian
+  alias Dailyploy.Schema.User
 
   import Comeonin.Bcrypt, only: [checkpw: 2, dummy_checkpw: 0]
 
@@ -33,6 +32,7 @@ defmodule Dailyploy.Model.User do
     case email_password_auth(email, password) do
       {:ok, user} ->
         Guardian.encode_and_sign(user)
+
       _ ->
         {:error, :unauthorized}
     end
@@ -40,7 +40,7 @@ defmodule Dailyploy.Model.User do
 
   defp email_password_auth(email, password) when is_binary(email) and is_binary(password) do
     with {:ok, user} <- get_by_email(email),
-    do: verify_password(password, user)
+         do: verify_password(password, user)
   end
 
   defp get_by_email(email) when is_binary(email) do
@@ -48,6 +48,7 @@ defmodule Dailyploy.Model.User do
       nil ->
         dummy_checkpw()
         {:error, "Email does not match"}
+
       user ->
         {:ok, user}
     end

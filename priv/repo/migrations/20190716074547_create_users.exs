@@ -8,6 +8,5 @@ defmodule Dailyploy.Repo.Migrations.CreateUsers do
       add :password_hash, :string
       timestamps()
     end
-
   end
 end
