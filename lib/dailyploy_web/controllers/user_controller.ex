@@ -2,6 +2,7 @@ defmodule DailyployWeb.UserController do
   use DailyployWeb, :controller
 
   alias Dailyploy.Model.User, as: UserModel
+  alias Dailyploy.Helper.User, as: UserHelper
   alias Dailyploy.Schema.User
 
   action_fallback DailyployWeb.FallbackController
@@ -12,6 +13,9 @@ defmodule DailyployWeb.UserController do
   end
 
   def create(conn, %{"user" => user_params}) do
+    case UserHelper.create_user_with_company(user_params) do
+      _ ->
+    end
     case UserModel.create_user(user_params) do
       {:ok, %User{} = user} ->
         conn
