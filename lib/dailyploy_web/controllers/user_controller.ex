@@ -2,6 +2,7 @@ defmodule DailyployWeb.UserController do
   use DailyployWeb, :controller
 
   alias Dailyploy.Model.User, as: UserModel
+  alias Dailyploy.Helper.User, as: UserHelper
   alias Dailyploy.Schema.User
 
   action_fallback DailyployWeb.FallbackController
@@ -12,7 +13,7 @@ defmodule DailyployWeb.UserController do
   end
 
   def create(conn, %{"user" => user_params}) do
-    case UserModel.create_user(user_params) do
+    case UserHelper.create_user_with_company(user_params) do
       {:ok, %User{} = user} ->
         conn
         |> put_status(:created)
@@ -22,6 +23,16 @@ defmodule DailyployWeb.UserController do
         conn
         |> put_status(422)
         |> render("signup_error.json", %{user: user})
+
+      {:error, _model, model_changeset, _valid_changesets} ->
+        conn
+        |> put_status(422)
+        |> render("changeset_error.json", %{errors: model_changeset.errors})
+
+      {:ok, %{company: _company, user: user}} ->
+        conn
+        |> put_status(:created)
+        |> render("show.json", user: user)
     end
   end
 

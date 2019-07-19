@@ -6,6 +6,7 @@ defmodule Dailyploy.Model.User do
 
   import Comeonin.Bcrypt, only: [checkpw: 2, dummy_checkpw: 0]
 
+  @spec list_users :: any
   def list_users() do
     Repo.all(User)
   end

@@ -1,6 +1,5 @@
 defmodule DailyployWeb.UserView do
   use DailyployWeb, :view
-  alias DailyployWeb.UserView
   alias DailyployWeb.ErrorHelpers
 
   def render("index.json", %{users: users}) do
