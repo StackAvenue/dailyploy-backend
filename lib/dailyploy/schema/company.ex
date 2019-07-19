@@ -2,14 +2,13 @@ defmodule Dailyploy.Schema.Company do
   use Ecto.Schema
   import Ecto.Changeset
 
-
   schema "companies" do
     field :name, :string
     field :email, :string
     timestamps()
   end
 
- def changeset(company, attrs) do
+  def changeset(company, attrs) do
     company
     |> cast(attrs, [:name, :email])
     |> validate_required([:name, :email])

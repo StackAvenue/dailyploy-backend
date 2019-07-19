@@ -14,9 +14,6 @@ defmodule DailyployWeb.UserController do
 
   def create(conn, %{"user" => user_params}) do
     case UserHelper.create_user_with_company(user_params) do
-      _ ->
-    end
-    case UserModel.create_user(user_params) do
       {:ok, %User{} = user} ->
         conn
         |> put_status(:created)
@@ -26,6 +23,16 @@ defmodule DailyployWeb.UserController do
         conn
         |> put_status(422)
         |> render("signup_error.json", %{user: user})
+
+      {:error, _model, model_changeset, _valid_changesets} ->
+        conn
+        |> put_status(422)
+        |> render("changeset_error.json", %{errors: model_changeset.errors})
+
+      {:ok, %{company: _company, user: user}} ->
+        conn
+        |> put_status(:created)
+        |> render("show.json", user: user)
     end
   end
 

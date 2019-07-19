@@ -5,6 +5,8 @@ defmodule Dailyploy.Repo.Migrations.CreateCompanies do
     create table(:companies) do
       add :name, :string
       add :email, :string
+
+      timestamps()
     end
   end
 end

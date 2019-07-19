@@ -11,13 +11,13 @@ defmodule Dailyploy.Model.Company do
   def create_company(attrs \\ %{}) do
     %Company{}
     |> Company.changeset(attrs)
-    |> Repo.insert
+    |> Repo.insert()
   end
 
   def update_company(%Company{} = company, attrs) do
     company
     |> Company.changeset(attrs)
-    |> Repo.update
+    |> Repo.update()
   end
 
   def delete_company(%Company{} = company) do
