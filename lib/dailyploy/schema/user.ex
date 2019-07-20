@@ -35,4 +35,6 @@ defmodule Dailyploy.Schema.User do
         changeset
     end
   end
+
+
 end

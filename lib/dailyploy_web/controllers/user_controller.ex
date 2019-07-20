@@ -12,6 +12,7 @@ defmodule DailyployWeb.UserController do
     render(conn, "index.json", users: users)
   end
 
+  @spec create(Plug.Conn.t(), map) :: Plug.Conn.t()
   def create(conn, %{"user" => user_params}) do
     case UserHelper.create_user_with_company(user_params) do
       {:ok, %User{} = user} ->
@@ -22,7 +23,7 @@ defmodule DailyployWeb.UserController do
       {:error, user} ->
         conn
         |> put_status(422)
-        |> render("signup_error.json", %{user: user})
+        |> render("signup_error.json", user: user)
 
       {:error, _model, model_changeset, _valid_changesets} ->
         conn

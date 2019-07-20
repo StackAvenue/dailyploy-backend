@@ -11,7 +11,7 @@ defmodule Dailyploy.Helper.User do
   def create_user_with_company(user_attrs) do
     case user_attrs_has_company_key?(user_attrs) do
       true ->
-        %{company: company_data} = user_attrs
+        %{"company" => company_data} = user_attrs
         user_changeset = User.changeset(%User{}, user_attrs)
         company_changeset = Company.changeset(%Company{}, company_data)
         Repo.transaction(multi_for_user_and_company_creation(user_changeset, company_changeset))
@@ -25,7 +25,7 @@ defmodule Dailyploy.Helper.User do
   end
 
   defp user_attrs_has_company_key?(user_attrs) do
-    user_attrs["is_company_present"] && Map.has_key?(user_attrs, "company")
+    (user_attrs["is_company_present"] || false) && Map.has_key?(user_attrs, "company")
   end
 
   defp multi_for_user_and_company_creation(user_changeset, company_changeset) do
