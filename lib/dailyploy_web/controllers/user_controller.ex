@@ -18,12 +18,12 @@ defmodule DailyployWeb.UserController do
       {:ok, %User{} = user} ->
         conn
         |> put_status(:created)
-        |> render("show.json", user: user)
+        |> render("show.json", %{user: user})
 
       {:error, user} ->
         conn
         |> put_status(422)
-        |> render("signup_error.json", user: user)
+        |> render("signup_error.json", %{user: user})
 
       {:error, _model, model_changeset, _valid_changesets} ->
         conn
@@ -33,7 +33,7 @@ defmodule DailyployWeb.UserController do
       {:ok, %{company: _company, user: user}} ->
         conn
         |> put_status(:created)
-        |> render("show.json", user: user)
+        |> render("show.json", %{user: user})
     end
   end
 
