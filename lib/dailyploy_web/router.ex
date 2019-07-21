@@ -5,7 +5,10 @@ defmodule DailyployWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/api", DailyployWeb do
+  scope "/api/v1", DailyployWeb do
     pipe_through :api
+
+    post "/sign_up", UserController, :create
+    post "/sign_in", UserController, :sign_in
   end
 end

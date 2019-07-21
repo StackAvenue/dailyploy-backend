@@ -40,5 +40,7 @@ defmodule DailyployWeb.Endpoint do
     key: "_dailyploy_key",
     signing_salt: "8GYTNdCf"
 
+  plug CORSPlug
+
   plug DailyployWeb.Router
 end
