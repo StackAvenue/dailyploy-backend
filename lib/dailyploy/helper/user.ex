@@ -3,7 +3,6 @@ defmodule Dailyploy.Helper.User do
   alias Ecto.Multi
   alias Dailyploy.Schema.User
   alias Dailyploy.Schema.Company
-
   alias Dailyploy.Repo
 
   @spec create_user_with_company(%{optional(:__struct__) => none, optional(atom | binary) => any}) ::

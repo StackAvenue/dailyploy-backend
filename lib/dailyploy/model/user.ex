@@ -1,9 +1,7 @@
 defmodule Dailyploy.Model.User do
   alias Dailyploy.Repo
-
-  alias Auth.Guardian
   alias Dailyploy.Schema.User
-
+  alias Auth.Guardian
   import Comeonin.Bcrypt, only: [checkpw: 2, dummy_checkpw: 0]
 
   @spec list_users :: any
