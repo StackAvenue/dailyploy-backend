@@ -23,8 +23,6 @@ defmodule Dailyploy.Helper.User do
     end
   end
 
-
-
   defp user_attrs_has_company_key?(user_attrs) do
     (user_attrs["is_company_present"] || false) && Map.has_key?(user_attrs, "company")
   end
@@ -35,4 +33,3 @@ defmodule Dailyploy.Helper.User do
     |> Multi.insert(:company, company_changeset)
   end
 end
-
