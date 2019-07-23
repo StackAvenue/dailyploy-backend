@@ -1,10 +1,12 @@
 defmodule Dailyploy.Schema.Company do
   use Ecto.Schema
   import Ecto.Changeset
+  alias Dailyploy.Schema.Workspace
 
   schema "companies" do
     field :name, :string
     field :email, :string
+    has_one :workspaces, Workspace
     timestamps()
   end
 

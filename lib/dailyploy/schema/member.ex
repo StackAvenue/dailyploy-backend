@@ -13,4 +13,10 @@ defmodule Dailyploy.Schema.Member do
 
     timestamps()
   end
+
+  def changeset(member, attrs) do
+    member
+    |> cast(attrs, [:workspace_id, :user_id, :role_id])
+    |> validate_required([:workspace_id, :user_id, :role_id])
+  end
 end
