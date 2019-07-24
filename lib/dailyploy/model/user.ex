@@ -1,9 +1,7 @@
 defmodule Dailyploy.Model.User do
   alias Dailyploy.Repo
-
-  alias Auth.Guardian
   alias Dailyploy.Schema.User
-
+  alias Auth.Guardian
   import Comeonin.Bcrypt, only: [checkpw: 2, dummy_checkpw: 0]
 
   @spec list_users :: any
@@ -12,6 +10,8 @@ defmodule Dailyploy.Model.User do
   end
 
   def get_user!(id), do: Repo.get!(User, id)
+
+  def get_user!(id, preloads), do: Repo.get!(User, id) |> Repo.preload(preloads)
 
   def create_user(attrs \\ %{}) do
     %User{}

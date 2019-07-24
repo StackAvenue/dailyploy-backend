@@ -44,7 +44,8 @@ defmodule Dailyploy.MixProject do
       {:comeonin, "~> 4.0"},
       {:bcrypt_elixir, "~> 1.0"},
       {:cors_plug, "~> 2.0"},
-      {:guardian, "~> 1.0"}
+      {:guardian, "~> 1.0"},
+      {:ecto_enum, "~> 1.3"}
     ]
   end
 

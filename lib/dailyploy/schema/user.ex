@@ -1,6 +1,8 @@
 defmodule Dailyploy.Schema.User do
   use Ecto.Schema
   import Ecto.Changeset
+  alias Dailyploy.Schema.Workspace
+  alias Dailyploy.Schema.Member
 
   import Comeonin.Bcrypt, only: [hashpwsalt: 1]
 
@@ -10,6 +12,7 @@ defmodule Dailyploy.Schema.User do
     field :password_hash, :string
     field :password, :string, virtual: true
     field :password_confirmation, :string, virtual: true
+    many_to_many :workspaces, Workspace, join_through: Member
 
     timestamps()
   end
@@ -24,6 +27,7 @@ defmodule Dailyploy.Schema.User do
     |> validate_confirmation(:password)
     |> put_password_hash
     |> unique_constraint(:email)
+    |> cast_assoc(:workspaces, required: true, with: &Workspace.changeset/2)
   end
 
   defp put_password_hash(changeset) do
@@ -35,6 +39,4 @@ defmodule Dailyploy.Schema.User do
         changeset
     end
   end
-
-
 end
