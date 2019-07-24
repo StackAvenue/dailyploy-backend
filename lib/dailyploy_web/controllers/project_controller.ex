@@ -13,8 +13,13 @@ defmodule DailyployWeb.ProjectController do
 
   @spec create(Plug.Conn.t(), map) :: Plug.Conn.t()
   def create(conn, %{"project" => project_params}) do
-    with {:ok, %Project{} = project} <- ProjectModel.create_project(project_params) do
-      render(conn, "show.json", project: project)
+    case ProjectModel.create_project(project_params) do
+      {:ok, %Project{} = project} ->
+        render(conn, "show.json", project: project)
+      {:error, project} ->
+        conn
+        |> put_status(422)
+        |> render("changeset_error.json", %{errors: project.errors})
     end
   end
 
@@ -25,9 +30,13 @@ defmodule DailyployWeb.ProjectController do
 
   def update(conn, %{"id" => id, "project" => project_params}) do
     project = ProjectModel.get_project!(id)
-
-    with {:ok, %Project{} = project} <- ProjectModel.update_project(project, project_params) do
-      render(conn, "show.json", project: project)
+    case ProjectModel.update_project(project, project_params) do
+      {:ok, %Project{} = project} ->
+        render(conn, "show.json", project: project)
+      {:error, project} ->
+        conn
+        |> put_status(422)
+        |> render("changeset_error.json", %{errors: project.errors})
     end
   end
 
