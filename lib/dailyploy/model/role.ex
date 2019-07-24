@@ -9,7 +9,7 @@ defmodule Dailyploy.Model.Role do
 
   def get_role_by_name!(name) do
     query = from role in Role, where: role.name == ^name
-    Repo.all(query)
+    List.first(Repo.all(query))
   end
 
   @spec list_roles :: any

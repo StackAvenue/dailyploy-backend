@@ -18,8 +18,9 @@ defmodule Dailyploy.Schema.Member do
     member
     |> cast(attrs, [:workspace_id, :user_id, :role_id])
     |> validate_required([:workspace_id, :user_id])
-    |> unique_constraint(:user_id)
-    |> unique_constraint(:workspace_id)
+    |> unique_constraint(:user_workspace_uniqueness,
+      name: :add_unique_index_for_user_and_workspace_in_member
+    )
   end
 
   def update_role_changeset(member, role) do

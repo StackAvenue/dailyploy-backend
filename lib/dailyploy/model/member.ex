@@ -8,8 +8,20 @@ defmodule Dailyploy.Model.Member do
   end
 
   def get_member!(%{user_id: user_id, workspace_id: workspace_id}) do
-    query = from member in Member, where: member.user_id == ^user_id and member.workspace_id == ^workspace_id
-    List.first (Repo.all query)
+    query =
+      from member in Member,
+        where: member.user_id == ^user_id and member.workspace_id == ^workspace_id
+
+    List.first(Repo.all(query))
+  end
+
+  def get_member!(%{user_id: user_id, workspace_id: workspace_id}, preloads) do
+    query =
+      from member in Member,
+        where: member.user_id == ^user_id and member.workspace_id == ^workspace_id
+
+    member = List.first(Repo.all(query))
+    Repo.preload(member, preloads)
   end
 
   def get_member!(id), do: Repo.get!(Member, id)
