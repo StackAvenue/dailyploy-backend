@@ -17,6 +17,13 @@ defmodule Dailyploy.Schema.Member do
   def changeset(member, attrs) do
     member
     |> cast(attrs, [:workspace_id, :user_id, :role_id])
-    |> validate_required([:workspace_id, :user_id, :role_id])
+    |> validate_required([:workspace_id, :user_id])
+    |> unique_constraint(:user_id)
+    |> unique_constraint(:workspace_id)
+  end
+
+  def update_role_changeset(member, role) do
+    member
+    |> put_assoc(:role, role)
   end
 end

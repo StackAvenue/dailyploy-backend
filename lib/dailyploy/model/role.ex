@@ -1,6 +1,16 @@
 defmodule Dailyploy.Model.Role do
   alias Dailyploy.Repo
   alias Dailyploy.Schema.Role
+  import Ecto.Query
+
+  @all_roles %{admin: "admin", member: "member"}
+
+  def all_roles, do: @all_roles
+
+  def get_role_by_name!(name) do
+    query = from role in Role, where: role.name == ^name
+    Repo.all(query)
+  end
 
   @spec list_roles :: any
   def list_roles() do
