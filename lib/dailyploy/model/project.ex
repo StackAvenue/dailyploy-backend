@@ -6,7 +6,7 @@ defmodule Dailyploy.Model.Project do
     Repo.all(Project)
   end
 
-  def get_project!(id), do: Repo.get!(Project, id)
+  def get_project!(id), do: Repo.get(Project, id)
 
   def create_project(attrs \\ %{}) do
     %Project{}

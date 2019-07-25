@@ -24,27 +24,38 @@ defmodule DailyployWeb.ProjectController do
   end
 
   def show(conn, %{"id" => id}) do
-    project = ProjectModel.get_project!(id)
-    render(conn, "show.json", project: project)
+    case  ProjectModel.get_project!(id) do
+      {:ok, project} ->
+        render(conn, "show.json", project: project)
+      _ ->
+        {:error, :not_found}
+    end
   end
 
   def update(conn, %{"id" => id, "project" => project_params}) do
-    project = ProjectModel.get_project!(id)
-    case ProjectModel.update_project(project, project_params) do
-      {:ok, %Project{} = project} ->
-        render(conn, "show.json", project: project)
-      {:error, project} ->
-        conn
-        |> put_status(422)
-        |> render("changeset_error.json", %{errors: project.errors})
+    case  ProjectModel.get_project!(id) do
+      {:ok, project} ->
+        case ProjectModel.update_project(project, project_params) do
+          {:ok, %Project{} = project} ->
+            render(conn, "show.json", project: project)
+          {:error, project} ->
+            conn
+            |> put_status(422)
+            |> render("changeset_error.json", %{errors: project.errors})
+        end
+      _ ->
+        {:error, :not_found}
     end
   end
 
   def delete(conn, %{"id" => id}) do
-    project = ProjectModel.get_project!(id)
-
-    with {:ok, %Project{}} <- ProjectModel.delete_project(project) do
-      send_resp(conn, :no_content, "")
+    case  ProjectModel.get_project!(id) do
+      {:ok, project} ->
+        ProjectModel.delete_project(project) do
+          send_resp(conn, :no_content, "")
+        end
+      _ ->
+        {:error, :not_found}
     end
   end
 end
