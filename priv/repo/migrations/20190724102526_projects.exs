@@ -9,5 +9,6 @@ defmodule Dailyploy.Repo.Migrations.Project do
       add :color_code, :string
       timestamps()
     end
+    create unique_index(:projects, [:name])
   end
 end
