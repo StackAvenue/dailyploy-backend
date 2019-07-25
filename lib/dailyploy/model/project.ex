@@ -14,13 +14,13 @@ defmodule Dailyploy.Model.Project do
     |> Repo.insert()
   end
 
-  def update_project(%Project{} = project, attrs) do
+  def update_project(project, attrs) do
     project
     |> Project.changeset(attrs)
     |> Repo.update()
   end
 
-  def delete_project(%Project{} = project) do
+  def delete_project(project) do
     Repo.delete(project)
   end
 end
