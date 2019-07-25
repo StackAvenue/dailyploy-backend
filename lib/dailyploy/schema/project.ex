@@ -6,6 +6,7 @@ defmodule Dailyploy.Schema.Project do
     field :name, :string
     field :start_date, :date
     field :description, :string
+    field :color_code, :string
 
     timestamps()
   end
