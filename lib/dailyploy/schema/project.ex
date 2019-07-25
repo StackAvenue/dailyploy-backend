@@ -2,8 +2,6 @@ defmodule Dailyploy.Schema.Project do
   use Ecto.Schema
   import Ecto.Changeset
 
-  import Comeonin.Bcrypt, only: [hashpwsalt: 1]
-
   schema "projects" do
     field :name, :string
     field :start_date, :date
