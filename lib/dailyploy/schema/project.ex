@@ -1,14 +1,14 @@
 defmodule Dailyploy.Schema.Project do
   use Ecto.Schema
   import Ecto.Changeset
-  alias Dailyploy.Schema.Task
+
 
   schema "projects" do
     field :name, :string
     field :start_date, :date
     field :description, :string
     field :color_code, :string
-    has_many :tasks, Task
+
 
     timestamps()
   end
