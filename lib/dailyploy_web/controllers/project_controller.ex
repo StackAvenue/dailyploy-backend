@@ -1,10 +1,8 @@
 defmodule DailyployWeb.ProjectController do
   use DailyployWeb, :controller
-
   alias Dailyploy.Model.Project, as: ProjectModel
   alias Dailyploy.Schema.Project
 
-  action_fallback DailyployWeb.FallbackController
   plug :get_project_by_id when action in [:show, :update, :delete]
 
   def index(conn, _params) do
@@ -43,7 +41,7 @@ defmodule DailyployWeb.ProjectController do
 
   def delete(conn, _) do
     project = conn.assigns.project
-    with {:ok, project} <- ProjectModel.delete_project(project) do
+    with {:ok, _project} <- ProjectModel.delete_project(project) do
       send_resp(conn, 200, "Project Deleted successfully")
     end
   end

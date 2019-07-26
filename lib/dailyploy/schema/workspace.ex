@@ -2,7 +2,6 @@ defmodule Dailyploy.Schema.Workspace do
   use Ecto.Schema
   import Ecto.Changeset
   alias Dailyploy.Schema.Company
-  # alias Dailyploy.Schema.User
   alias Dailyploy.Schema.Member
 
   schema "workspaces" do
@@ -12,7 +11,6 @@ defmodule Dailyploy.Schema.Workspace do
     belongs_to :company, Company
     has_many :members, Member, on_delete: :delete_all, on_replace: :delete
     has_many :users, through: [:members, :user]
-    # many_to_many :users, User, join_through: "members"
 
     timestamps()
   end

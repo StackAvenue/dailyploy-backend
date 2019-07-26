@@ -11,6 +11,8 @@ defmodule DailyployWeb.Router do
     post "/sign_up", UserController, :create
     post "/sign_in", UserController, :sign_in
 
-    resources "/projects", ProjectController
+    resources "/projects", ProjectController do
+      resources "/tasks", TaskController
+    end
   end
 end

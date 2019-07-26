@@ -20,7 +20,7 @@ defmodule Dailyploy.MixProject do
   def application do
     [
       mod: {Dailyploy.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools, :calendar]
     ]
   end
 
@@ -45,7 +45,8 @@ defmodule Dailyploy.MixProject do
       {:bcrypt_elixir, "~> 1.0"},
       {:cors_plug, "~> 2.0"},
       {:guardian, "~> 1.0"},
-      {:ecto_enum, "~> 1.3"}
+      {:ecto_enum, "~> 1.3"},
+      {:calendar, "~> 0.17.5"}
     ]
   end
 

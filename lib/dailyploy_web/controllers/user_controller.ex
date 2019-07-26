@@ -1,6 +1,5 @@
 defmodule DailyployWeb.UserController do
   use DailyployWeb, :controller
-
   alias Dailyploy.Model.User, as: UserModel
   alias Dailyploy.Helper.User, as: UserHelper
   alias Dailyploy.Schema.User
