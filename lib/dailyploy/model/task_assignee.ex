@@ -2,25 +2,26 @@ defmodule Dailyploy.Model.TaskAssignee do
   alias Dailyploy.Repo
   alias Dailyploy.Schema.TaskAssignee
 
-  def list_taskassignees() do
+
+  def list_task_assignees() do
     Repo.all(TaskAssignee)
   end
 
-  def get_taskassignee!(id), do: Repo.get(TaskAssignee, id)
+  def get_task_assignee!(id), do: Repo.get(TaskAssignee, id)
 
-  def create_taskassignee(attrs \\ %{}) do
+  def create_task_assignee(attrs \\ %{}) do
     %TaskAssignee{}
     |> TaskAssignee.changeset(attrs)
     |> Repo.insert()
   end
 
-  def update_task(taskassignee, attrs) do
+  def update_task_assignee(taskassignee, attrs) do
     taskassignee
     |> TaskAssignee.changeset(attrs)
     |> Repo.update()
   end
 
-  def delete_task(taskassignee) do
+  def delete_task_assignee(taskassignee) do
     Repo.delete(taskassignee)
   end
 end

@@ -4,7 +4,7 @@ defmodule Dailyploy.Schema.TaskAssignee do
   alias Dailyploy.Schema.User
   alias Dailyploy.Schema.Task
 
-  schema "taskassignees" do
+  schema "task_assignees" do
    belongs_to :user, User
    belongs_to :task, Task
 
