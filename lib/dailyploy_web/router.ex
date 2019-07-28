@@ -12,8 +12,6 @@ defmodule DailyployWeb.Router do
   end
 
   scope "/api/v1", DailyployWeb do
-    require IEx
-    IEx.pry
     pipe_through [:api, :jwt_authenticated]
 
     get "/user", UserController, :show
