@@ -36,10 +36,10 @@ defmodule DailyployWeb.UserController do
     end
   end
 
-  def show(conn, %{"id" => id}) do
-    user = UserModel.get_user!(id)
-    render(conn, "show.json", user: user)
-  end
+  # def show(conn, %{"id" => id}) do
+  #   user = UserModel.get_user!(id)
+  #   render(conn, "show.json", user: user)
+  # end
 
   def update(conn, %{"id" => id, "user" => user_params}) do
     user = UserModel.get_user!(id)
@@ -55,6 +55,11 @@ defmodule DailyployWeb.UserController do
     with {:ok, %User{}} <- UserModel.delete_user(user) do
       send_resp(conn, :no_content, "")
     end
+  end
+
+  def show(conn, _params) do
+    user = Guardian.Plug.current_resource(conn)
+    conn |> render("user.json", user: user)
   end
 
   def sign_in(conn, %{"email" => email, "password" => password}) do
