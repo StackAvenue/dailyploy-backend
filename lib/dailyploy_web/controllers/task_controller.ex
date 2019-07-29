@@ -49,8 +49,6 @@ defmodule DailyployWeb.TaskController do
   defp get_task_by_id(%{params: %{"id" => id}} = conn, _) do
     case TaskModel.get_task!(id) do
       %Task{} = task ->
-        require IEx
-        IEx.Pry
         assign(conn, :task, task)
       _ -> send_resp(conn, 404, "Not Found")
     end

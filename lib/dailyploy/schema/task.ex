@@ -3,6 +3,8 @@ defmodule Dailyploy.Schema.Task do
   alias Dailyploy.Schema.Project
   alias Dailyploy.Schema.User
   alias Dailyploy.Schema.TaskAssignee
+  alias Dailyploy.Schema.Label
+  alias Dailyploy.Schema.Tag
   import Ecto.Changeset
 
   schema "tasks" do
@@ -13,6 +15,7 @@ defmodule Dailyploy.Schema.Task do
     field :end_date, :utc_datetime
     belongs_to :project, Project
     many_to_many :users, User, join_through: TaskAssignee
+    many_to_many :tags, Tag, join_through: Label
 
     timestamps(type: :utc_datetime)
   end

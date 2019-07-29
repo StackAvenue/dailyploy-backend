@@ -5,8 +5,17 @@ defmodule DailyployWeb.Router do
     plug :accepts, ["json"]
   end
 
+  pipeline :jwt_authenticated do
+    plug Auth.Pipeline
+  end
+
   scope "/api/v1", DailyployWeb do
-    pipe_through :api
+    pipe_through :jwt_authenticated
+
+    get "/user", UserController, :show
+  end
+
+  scope "/api/v1", DailyployWeb do
 
     post "/sign_up", UserController, :create
     post "/sign_in", UserController, :sign_in

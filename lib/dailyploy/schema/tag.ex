@@ -1,6 +1,8 @@
 defmodule Dailyploy.Schema.Tag do
   use Ecto.Schema
   import Ecto.Changeset
+  alias Dailyploy.Schema.Task
+  alias Dailyploy.Schema.Label
 
   alias Dailyploy.Schema.Workspace
 
@@ -8,6 +10,8 @@ defmodule Dailyploy.Schema.Tag do
     field :name, :string
     field :color, :string
     belongs_to :workspace, Workspace, on_replace: :update
+    many_to_many :tasks, Task, join_through: Label
+
     timestamps()
   end
 
