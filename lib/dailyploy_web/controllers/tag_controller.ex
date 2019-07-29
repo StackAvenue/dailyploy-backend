@@ -5,9 +5,11 @@ defmodule DailyployWeb.TagController do
   alias Dailyploy.Model.Tag, as: TagModel
   alias Dailyploy.Schema.Tag
 
+
   plug :load_workspace_by_id
   plug :load_tag_by_id_in_workspace when action in [:update, :delete, :show]
 
+  @spec create(Plug.Conn.t(), map) :: Plug.Conn.t()
   def create(conn, %{"tag" => tag_params}) do
     tag_params = Map.put(tag_params, "workspace", conn.assigns.workspace)
     case TagModel.create_tag(tag_params) do
@@ -20,6 +22,7 @@ defmodule DailyployWeb.TagController do
     end
   end
 
+  @spec update(Plug.Conn.t(), map) :: Plug.Conn.t()
   def update(conn, %{"tag" => tag_params}) do
     tag = conn.assigns.tag
     tag_params = Map.put(tag_params, "workspace", conn.assigns.workspace)
@@ -33,6 +36,7 @@ defmodule DailyployWeb.TagController do
     end
   end
 
+  @spec delete(Plug.Conn.t(), any) :: Plug.Conn.t()
   def delete(conn, _) do
     tag = conn.assigns.tag
     case TagModel.delete_tag(tag) do
@@ -56,6 +60,7 @@ defmodule DailyployWeb.TagController do
   end
 
   defp load_workspace_by_id(%{params: %{"workspace_id" => id}} = conn, _) do
+    # WorkspaceModel.get_workspace_by_user(%{user_id: Guardian.plug.current_resource, workspace_id: id})
     case WorkspaceModel.get_workspace!(id) do
       %Workspace{} = workspace ->
         assign(conn, :workspace, workspace)
