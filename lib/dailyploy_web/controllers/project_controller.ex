@@ -42,7 +42,7 @@ defmodule DailyployWeb.ProjectController do
   def delete(conn, _) do
     project = conn.assigns.project
     with {:ok, _project} <- ProjectModel.delete_project(project) do
-      send_resp(conn, 200, "Project Deleted successfully")
+      send_resp(conn, 202, "Project Deleted successfully")
     end
   end
 
@@ -50,7 +50,7 @@ defmodule DailyployWeb.ProjectController do
     case ProjectModel.get_project!(id) do
       %Project{} = project ->
         assign(conn, :project, project)
-      _ -> send_resp(conn, 404, "Not Found")
+      _ -> send_resp(conn, 404, "Project Not Found")
     end
   end
 end

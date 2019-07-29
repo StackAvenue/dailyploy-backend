@@ -7,9 +7,9 @@ defmodule Dailyploy.Model.Workspace do
     Repo.all(Workspace)
   end
 
-  def get_workspace!(id), do: Repo.get!(Workspace, id)
+  def get_workspace!(id), do: Repo.get(Workspace, id)
 
-  def get_workspace!(id, preloads), do: Repo.get!(Workspace, id) |> Repo.preload(preloads)
+  def get_workspace!(id, preloads), do: Repo.get(Workspace, id) |> Repo.preload(preloads)
 
   def create_workspace(attrs \\ %{}) do
     %Workspace{}

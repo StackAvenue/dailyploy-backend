@@ -14,5 +14,9 @@ defmodule DailyployWeb.Router do
     resources "/projects", ProjectController do
       resources "/tasks", TaskController
     end
+
+    resources "/workspaces", WorkspaceController do
+      resources "/tags", TagController, only: [:create, :update, :delete, :index, :show]
+    end
   end
 end
