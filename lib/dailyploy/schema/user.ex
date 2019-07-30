@@ -3,6 +3,7 @@ defmodule Dailyploy.Schema.User do
   import Ecto.Changeset
   alias Dailyploy.Schema.Workspace
   alias Dailyploy.Schema.Member
+  alias Dailyploy.Schema.Invitation  
 
   import Comeonin.Bcrypt, only: [hashpwsalt: 1]
 
@@ -12,6 +13,9 @@ defmodule Dailyploy.Schema.User do
     field :password_hash, :string
     field :password, :string, virtual: true
     field :password_confirmation, :string, virtual: true
+    
+    has_many :invitation, Invitation, foreign_key: :assignee_id
+    has_many :invitation, Invitation, foreign_key: :sender_id  
     many_to_many :workspaces, Workspace, join_through: Member
 
     timestamps()

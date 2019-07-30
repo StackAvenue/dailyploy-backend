@@ -1,5 +1,6 @@
 defmodule Dailyploy.Schema.Project do
   use Ecto.Schema
+  alias Dailyploy.Schema.Invitation  
   import Ecto.Changeset
 
   schema "projects" do
@@ -7,6 +8,7 @@ defmodule Dailyploy.Schema.Project do
     field :start_date, :date
     field :description, :string
     field :color_code, :string
+    has_many :invitation, Invitation    
 
     timestamps()
   end
