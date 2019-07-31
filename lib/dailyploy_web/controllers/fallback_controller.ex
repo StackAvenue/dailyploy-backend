@@ -19,6 +19,6 @@ defmodule DailyployWeb.FallbackController do
   def call(conn, {:error, :unauthorized}) do
     conn
     |> put_status(:unauthorized)
-    |> json(%{error: "Email and Password does not match"})
+    |> json(%{error: "Email and Password do not match"})
   end
 end

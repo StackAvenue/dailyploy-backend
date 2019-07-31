@@ -17,8 +17,8 @@ defmodule DailyployWeb.Router do
 
   scope "/api/v1", DailyployWeb do
 
-    post "/sign_up", UserController, :create
-    post "/sign_in", UserController, :sign_in
+    post "/sign_up", SessionController, :sign_up
+    post "/sign_in", SessionController, :sign_in
 
     resources "/projects", ProjectController do
       resources "/tasks", TaskController
