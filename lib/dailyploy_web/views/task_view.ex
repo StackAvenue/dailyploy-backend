@@ -13,7 +13,7 @@ defmodule DailyployWeb.TaskView do
   end
 
   def render("task.json", %{task: task}) do
-    %{id: task.id, name: task.name, start_date: task.start_date, end_date: task.end_date, description: task.description, type: task.type, project_id: task.project_id}
+    %{id: task.id, name: task.name, start_date: task.start_date, end_date: task.end_date, description: task.description, type: task.type}
   end
 
   def render("changeset_error.json", %{errors: errors}) do

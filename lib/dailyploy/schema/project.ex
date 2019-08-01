@@ -22,7 +22,8 @@ defmodule Dailyploy.Schema.Project do
   def changeset(project, attrs) do
     project
     |> cast(attrs, [:name, :start_date, :description])
-    |> validate_required([:name])
+    |> validate_required([:name, :start_date])
     |> unique_constraint(:name)
+    |> put_assoc(:workspace, attrs["Workspace"])
   end
 end

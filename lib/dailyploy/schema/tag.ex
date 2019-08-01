@@ -3,7 +3,6 @@ defmodule Dailyploy.Schema.Tag do
   import Ecto.Changeset
   alias Dailyploy.Schema.Task
   alias Dailyploy.Schema.Label
-
   alias Dailyploy.Schema.Workspace
 
   schema "tags" do

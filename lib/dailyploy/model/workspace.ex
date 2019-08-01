@@ -1,10 +1,19 @@
 defmodule Dailyploy.Model.Workspace do
   alias Dailyploy.Repo
   alias Dailyploy.Schema.Workspace
+  alias Dailyploy.Model.Member, as: MemberModel
+
 
   @spec list_workspaces :: any
   def list_workspaces() do
     Repo.all(Workspace)
+  end
+
+  def get_workspace_by_user(%{user_id: user_id, workspace_id: workspace_id}) do
+    case MemberModel.get_member!(%{user_id: user_id, workspace_id: workspace_id}, [:workspace]) do
+      member -> member.workspace
+      _ -> nil
+    end
   end
 
   def get_workspace!(id), do: Repo.get(Workspace, id)
