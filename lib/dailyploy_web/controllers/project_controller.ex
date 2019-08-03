@@ -6,20 +6,18 @@ defmodule DailyployWeb.ProjectController do
   alias Dailyploy.Schema.Workspace
 
   plug Auth.Pipeline
-  plug :get_project_by_id when action in [:show, :update, :delete]
-  plug :load_workspace_by_user when action in []
-  plug :load_user_in_project
+  plug :load_workspace_by_user
   plug :load_project_in_workspace when action in [:show, :update, :delete]
 
   @spec index(Plug.Conn.t(), any) :: Plug.Conn.t()
   def index(conn, _params) do
-    projects = ProjectModel.list_projects()
+    projects = ProjectModel.list_user_projects_in_workspace(%{workspace_id: conn.assigns.workspace.id, user_id: Guardian.Plug.current_resource(conn).id})
     render(conn, "index.json", projects: projects)
   end
 
   @spec create(Plug.Conn.t(), map) :: Plug.Conn.t()
   def create(conn, %{"project" => project_params}) do
-    project_params = Map.put(project_params, "workspace", conn.assigns.workspace)
+    project_params = add_workspace_and_user_in_project_params(project_params, conn)
     case ProjectModel.create_project(project_params) do
       {:ok, %Project{} = project} ->
         render(conn, "show.json", project: project)
@@ -89,5 +87,10 @@ defmodule DailyployWeb.ProjectController do
         assign(conn, :workspace, workspace)
       _ -> send_resp(conn, 404, "Resource Not Found")
     end
+  end
+
+  defp add_workspace_and_user_in_project_params(project_params, conn) do
+    project_params = Map.put(project_params, "workspace", conn.assigns.workspace)
+    Map.put(project_params, "users", [Guardian.Plug.current_resource(conn)])
   end
 end
