@@ -8,6 +8,9 @@ defmodule Dailyploy.Repo.Migrations.CreateTaskAssignee do
 
       timestamps()
     end
-    create unique_index(:task_assignees, [:user_id, :task_id], name: :unique_index_for_user_and_task_in_taskassignee)
+
+    create unique_index(:task_assignees, [:user_id, :task_id],
+             name: :unique_index_for_user_and_task_in_taskassignee
+           )
   end
 end

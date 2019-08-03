@@ -16,14 +16,14 @@ defmodule DailyployWeb.Router do
   end
 
   scope "/api/v1", DailyployWeb do
-
     post "/sign_up", SessionController, :sign_up
     post "/sign_in", SessionController, :sign_in
 
     resources "/workspaces", WorkspaceController do
       resources "/tags", TagController, only: [:create, :update, :delete, :index, :show]
-        resources "/projects", ProjectController do
-          resources "/tasks", TaskController
+
+      resources "/projects", ProjectController do
+        resources "/tasks", TaskController
       end
     end
   end

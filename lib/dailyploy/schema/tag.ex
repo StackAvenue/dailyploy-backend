@@ -18,7 +18,9 @@ defmodule Dailyploy.Schema.Tag do
     tag
     |> cast(attrs, [:name, :color])
     |> validate_required([:name])
-    |> unique_constraint(:tag_name_workspace_uniqueness, name: :unique_index_for_tag_name_and_workspace_in_tag)
+    |> unique_constraint(:tag_name_workspace_uniqueness,
+      name: :unique_index_for_tag_name_and_workspace_in_tag
+    )
     |> put_assoc(:workspace, attrs["workspace"])
   end
 end

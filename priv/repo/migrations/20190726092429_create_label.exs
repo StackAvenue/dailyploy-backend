@@ -8,6 +8,9 @@ defmodule Dailyploy.Repo.Migrations.CreateLabel do
 
       timestamps()
     end
-    create unique_index(:labels, [:tag_id, :task_id], name: :unique_index_for_tag_and_task_in_label)
+
+    create unique_index(:labels, [:tag_id, :task_id],
+             name: :unique_index_for_tag_and_task_in_label
+           )
   end
 end

@@ -3,7 +3,6 @@ defmodule DailyployWeb.TagView do
   alias DailyployWeb.TagView
   alias DailyployWeb.ErrorHelpers
 
-
   def render("index.json", %{tags: tags}) do
     %{tasks: render_many(tags, TagView, "tag.json")}
   end

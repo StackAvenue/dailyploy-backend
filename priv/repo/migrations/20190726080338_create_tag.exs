@@ -6,6 +6,7 @@ defmodule Dailyploy.Repo.Migrations.CreateTag do
       add :name, :string
       timestamps()
     end
+
     create unique_index(:tags, [:name])
   end
 end

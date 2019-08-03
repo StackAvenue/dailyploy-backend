@@ -30,13 +30,13 @@ defmodule Dailyploy.Model.Tag do
 
   def get_tag_in_workspace!(%{workspace_id: workspace_id, tag_id: tag_id}) do
     query = from tag in Tag, where: tag.workspace_id == ^workspace_id and tag.id == ^tag_id
-    List.first Repo.all(query)
+    List.first(Repo.all(query))
   end
 
   def get_tag_in_workspace!(%{workspace_id: workspace_id, tag_id: tag_id}, preloads) do
     query = from tag in Tag, where: tag.workspace_id == ^workspace_id and tag.id == ^tag_id
     tags = Repo.all(query)
-    List.first Repo.preload(tags, preloads)
+    List.first(Repo.preload(tags, preloads))
   end
 
   def list_tags_in_workspace(%{workspace_id: workspace_id}) do

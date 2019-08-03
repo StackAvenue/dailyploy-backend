@@ -12,7 +12,12 @@ defmodule DailyployWeb.ProjectView do
   end
 
   def render("project.json", %{project: project}) do
-    %{id: project.id, name: project.name, start_date: project.start_date, description: project.description}
+    %{
+      id: project.id,
+      name: project.name,
+      start_date: project.start_date,
+      description: project.description
+    }
   end
 
   def render("changeset_error.json", %{errors: errors}) do

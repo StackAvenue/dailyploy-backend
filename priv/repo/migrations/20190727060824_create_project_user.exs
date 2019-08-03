@@ -8,6 +8,9 @@ defmodule Dailyploy.Repo.Migrations.CreateProjectUser do
 
       timestamps()
     end
-    create unique_index(:project_users, [:user_id, :project_id], name: :unique_index_for_user_and_project_in_projectuser)
+
+    create unique_index(:project_users, [:user_id, :project_id],
+             name: :unique_index_for_user_and_project_in_projectuser
+           )
   end
 end

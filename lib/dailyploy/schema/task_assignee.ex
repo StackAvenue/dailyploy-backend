@@ -5,17 +5,18 @@ defmodule Dailyploy.Schema.TaskAssignee do
   alias Dailyploy.Schema.Task
 
   schema "task_assignees" do
-   belongs_to :user, User
-   belongs_to :task, Task
+    belongs_to :user, User
+    belongs_to :task, Task
 
-   timestamps()
+    timestamps()
   end
 
   def changeset(taskassignee, attrs) do
     taskassignee
     |> cast(attrs, [:user_id, :task_id])
     |> validate_required([:user_id, :task_id])
-    |> unique_constraint(:user_task_uniqueness, name: :unique_index_for_user_and_task_in_taskassignee)
+    |> unique_constraint(:user_task_uniqueness,
+      name: :unique_index_for_user_and_task_in_taskassignee
+    )
   end
 end
-

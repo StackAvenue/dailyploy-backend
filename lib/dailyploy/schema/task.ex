@@ -20,7 +20,6 @@ defmodule Dailyploy.Schema.Task do
     timestamps(type: :utc_datetime)
   end
 
-
   def changeset(task, attrs) do
     task
     |> cast(attrs, [:name, :description, :type, :start_date, :end_date, :project_id])

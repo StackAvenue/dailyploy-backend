@@ -15,9 +15,11 @@ defmodule DailyployWeb.TaskController do
 
   def create(conn, %{"task" => task_params}) do
     task_params = Map.put(task_params, "project", conn.assigns.project)
+
     case TaskModel.create_task(task_params) do
       {:ok, %Task{} = task} ->
         render(conn, "show.json", task: task)
+
       {:error, task} ->
         conn
         |> put_status(422)
@@ -32,9 +34,11 @@ defmodule DailyployWeb.TaskController do
 
   def update(conn, %{"task" => params}) do
     task = conn.assigns.task
+
     case TaskModel.update_task(task, params) do
       {:ok, %Task{} = task} ->
         render(conn, "show.json", task: task)
+
       {:error, task} ->
         conn
         |> put_status(422)
@@ -44,6 +48,7 @@ defmodule DailyployWeb.TaskController do
 
   def delete(conn, _) do
     task = conn.assigns.task
+
     with {:ok, _task} <- TaskModel.delete_task(task) do
       send_resp(conn, 200, "Task Deleted successfully")
     end
@@ -53,7 +58,9 @@ defmodule DailyployWeb.TaskController do
     case TaskModel.get_task!(id) do
       %Task{} = task ->
         assign(conn, :task, task)
-      _ -> send_resp(conn, 404, "Not Found")
+
+      _ ->
+        send_resp(conn, 404, "Not Found")
     end
   end
 
@@ -61,16 +68,22 @@ defmodule DailyployWeb.TaskController do
     case TaskModel.get_task_in_project!(%{project_id: project_id, task_id: task_id}) do
       %Task{} = task ->
         assign(conn, :task, task)
-      _ -> send_resp(conn, 404, "Not Found")
+
+      _ ->
+        send_resp(conn, 404, "Not Found")
     end
   end
 
   defp load_user_by_task(%{params: %{"task_id" => id}} = conn, _) do
-    case TaskModel.get_user_by_task!(%{user_id: Guardian.Plug.current_resource(conn).id, task_id: id}) do
+    case TaskModel.get_user_by_task!(%{
+           user_id: Guardian.Plug.current_resource(conn).id,
+           task_id: id
+         }) do
       %Task{} = task ->
         assign(conn, :task, task)
-      _ -> send_resp(conn, 404, "Not Found")
+
+      _ ->
+        send_resp(conn, 404, "Not Found")
     end
   end
 end
-

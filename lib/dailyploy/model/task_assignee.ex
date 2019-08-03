@@ -3,7 +3,6 @@ defmodule Dailyploy.Model.TaskAssignee do
   alias Dailyploy.Schema.TaskAssignee
   import Ecto.Query
 
-
   def list_task_assignees() do
     Repo.all(TaskAssignee)
   end

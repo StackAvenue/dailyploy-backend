@@ -4,7 +4,6 @@ defmodule Dailyploy.Model.Task do
   import Ecto.Query
   alias Dailyploy.Model.TaskAssignee, as: TaskAssigneeModel
 
-
   def list_tasks() do
     Repo.all(Task)
   end
@@ -30,7 +29,7 @@ defmodule Dailyploy.Model.Task do
   def get_user_by_task!(%{user_id: user_id, task_id: task_id}) do
     case TaskAssigneeModel.get_user!(%{user_id: user_id, task_id: task_id}) do
       taskassignee -> taskassignee.task
-     _ ->  nil
+      _ -> nil
     end
   end
 

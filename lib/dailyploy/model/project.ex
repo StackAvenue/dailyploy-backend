@@ -11,11 +11,14 @@ defmodule Dailyploy.Model.Project do
   end
 
   def list_user_projects_in_workspace(%{workspace_id: workspace_id, user_id: user_id}) do
-    query = from project in Project,
-              join: project_user in ProjectUser,
-              on: project.id == project_user.project_id,
-              join: user in User,
-              on: user.id == project_user.user_id, where: project.workspace_id == ^workspace_id and project_user.user_id == ^user_id
+    query =
+      from project in Project,
+        join: project_user in ProjectUser,
+        on: project.id == project_user.project_id,
+        join: user in User,
+        on: user.id == project_user.user_id,
+        where: project.workspace_id == ^workspace_id and project_user.user_id == ^user_id
+
     Repo.all(query)
   end
 
@@ -37,12 +40,13 @@ defmodule Dailyploy.Model.Project do
     Repo.delete(project)
   end
 
-
   def get_project_in_workspace!(%{workspace_id: workspace_id, project_id: project_id}) do
-    query = from project in Project, where: project.workspace_id == ^workspace_id and project.id == ^project_id
+    query =
+      from project in Project,
+        where: project.workspace_id == ^workspace_id and project.id == ^project_id
+
     List.first(Repo.all(query))
   end
-
 
   def get_user_by_project!(%{user_id: user_id, project_id: project_id}) do
     case ProjectUserModel.get_project!(%{user_id: user_id, project_id: project_id}, [:project]) do
@@ -51,4 +55,3 @@ defmodule Dailyploy.Model.Project do
     end
   end
 end
-
