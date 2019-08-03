@@ -42,8 +42,10 @@ defmodule DailyployWeb.ProjectController do
 
   @spec update(Plug.Conn.t(), map) :: Plug.Conn.t()
   def update(conn, %{"project" => project_params}) do
-    project = conn.assigns.project
-    project_params = Map.put(project_params, "workspace", conn.assigns.workspace)
+    project = ProjectModel.get_project!(conn.assigns.project.id, [:users, :workspace])
+
+    project_params =
+      add_workspace_and_user_in_project_params_for_update(project_params, project, conn)
 
     case ProjectModel.update_project(project, project_params) do
       {:ok, %Project{} = project} ->
@@ -103,5 +105,10 @@ defmodule DailyployWeb.ProjectController do
   defp add_workspace_and_user_in_project_params(project_params, conn) do
     project_params = Map.put(project_params, "workspace", conn.assigns.workspace)
     Map.put(project_params, "users", [Guardian.Plug.current_resource(conn)])
+  end
+
+  def add_workspace_and_user_in_project_params_for_update(project_params, project, conn) do
+    project_params = Map.put(project_params, "workspace", conn.assigns.workspace)
+    Map.put(project_params, "users", project.users)
   end
 end

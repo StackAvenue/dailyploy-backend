@@ -3,7 +3,6 @@ defmodule Dailyploy.Model.Project do
   alias Dailyploy.Schema.Project
   alias Dailyploy.Schema.User
   alias Dailyploy.Schema.ProjectUser
-  alias Dailyploy.Model.ProjectUser, as: ProjectUserModel
   import Ecto.Query
 
   def list_projects() do
@@ -41,6 +40,8 @@ defmodule Dailyploy.Model.Project do
   end
 
   def get_project!(id), do: Repo.get(Project, id)
+
+  def get_project!(id, preloads), do: Repo.get(Project, id) |> Repo.preload(preloads)
 
   def create_project(attrs \\ %{}) do
     %Project{}
