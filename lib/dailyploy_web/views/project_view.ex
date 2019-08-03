@@ -23,4 +23,8 @@ defmodule DailyployWeb.ProjectView do
   def render("changeset_error.json", %{errors: errors}) do
     %{errors: ErrorHelpers.changeset_error_to_map(errors)}
   end
+
+  def render("error_in_deletion.json", %{}) do
+    %{errors: "Error in Deleting Project"}
+  end
 end

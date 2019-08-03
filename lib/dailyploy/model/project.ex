@@ -22,15 +22,22 @@ defmodule Dailyploy.Model.Project do
     Repo.all(query)
   end
 
-  def load_user_project_in_workspace(%{workspace_id: workspace_id, user_id: user_id, project_id: project_id}) do
+  def load_user_project_in_workspace(%{
+        workspace_id: workspace_id,
+        user_id: user_id,
+        project_id: project_id
+      }) do
     query =
       from project in Project,
         join: project_user in ProjectUser,
         on: project.id == project_user.project_id,
         join: user in User,
         on: user.id == project_user.user_id,
-        where: project.workspace_id == ^workspace_id and project_user.user_id == ^user_id and project.id == ^project_id
-    List.first Repo.all(query)
+        where:
+          project.workspace_id == ^workspace_id and project_user.user_id == ^user_id and
+            project.id == ^project_id
+
+    List.first(Repo.all(query))
   end
 
   def get_project!(id), do: Repo.get(Project, id)
@@ -57,12 +64,5 @@ defmodule Dailyploy.Model.Project do
         where: project.workspace_id == ^workspace_id and project.id == ^project_id
 
     List.first(Repo.all(query))
-  end
-
-  def get_user_by_project!(%{user_id: user_id, project_id: project_id}) do
-    case ProjectUserModel.get_project!(%{user_id: user_id, project_id: project_id}, [:project]) do
-      projectuser -> projectuser.project
-      _ -> nil
-    end
   end
 end

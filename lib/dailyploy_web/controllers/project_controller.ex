@@ -59,14 +59,29 @@ defmodule DailyployWeb.ProjectController do
   def delete(conn, _) do
     project = conn.assigns.project
 
-    with {:ok, _project} <- ProjectModel.delete_project(project) do
-      send_resp(conn, 202, "Project Deleted successfully")
+    case ProjectModel.delete_project(project) do
+      {:ok, _project} ->
+        send_resp(conn, 202, "Project Deleted successfully")
+
+      _ ->
+        conn
+        |> put_status(422)
+
+        render("error_in_deletion.json", %{})
     end
   end
 
-  defp load_user_project_in_workspace(%{params: %{"workspace_id" => workspace_id, "id" => id}} = conn, _) do
+  defp load_user_project_in_workspace(
+         %{params: %{"workspace_id" => workspace_id, "id" => id}} = conn,
+         _
+       ) do
     user_id = Guardian.Plug.current_resource(conn).id
-    case ProjectModel.load_user_project_in_workspace(%{workspace_id: workspace_id, user_id: user_id, project_id: id}) do
+
+    case ProjectModel.load_user_project_in_workspace(%{
+           workspace_id: workspace_id,
+           user_id: user_id,
+           project_id: id
+         }) do
       %Project{} = project -> assign(conn, :project, project)
       _ -> send_resp(conn, 404, "Resource Not Found")
     end
