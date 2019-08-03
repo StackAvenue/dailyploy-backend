@@ -7,7 +7,7 @@ defmodule DailyployWeb.ProjectController do
 
   plug Auth.Pipeline
   plug :load_workspace_by_user
-  plug :load_project_in_workspace when action in [:show, :update, :delete]
+  plug :load_user_project_in_workspace when action in [:show, :update, :delete]
 
   @spec index(Plug.Conn.t(), any) :: Plug.Conn.t()
   def index(conn, _params) do
@@ -37,13 +37,7 @@ defmodule DailyployWeb.ProjectController do
 
   @spec show(Plug.Conn.t(), any) :: Plug.Conn.t()
   def show(conn, _) do
-    project =
-      ProjectModel.get_project_in_workspace!(%{
-        workspace_id: conn.assigns.workspace.id,
-        project_id: conn.assigns.project.id
-      })
-
-    render(conn, "show.json", project: project)
+    render(conn, "show.json", project: conn.assigns.project)
   end
 
   @spec update(Plug.Conn.t(), map) :: Plug.Conn.t()
@@ -70,42 +64,11 @@ defmodule DailyployWeb.ProjectController do
     end
   end
 
-  defp get_project_by_id(%{params: %{"id" => id}} = conn, _) do
-    case ProjectModel.get_project!(id) do
-      %Project{} = project ->
-        assign(conn, :project, project)
-
-      _ ->
-        send_resp(conn, 404, "Resource Not Found")
-    end
-  end
-
-  defp load_user_in_project(%{param: %{"project_id" => id}} = conn, _) do
-    case ProjectModel.get_user_by_project!(%{
-           user_id: Guardian.Plug.current_resource(conn).id,
-           project_id: id
-         }) do
-      %Project{} = project ->
-        assign(conn, :project, project)
-
-      _ ->
-        send_resp(conn, 404, "Resource Not Found")
-    end
-  end
-
-  defp load_project_in_workspace(
-         %{param: %{"workspace_id" => workspace_id, "id" => project_id}} = conn,
-         _
-       ) do
-    case ProjectModel.get_project_in_workspace!(%{
-           workspace_id: workspace_id,
-           project_id: project_id
-         }) do
-      %Project{} = project ->
-        assign(conn, :project, project)
-
-      _ ->
-        send_resp(conn, 404, "Resource Not Found")
+  defp load_user_project_in_workspace(%{params: %{"workspace_id" => workspace_id, "id" => id}} = conn, _) do
+    user_id = Guardian.Plug.current_resource(conn).id
+    case ProjectModel.load_user_project_in_workspace(%{workspace_id: workspace_id, user_id: user_id, project_id: id}) do
+      %Project{} = project -> assign(conn, :project, project)
+      _ -> send_resp(conn, 404, "Resource Not Found")
     end
   end
 
