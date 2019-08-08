@@ -1,0 +1,12 @@
+alias Dailyploy.Repo
+alias Dailyploy.Schema.User
+alias Dailyploy.Schema.Project
+alias Dailyploy.Schema.Workspace
+alias Dailyploy.Schema.Invitation
+alias Dailyploy.Model.InvitationModel
+
+sender = Repo.get(User,1)
+assignee = Repo.get(User,2)
+project = Repo.get(Project,1) 
+workspace = Repo.get(Workspace,3)
+invite = %{ :email => "vik123@gmail.com", :type => "Pending", :token => "", :assignee => assignee, :sender => sender, :workspace  => workspace, :project => project}

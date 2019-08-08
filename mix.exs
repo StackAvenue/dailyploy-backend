@@ -45,7 +45,8 @@ defmodule Dailyploy.MixProject do
       {:bcrypt_elixir, "~> 1.0"},
       {:cors_plug, "~> 2.0"},
       {:guardian, "~> 1.0"},
-      {:ecto_enum, "~> 1.3"}
+      {:ecto_enum, "~> 1.3"},
+      {:sendgrid, "~> 1.3.0"}
     ]
   end
 

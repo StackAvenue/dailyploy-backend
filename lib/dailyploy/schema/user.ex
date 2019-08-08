@@ -14,8 +14,8 @@ defmodule Dailyploy.Schema.User do
     field :password, :string, virtual: true
     field :password_confirmation, :string, virtual: true
     
-    has_many :invitation, Invitation, foreign_key: :assignee_id
-    has_many :invitation, Invitation, foreign_key: :sender_id  
+    has_many :invitation_to, Invitation
+    has_many :invitation_from, Invitation
     many_to_many :workspaces, Workspace, join_through: Member
 
     timestamps()
