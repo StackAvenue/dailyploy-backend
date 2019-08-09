@@ -19,7 +19,7 @@ defmodule Dailyploy.Schema.Project do
   @doc false
   def changeset(project, attrs) do
     project
-    |> cast(attrs, [:name, :start_date, :description])
+    |> cast(attrs, [:name, :start_date, :description, :color_code])
     |> validate_required([:name, :start_date])
     |> unique_constraint(:project_name_workspace_uniqueness,
       name: :unique_index_for_project_name_and_workspace_id_in_project

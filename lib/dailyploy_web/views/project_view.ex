@@ -16,7 +16,8 @@ defmodule DailyployWeb.ProjectView do
       id: project.id,
       name: project.name,
       start_date: project.start_date,
-      description: project.description
+      description: project.description,
+      color_code: project.color_code
     }
   end
 
