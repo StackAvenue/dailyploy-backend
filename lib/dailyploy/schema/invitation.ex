@@ -8,7 +8,7 @@ defmodule Dailyploy.Schema.Invitation do
     schema "invitations" do
         field :email, :string
         field :token, :string
-        field :type, InviteStatusTypeEnum
+        field :status, InviteStatusTypeEnum
         belongs_to :workspace, Workspace
         belongs_to :project, Project        
         belongs_to :assignee, User
@@ -18,8 +18,8 @@ defmodule Dailyploy.Schema.Invitation do
 
     def changeset(invitation, attrs) do 
         invitation
-        |> cast(attrs, [:email, :type, :token])
-        |> validate_required([:email, :type])
+        |> cast(attrs, [:email, :status, :token])
+        |> validate_required([:email, :status])
         |> validate_format(:email, ~r/^[A-Za-z0-9._%+-+']+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/)        
         |> genToken
         |> unique_constraint(:email)

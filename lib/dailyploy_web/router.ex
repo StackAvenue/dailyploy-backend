@@ -12,5 +12,6 @@ defmodule DailyployWeb.Router do
     post "/sign_in", UserController, :sign_in
 
     resources "/projects", ProjectController
+    resources "/invitations", InvitationController
   end
 end

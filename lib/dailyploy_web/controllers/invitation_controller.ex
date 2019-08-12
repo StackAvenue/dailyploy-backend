@@ -1,70 +1,65 @@
 defmodule DailyployWeb.InvitationController do
     use DailyployWeb, :controller
   
-    alias Dailyploy.Model.User, as: UserModel
-    alias Dailyploy.Helper.User, as: UserHelper
-    alias Dailyploy.Schema.User
+    alias Dailyploy.Model.Invitation, as: InvitationModel
+    alias Dailyploy.Helper.Invitation, as: InvitationHelper
+    alias Dailyploy.Schema.Invitation
   
     action_fallback DailyployWeb.FallbackController
+    plug :get_invitation_by_id when action in [:show, :update, :delete]
   
     def index(conn, _params) do
-      users = UserModel.list_users()
-      render(conn, "index.json", users: users)
+      invitations = InvitationModel.list_invitations()
+      render(conn, "index.json", invitations: invitations)
     end
   
     @spec create(Plug.Conn.t(), map) :: Plug.Conn.t()
-    def create(conn, %{"user" => user_params}) do
-      case UserHelper.create_user_with_company(user_params) do
-        {:ok, %User{} = user} ->
+    def create(conn, %{"invitation" => invite_attrs}) do
+      case InvitationHelper.create_invite(invite_attrs) do
+        {:ok, %Invitation{} = invitation} ->
           conn
           |> put_status(:created)
-          |> render("show.json", %{user: user})
+          |> render("show.json", %{invitation: invitation})
   
+        {:error, invitation} ->
+          conn
+          |> put_status(422)
+          |> render("changeset_error.json", %{invitation: invitation.errors})
+      end
+    end
+  
+    def show(conn, _) do
+      invitation = conn.assigns.invitation
+      render(conn, "show.json", invitation: invitation)
+    end
+  
+    def update(conn, %{"invitation" => invite_attrs}) do
+      invitation = conn.assigns.invitation
+      case InvitationModel.update_invitation(invitation, invite_attrs) do
+        {:ok, %Invitation{} = invitation} ->
+          conn
+          |> put_status(:created)
+          |> render(conn, "show.json", invitation: invitation)
+
         {:error, user} ->
           conn
           |> put_status(422)
-          |> render("signup_error.json", %{user: user})
-  
-        {:error, _model, model_changeset, _valid_changesets} ->
-          conn
-          |> put_status(422)
-          |> render("changeset_error.json", %{errors: model_changeset.errors})
-  
-        {:ok, %{company: _company, user: user}} ->
-          conn
-          |> put_status(:created)
-          |> render("show.json", %{user: user})
+          |> render("changeset_error.json", %{invitation: invitation.errors})  
       end
     end
   
-    def show(conn, %{"id" => id}) do
-      user = UserModel.get_user!(id)
-      render(conn, "show.json", user: user)
-    end
-  
-    def update(conn, %{"id" => id, "user" => user_params}) do
-      user = UserModel.get_user!(id)
-  
-      with {:ok, %User{} = user} <- UserModel.update_user(user, user_params) do
-        render(conn, "show.json", user: user)
+    def delete(conn, _) do
+      invitation = conn.assigns.invitation
+      with {:ok, %Invitation{}} <- InvitationModel.delete_invitation(invitation) do
+        send_resp(conn, :no_content, "Invitation Deleted Successfully")
       end
     end
-  
-    def delete(conn, %{"id" => id}) do
-      user = UserModel.get_user!(id)
-  
-      with {:ok, %User{}} <- UserModel.delete_user(user) do
-        send_resp(conn, :no_content, "")
-      end
-    end
-  
-    def sign_in(conn, %{"email" => email, "password" => password}) do
-      case UserModel.token_sign_in(email, password) do
-        {:ok, token, _claims} ->
-          conn |> render("access_token.json", access_token: token)
-  
-        _ ->
-          {:error, :unauthorized}
+
+    defp get_invitation_by_id(%{params: %{"id" => id}} = conn, _) do
+      case InvitationModel.get_invitation!(id) do
+        %Invitation{} = invitation ->
+          assign(conn, :invitation, invitation)
+        _ -> send_resp(conn, 404, "Not Found")
       end
     end
   end
