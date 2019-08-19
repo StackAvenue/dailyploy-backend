@@ -1,6 +1,7 @@
 defmodule Dailyploy.Model.Member do
   alias Dailyploy.Repo
   alias Dailyploy.Schema.Member
+  alias Dailyploy.Schema.User
   import Ecto.Query
 
   def list_members() do
@@ -22,6 +23,17 @@ defmodule Dailyploy.Model.Member do
 
     member = List.first(Repo.all(query))
     Repo.preload(member, preloads)
+  end
+
+  def workspace_members_from_emails(workspace_id, emails) do
+    query =
+      from member in Member,
+      join: user in User,
+      on: member.user_id == user.id,
+      where: member.workspace_id == ^workspace_id and user.email in ^emails
+    members = Repo.all(query)
+    members = Repo.preload(members, [:user])
+    Enum.map(members, fn member -> member.user end)
   end
 
   def get_member!(id), do: Repo.get!(Member, id)

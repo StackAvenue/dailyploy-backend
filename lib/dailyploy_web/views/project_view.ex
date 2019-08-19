@@ -1,6 +1,7 @@
 defmodule DailyployWeb.ProjectView do
   use DailyployWeb, :view
   alias DailyployWeb.ProjectView
+  alias DailyployWeb.UserView
   alias DailyployWeb.ErrorHelpers
 
   def render("index.json", %{projects: projects}) do
@@ -17,7 +18,8 @@ defmodule DailyployWeb.ProjectView do
       name: project.name,
       start_date: project.start_date,
       description: project.description,
-      color_code: project.color_code
+      color_code: project.color_code,
+      members: UserView.render("index.json", %{users: project.users})
     }
   end
 

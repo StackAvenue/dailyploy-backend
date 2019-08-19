@@ -43,6 +43,8 @@ defmodule Dailyploy.Model.Project do
 
   def get_project!(id, preloads), do: Repo.get(Project, id) |> Repo.preload(preloads)
 
+  def get_project_users(project), do: Repo.preload(project, [:users])
+
   def create_project(attrs \\ %{}) do
     %Project{}
     |> Project.changeset(attrs)
