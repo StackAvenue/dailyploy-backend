@@ -30,6 +30,7 @@ defmodule DailyployWeb.UserController do
 
   def show(conn, _params) do
     user = Guardian.Plug.current_resource(conn)
-    conn |> render("user.json", user: user)
+    workspace = UserModel.get_current_workspace(user)
+    conn |> render("user.json", %{user: user, workspace: workspace})
   end
 end
