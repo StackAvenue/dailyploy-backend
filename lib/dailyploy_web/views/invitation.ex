@@ -11,10 +11,14 @@ defmodule DailyployWeb.InvitationView do
       %{invitation: render_one(invitation, InvitationView, "invitation.json")}
     end
   
-    def render("invitation.json", %{invitation: invitation}) do
+    def render("Testinvitation.json", %{invitation: invitation}) do
       %{id: invitation.id, status: invitation.status, token: invitation.token}
     end
       
+    def render("invitation.json", true) do
+      %{status: true}
+    end
+
     def render("changeset_error.json", %{errors: errors}) do
       %{errors: ErrorHelpers.changeset_error_to_map(errors)}
     end

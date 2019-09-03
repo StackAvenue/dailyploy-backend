@@ -1,12 +1,20 @@
 defmodule Dailyploy.Helper.Invitation do
     alias Dailyploy.Model.Invitation, as: InvitationModel
+    alias Dailyploy.Model.User, as: UserModel
+    alias Dailyploy.Model.Project, as: ProjectModel
+    alias Dailyploy.Model.Workspace, as: WorkspaceModel
     alias Ecto.Multi
+    alias Dailyploy.Repo
+    alias Dailyploy.Schema.User
+    alias Dailyploy.Schema.Project
+    alias Dailyploy.Schema.Workspace
+    alias Dailyploy.Schema.Invitation
     alias SendGrid.{Mailer, Email}
     
     def create_invite(invite_attrs)  do 
         invite_attrs
-        |>
-        InvitationModel.create_invitation
+        |>get_dep_params
+        |>InvitationModel.create_invitation
         |>get_created_invite
         |>send_invite_email
     end
@@ -26,6 +34,18 @@ defmodule Dailyploy.Helper.Invitation do
         {:ok, invite} = attrs
         {:ok, email} = Map.fetch(invite, :email)
         email
+    end
+
+    def get_dep_params(attrs) do 
+        sender = UserModel.get_user!(Map.get(attrs, "sender_id"))
+        assignee = UserModel.get_user!(Map.get(attrs, "assignee_id"))
+        project = ProjectModel.get_project!(Map.get(attrs, "project_id"))
+        workspace = WorkspaceModel.get_workspace!(Map.get(attrs, "workspace_id"))
+        Map.put(attrs, "sender", sender)
+        |>Map.put("sender", sender)
+        |>Map.put("assignee", assignee)
+        |>Map.put("project", project)
+        |>Map.put("workspace", workspace)
     end
   end
   

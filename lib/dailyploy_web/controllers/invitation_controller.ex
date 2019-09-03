@@ -1,6 +1,6 @@
 defmodule DailyployWeb.InvitationController do
     use DailyployWeb, :controller
-  
+    
     alias Dailyploy.Model.Invitation, as: InvitationModel
     alias Dailyploy.Helper.Invitation, as: InvitationHelper
     alias Dailyploy.Schema.Invitation
@@ -16,10 +16,10 @@ defmodule DailyployWeb.InvitationController do
     @spec create(Plug.Conn.t(), map) :: Plug.Conn.t()
     def create(conn, %{"invitation" => invite_attrs}) do
       case InvitationHelper.create_invite(invite_attrs) do
-        {:ok, %Invitation{} = invitation} ->
+        {:ok} ->
           conn
           |> put_status(:created)
-          |> render("show.json", %{invitation: invitation})
+          |> render("invitation.json", true)
   
         {:error, invitation} ->
           conn
