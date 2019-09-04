@@ -3,6 +3,7 @@ defmodule Dailyploy.Model.Task do
 
   alias Dailyploy.Repo
   alias Dailyploy.Schema.Task
+  alias Dailyploy.Schema.Project
 
   def list_tasks(project_id) do
     query =
@@ -12,6 +13,14 @@ defmodule Dailyploy.Model.Task do
       )
 
     Repo.all(query)
+  end
+
+  def list_workspace_tasks(workspace_id) do
+    project_query = from(project in Project, where: project.workspace_id == ^workspace_id, select: project.id)
+    project_ids = Repo.all project_query
+
+    task_query = from(task in Task, where: task.project_id in ^project_ids)
+    Repo.all task_query
   end
 
   def get_task!(id), do: Repo.get(Task, id)

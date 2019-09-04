@@ -17,7 +17,8 @@ defmodule DailyployWeb.TaskView do
       name: task.name,
       start_datetime: task.start_datetime,
       end_datetime: task.end_datetime,
-      comments: task.comments
+      comments: task.comments,
+      user: render(DailyployWeb.UserView, "user.json", user: task.user)
     }
   end
 

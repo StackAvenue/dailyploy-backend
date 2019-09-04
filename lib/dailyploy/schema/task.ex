@@ -5,6 +5,7 @@ defmodule Dailyploy.Schema.Task do
 
   alias Dailyploy.Repo
   alias Dailyploy.Schema.Project
+  alias Dailyploy.Schema.User
   alias Dailyploy.Schema.Member
 
   schema "tasks" do
@@ -13,6 +14,7 @@ defmodule Dailyploy.Schema.Task do
     field :end_datetime, :utc_datetime
     field :comments, :string
 
+    belongs_to :user, User
     belongs_to :project, Project
     many_to_many :members, Member, join_through: "member_tasks"
 
@@ -23,8 +25,8 @@ defmodule Dailyploy.Schema.Task do
   def changeset(task, attrs) do
     task
     |> Repo.preload([:members])
-    |> cast(attrs, [:name, :start_datetime, :end_datetime, :comments, :project_id])
-    |> validate_required([:name, :start_datetime, :end_datetime, :project_id])
+    |> cast(attrs, [:name, :start_datetime, :end_datetime, :comments, :project_id, :user_id])
+    |> validate_required([:name, :start_datetime, :end_datetime, :project_id, :user_id])
     |> unique_constraint(:name)
     |> assoc_constraint(:project)
     |> put_assoc_members(attrs["member_ids"])

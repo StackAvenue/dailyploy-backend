@@ -27,5 +27,7 @@ defmodule DailyployWeb.Router do
         resources "/tasks", TaskController
       end
     end
+
+    get "/workspaces/:workspace_id/project_tasks", WorkspaceController, :project_tasks
   end
 end
