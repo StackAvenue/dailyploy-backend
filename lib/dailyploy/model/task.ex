@@ -1,11 +1,17 @@
 defmodule Dailyploy.Model.Task do
+  import Ecto.Query, only: [from: 2]
+
   alias Dailyploy.Repo
   alias Dailyploy.Schema.Task
-  import Ecto.Query
-  alias Dailyploy.Model.TaskAssignee, as: TaskAssigneeModel
 
-  def list_tasks() do
-    Repo.all(Task)
+  def list_tasks(project_id) do
+    query =
+      from(task in Task,
+        where: task.project_id == ^project_id,
+        order_by: task.inserted_at
+      )
+
+    Repo.all(query)
   end
 
   def get_task!(id), do: Repo.get(Task, id)
@@ -24,17 +30,5 @@ defmodule Dailyploy.Model.Task do
 
   def delete_task(task) do
     Repo.delete(task)
-  end
-
-  def get_user_by_task!(%{user_id: user_id, task_id: task_id}) do
-    case TaskAssigneeModel.get_user!(%{user_id: user_id, task_id: task_id}) do
-      taskassignee -> taskassignee.task
-      _ -> nil
-    end
-  end
-
-  def get_task_in_project!(%{project_id: project_id, task_id: task_id}) do
-    query = from task in Task, where: task.project_id == ^project_id and task.id == ^task_id
-    List.first(Repo.all(query))
   end
 end

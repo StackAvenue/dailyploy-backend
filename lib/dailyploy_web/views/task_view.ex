@@ -15,10 +15,9 @@ defmodule DailyployWeb.TaskView do
     %{
       id: task.id,
       name: task.name,
-      start_date: task.start_date,
-      end_date: task.end_date,
-      description: task.description,
-      type: task.type
+      start_datetime: task.start_datetime,
+      end_datetime: task.end_datetime,
+      comments: task.comments
     }
   end
 
