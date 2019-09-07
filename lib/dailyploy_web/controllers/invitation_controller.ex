@@ -16,10 +16,10 @@ defmodule DailyployWeb.InvitationController do
     @spec create(Plug.Conn.t(), map) :: Plug.Conn.t()
     def create(conn, %{"invitation" => invite_attrs}) do
       case InvitationHelper.create_invite(invite_attrs) do
-        {:ok} ->
+        :ok ->
           conn
           |> put_status(:created)
-          |> render("invitation.json", true)
+          |> render("invite.json", %{isCreated: true})
   
         {:error, invitation} ->
           conn
