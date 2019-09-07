@@ -11,7 +11,7 @@ defmodule Dailyploy.Helper.Invitation do
     alias Dailyploy.Schema.Invitation
     alias SendGrid.{Mailer, Email}
     
-    def create_invite(invite_attrs)  do 
+    def create_invite(invite_attrs)  do
         invite_attrs
         |>get_dep_params
         |>InvitationModel.create_invitation
