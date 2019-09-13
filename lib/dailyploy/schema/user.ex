@@ -2,7 +2,7 @@ defmodule Dailyploy.Schema.User do
   use Ecto.Schema
   import Ecto.Changeset
   alias Dailyploy.Schema.Workspace
-  alias Dailyploy.Schema.Member
+  alias Dailyploy.Schema.UserWorkspace
   alias Dailyploy.Schema.Task
   alias Dailyploy.Schema.TaskAssignee
   alias Dailyploy.Schema.Project
@@ -16,7 +16,7 @@ defmodule Dailyploy.Schema.User do
     field :password_hash, :string
     field :password, :string, virtual: true
     field :password_confirmation, :string, virtual: true
-    many_to_many :workspaces, Workspace, join_through: Member
+    many_to_many :workspaces, Workspace, join_through: UserWorkspace
     many_to_many :tasks, Task, join_through: TaskAssignee
     many_to_many :projects, Project, join_through: ProjectUser
 

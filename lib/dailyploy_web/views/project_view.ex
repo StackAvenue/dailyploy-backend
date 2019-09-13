@@ -19,7 +19,7 @@ defmodule DailyployWeb.ProjectView do
       start_date: project.start_date,
       description: project.description,
       color_code: project.color_code,
-      members: UserView.render("index.json", %{users: project.users})
+      user_workspaces: UserView.render("index.json", %{users: project.users})
     }
   end
 

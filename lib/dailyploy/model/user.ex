@@ -1,7 +1,7 @@
 defmodule Dailyploy.Model.User do
   alias Dailyploy.Repo
   alias Dailyploy.Schema.User
-  alias Dailyploy.Schema.Member
+  alias Dailyploy.Schema.UserWorkspace
   alias Dailyploy.Schema.Workspace
   alias Auth.Guardian
   import Ecto.Query
@@ -67,15 +67,15 @@ defmodule Dailyploy.Model.User do
   end
 
   def get_current_workspace(user) do
-    query = from member in Member,
+    query = from user_workspace in UserWorkspace,
       join: workspace in Workspace,
-      on: member.workspace_id == workspace.id,
-      where: member.user_id == ^user.id and workspace.type == "individual"
-    members = Repo.all(query) |> Repo.preload(:workspace)
-    member = List.first members
-    case member do
+      on: user_workspace.workspace_id == workspace.id,
+      where: user_workspace.user_id == ^user.id and workspace.type == "individual"
+    user_workspaces = Repo.all(query) |> Repo.preload(:workspace)
+    user_workspace = List.first user_workspaces
+    case user_workspace do
       nil -> nil
-      _ -> member.workspace
+      _ -> user_workspace.workspace
     end
   end
 end

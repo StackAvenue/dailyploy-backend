@@ -1,8 +1,8 @@
 defmodule Dailyploy.Model.Workspace do
   alias Dailyploy.Repo
   alias Dailyploy.Schema.Workspace
-  alias Dailyploy.Model.Member, as: MemberModel
-  alias Dailyploy.Schema.Member
+  alias Dailyploy.Model.UserWorkspace, as: UserWorkspaceModel
+  alias Dailyploy.Schema.UserWorkspace
   import Ecto.Query
 
   @spec list_workspaces :: any
@@ -11,8 +11,8 @@ defmodule Dailyploy.Model.Workspace do
   end
 
   def get_workspace_by_user(%{user_id: user_id, workspace_id: workspace_id}) do
-    case MemberModel.get_member!(%{user_id: user_id, workspace_id: workspace_id}, [:workspace]) do
-      %Member{} = member -> member.workspace
+    case UserWorkspaceModel.get_user_workspace!(%{user_id: user_id, workspace_id: workspace_id}, [:workspace]) do
+      %UserWorkspace{} = user_workspace -> user_workspace.workspace
       _ -> nil
     end
   end
@@ -39,9 +39,9 @@ defmodule Dailyploy.Model.Workspace do
 
   def all_user_workspaces(user) do
     query =
-      from member in Member,
-        where: member.user_id == ^user.id
-    members = Repo.all(query) |> Repo.preload([:workspace])
-    Enum.map(members, fn member -> member.workspace end)
+      from user_workspace in UserWorkspace,
+        where: user_workspace.user_id == ^user.id
+    user_workspaces = Repo.all(query) |> Repo.preload([:workspace])
+    Enum.map(user_workspaces, fn user_workspace -> user_workspace.workspace end)
   end
 end

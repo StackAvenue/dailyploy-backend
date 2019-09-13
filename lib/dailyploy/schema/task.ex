@@ -6,7 +6,7 @@ defmodule Dailyploy.Schema.Task do
   alias Dailyploy.Repo
   alias Dailyploy.Schema.Project
   alias Dailyploy.Schema.User
-  alias Dailyploy.Schema.Member
+  alias Dailyploy.Schema.UserWorkspace
 
   schema "tasks" do
     field :name, :string
@@ -16,7 +16,7 @@ defmodule Dailyploy.Schema.Task do
 
     belongs_to :user, User
     belongs_to :project, Project
-    many_to_many :members, Member, join_through: "member_tasks"
+    many_to_many :user_workspaces, UserWorkspace, join_through: "user_workspace_tasks"
 
     timestamps()
   end
@@ -24,17 +24,17 @@ defmodule Dailyploy.Schema.Task do
   @doc false
   def changeset(task, attrs) do
     task
-    |> Repo.preload([:members])
+    |> Repo.preload([:user_workspaces])
     |> cast(attrs, [:name, :start_datetime, :end_datetime, :comments, :project_id, :user_id])
     |> validate_required([:name, :start_datetime, :end_datetime, :project_id, :user_id])
     |> unique_constraint(:name)
     |> assoc_constraint(:project)
-    |> put_assoc_members(attrs["member_ids"])
+    |> put_assoc_user_workspaces(attrs["user_workspace_ids"])
   end
 
-  defp put_assoc_members(changeset, member_ids) do
-    members = Repo.all(from(member in Member, where: member.id in ^member_ids))
+  defp put_assoc_user_workspaces(changeset, user_workspace_ids) do
+    user_workspaces = Repo.all(from(user_workspace in UserWorkspace, where: user_workspace.id in ^user_workspace_ids))
 
-    put_assoc(changeset, :members, Enum.map(members, &change/1))
+    put_assoc(changeset, :user_workspaces, Enum.map(user_workspaces, &change/1))
   end
 end

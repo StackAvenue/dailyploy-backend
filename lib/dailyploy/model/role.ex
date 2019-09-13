@@ -3,7 +3,7 @@ defmodule Dailyploy.Model.Role do
   alias Dailyploy.Schema.Role
   import Ecto.Query
 
-  @all_roles %{admin: "admin", member: "member"}
+  @all_roles %{admin: "admin", user_workspace: "user_workspace"}
 
   def all_roles, do: @all_roles
 

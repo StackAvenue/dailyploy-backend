@@ -5,8 +5,8 @@ defmodule Dailyploy.Helper.User do
   alias Dailyploy.Schema.Company
   alias Dailyploy.Repo
   alias Dailyploy.Model.Role, as: RoleModel
-  alias Dailyploy.Model.Member, as: MemberModel
-  alias Dailyploy.Schema.Member
+  alias Dailyploy.Model.UserWorkspace, as: UserWorkspaceModel
+  alias Dailyploy.Schema.UserWorkspace
 
   @spec create_user_with_company(%{optional(:__struct__) => none, optional(atom | binary) => any}) ::
           any
@@ -35,7 +35,7 @@ defmodule Dailyploy.Helper.User do
 
   defp successful_user_creation_with_company(user, user_creation_result) do
     workspace = List.first(user.workspaces)
-    associate_role_to_member(user.id, workspace.id)
+    associate_role_to_user_workspace(user.id, workspace.id)
     {:ok, %{company: company}} = user_creation_result
     company_workspace = company.workspace
     associate_company_workspace_to_user(company_workspace, user)
@@ -53,25 +53,25 @@ defmodule Dailyploy.Helper.User do
 
   defp successful_user_creation_without_company(user) do
     workspace = List.first(user.workspaces)
-    associate_role_to_member(user.id, workspace.id)
+    associate_role_to_user_workspace(user.id, workspace.id)
     {:ok, user}
   end
 
   defp associate_company_workspace_to_user(company_workspace, user) do
     role = RoleModel.get_role_by_name!(RoleModel.all_roles()[:admin])
 
-    MemberModel.create_member(%{
+    UserWorkspaceModel.create_user_workspace(%{
       workspace_id: company_workspace.id,
       user_id: user.id,
       role_id: role.id
     })
   end
 
-  defp associate_role_to_member(user_id, workspace_id) do
-    member = MemberModel.get_member!(%{user_id: user_id, workspace_id: workspace_id}, [:role])
+  defp associate_role_to_user_workspace(user_id, workspace_id) do
+    user_workspace = UserWorkspaceModel.get_user_workspace!(%{user_id: user_id, workspace_id: workspace_id}, [:role])
     role = RoleModel.get_role_by_name!(RoleModel.all_roles()[:admin])
-    member_changeset = Member.changeset(member, %{})
-    MemberModel.update_member_role(member_changeset, role)
+    user_workspace_changeset = UserWorkspace.changeset(user_workspace, %{})
+    UserWorkspaceModel.update_user_workspace_role(user_workspace_changeset, role)
   end
 
   defp add_user_workspace(user_attrs) do

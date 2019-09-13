@@ -4,7 +4,7 @@ defmodule DailyployWeb.ProjectController do
   alias Dailyploy.Schema.Project
   alias Dailyploy.Model.Workspace, as: WorkspaceModel
   alias Dailyploy.Schema.Workspace
-  alias Dailyploy.Model.Member, as: MemberModel
+  alias Dailyploy.Model.UserWorkspace, as: UserWorkspaceModel
   # alias Dailyploy.Model.Invitation, as: InvitationModel
 
   plug Auth.Pipeline
@@ -24,17 +24,17 @@ defmodule DailyployWeb.ProjectController do
 
   @spec create(Plug.Conn.t(), map) :: Plug.Conn.t()
   def create(conn, %{"project" => project_params}) do
-    workspace_members = MemberModel.workspace_members_from_emails(conn.assigns.workspace.id, project_params["members"])
-    project_params = add_workspace_and_user_in_project_params(project_params, workspace_members, conn)
+    user_workspaces = UserWorkspaceModel.user_workspaces_from_emails(conn.assigns.workspace.id, project_params["user_workspaces"])
+    project_params = add_workspace_and_user_in_project_params(project_params, user_workspaces, conn)
 
     case ProjectModel.create_project(project_params) do
       {:ok, %Project{} = project} ->
         render(conn, "show.json", project: project)
-        # workspace_member_emails = Enum.map(workspace_members, fn member -> member.email end)
+        # workspace_user_workspace_emails = Enum.map(user_workspaces, fn user_workspace -> user_workspace.email end)
 
-        # non_member_emails = project_params["members"] - workspace_member_emails
+        # non_user_workspace_emails = project_params["user_workspaces"] - workspace_user_workspace_emails
 
-        # InvitationModel.send_invivation(%{emails: non_member_emails, project_id: project.id, workspace_id: conn.assigns.workspace.id})
+        # InvitationModel.send_invivation(%{emails: non_user_workspace_emails, project_id: project.id, workspace_id: conn.assigns.workspace.id})
 
       {:error, project} ->
         conn
@@ -52,20 +52,20 @@ defmodule DailyployWeb.ProjectController do
   @spec update(Plug.Conn.t(), map) :: Plug.Conn.t()
   def update(conn, %{"project" => project_params}) do
     project = ProjectModel.get_project!(conn.assigns.project.id, [:users, :workspace])
-    workspace_members = MemberModel.workspace_members_from_emails(conn.assigns.workspace.id, project_params["members"])
+    user_workspaces = UserWorkspaceModel.user_workspaces_from_emails(conn.assigns.workspace.id, project_params["user_workspaces"])
 
     project_params =
-      add_workspace_and_user_in_project_params_for_update(project_params, workspace_members, project, conn)
+      add_workspace_and_user_in_project_params_for_update(project_params, user_workspaces, project, conn)
 
     case ProjectModel.update_project(project, project_params) do
       {:ok, %Project{} = project} ->
         render(conn, "show.json", project: project)
 
-        # workspace_member_emails = Enum.map(workspace_members, fn member -> member.email end)
+        # workspace_user_workspace_emails = Enum.map(user_workspaces, fn user_workspace -> user_workspace.email end)
 
-        # non_member_emails = project_params["members"] - workspace_member_emails
+        # non_user_workspace_emails = project_params["user_workspaces"] - workspace_user_workspace_emails
 
-        # InvitationModel.send_invivation(%{emails: non_member_emails, project_id: project.id, workspace_id: conn.assigns.workspace.id})
+        # InvitationModel.send_invivation(%{emails: non_user_workspace_emails, project_id: project.id, workspace_id: conn.assigns.workspace.id})
 
       {:error, project} ->
         conn
@@ -118,14 +118,14 @@ defmodule DailyployWeb.ProjectController do
     end
   end
 
-  defp add_workspace_and_user_in_project_params(project_params, workspace_members, conn) do
+  defp add_workspace_and_user_in_project_params(project_params, user_workspaces, conn) do
     project_params = Map.put(project_params, "workspace", conn.assigns.workspace)
-    Map.put(project_params, "users", [Guardian.Plug.current_resource(conn)] ++ workspace_members)
+    Map.put(project_params, "users", [Guardian.Plug.current_resource(conn)] ++ user_workspaces)
   end
 
-  def add_workspace_and_user_in_project_params_for_update(project_params, workspace_members, project, conn) do
+  def add_workspace_and_user_in_project_params_for_update(project_params, user_workspaces, project, conn) do
     project_params = Map.put(project_params, "workspace", conn.assigns.workspace)
-    users = Enum.uniq(project.users ++ workspace_members)
+    users = Enum.uniq(project.users ++ user_workspaces)
     Map.put(project_params, "users", users)
   end
 end
