@@ -2,7 +2,7 @@ defmodule Dailyploy.Schema.Project do
   use Ecto.Schema
   import Ecto.Changeset
   alias Dailyploy.Schema.User
-  alias Dailyploy.Schema.ProjectUser
+  alias Dailyploy.Schema.UserProject
   alias Dailyploy.Schema.Workspace
 
   schema "projects" do
@@ -10,7 +10,7 @@ defmodule Dailyploy.Schema.Project do
     field :start_date, :date
     field :description, :string
     field :color_code, :string
-    many_to_many :users, User, join_through: ProjectUser
+    many_to_many :users, User, join_through: UserProject
     belongs_to :workspace, Workspace
 
     timestamps()

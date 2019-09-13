@@ -1,33 +1,33 @@
-defmodule Dailyploy.Model.ProjectUser do
+defmodule Dailyploy.Model.UserProject do
   alias Dailyploy.Repo
-  alias Dailyploy.Schema.ProjectUser
+  alias Dailyploy.Schema.UserProject
   import Ecto.Query
 
-  def list_project_users() do
-    Repo.all(ProjectUser)
+  def list_user_projects() do
+    Repo.all(UserProject)
   end
 
-  def get_project_user!(id), do: Repo.get(ProjectUser, id)
+  def get_user_project!(id), do: Repo.get(UserProject, id)
 
-  def create_project_user(attrs \\ %{}) do
-    %ProjectUser{}
-    |> ProjectUser.changeset(attrs)
+  def create_user_project(attrs \\ %{}) do
+    %UserProject{}
+    |> UserProject.changeset(attrs)
     |> Repo.insert()
   end
 
-  def update_project_user(projectuser, attrs) do
+  def update_user_project(projectuser, attrs) do
     projectuser
-    |> ProjectUser.changeset(attrs)
+    |> UserProject.changeset(attrs)
     |> Repo.update()
   end
 
-  def delete_project_user(projectuser) do
+  def delete_user_project(projectuser) do
     Repo.delete(projectuser)
   end
 
   def get_project!(%{user_id: user_id, project_id: project_id}) do
     query =
-      from projectuser in ProjectUser,
+      from projectuser in UserProject,
         where: projectuser.user_id == ^user_id and projectuser.project_id == ^project_id
 
     List.first(Repo.all(query))
@@ -35,7 +35,7 @@ defmodule Dailyploy.Model.ProjectUser do
 
   def get_project!(%{user_id: user_id, project_id: project_id}, preloads) do
     query =
-      from projectuser in ProjectUser,
+      from projectuser in UserProject,
         where: projectuser.user_id == ^user_id and projectuser.project_id == ^project_id
 
     projectuser = List.first(Repo.all(query))

@@ -6,7 +6,7 @@ defmodule Dailyploy.Schema.User do
   alias Dailyploy.Schema.Task
   alias Dailyploy.Schema.TaskAssignee
   alias Dailyploy.Schema.Project
-  alias Dailyploy.Schema.ProjectUser
+  alias Dailyploy.Schema.UserProject
 
   import Comeonin.Bcrypt, only: [hashpwsalt: 1]
 
@@ -18,7 +18,7 @@ defmodule Dailyploy.Schema.User do
     field :password_confirmation, :string, virtual: true
     many_to_many :workspaces, Workspace, join_through: UserWorkspace
     many_to_many :tasks, Task, join_through: TaskAssignee
-    many_to_many :projects, Project, join_through: ProjectUser
+    many_to_many :projects, Project, join_through: UserProject
 
     timestamps()
   end

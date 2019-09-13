@@ -45,7 +45,7 @@ defmodule DailyployWeb.ProjectController do
 
   @spec show(Plug.Conn.t(), any) :: Plug.Conn.t()
   def show(conn, _) do
-    project = ProjectModel.get_project_users(conn.assigns.project)
+    project = ProjectModel.get_user_projects(conn.assigns.project)
     render(conn, "show.json", project: project)
   end
 

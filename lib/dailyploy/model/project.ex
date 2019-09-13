@@ -2,7 +2,7 @@ defmodule Dailyploy.Model.Project do
   alias Dailyploy.Repo
   alias Dailyploy.Schema.Project
   alias Dailyploy.Schema.User
-  alias Dailyploy.Schema.ProjectUser
+  alias Dailyploy.Schema.UserProject
   import Ecto.Query
 
   def list_projects() do
@@ -12,11 +12,11 @@ defmodule Dailyploy.Model.Project do
   def list_user_projects_in_workspace(%{workspace_id: workspace_id, user_id: user_id}) do
     query =
       from project in Project,
-        join: project_user in ProjectUser,
-        on: project.id == project_user.project_id,
+        join: user_project in UserProject,
+        on: project.id == user_project.project_id,
         join: user in User,
-        on: user.id == project_user.user_id,
-        where: project.workspace_id == ^workspace_id and project_user.user_id == ^user_id
+        on: user.id == user_project.user_id,
+        where: project.workspace_id == ^workspace_id and user_project.user_id == ^user_id
 
     Repo.all(query)
   end
@@ -28,12 +28,12 @@ defmodule Dailyploy.Model.Project do
       }) do
     query =
       from project in Project,
-        join: project_user in ProjectUser,
-        on: project.id == project_user.project_id,
+        join: user_project in UserProject,
+        on: project.id == user_project.project_id,
         join: user in User,
-        on: user.id == project_user.user_id,
+        on: user.id == user_project.user_id,
         where:
-          project.workspace_id == ^workspace_id and project_user.user_id == ^user_id and
+          project.workspace_id == ^workspace_id and user_project.user_id == ^user_id and
             project.id == ^project_id
 
     List.first(Repo.all(query))
@@ -43,7 +43,7 @@ defmodule Dailyploy.Model.Project do
 
   def get_project!(id, preloads), do: Repo.get(Project, id) |> Repo.preload(preloads)
 
-  def get_project_users(project), do: Repo.preload(project, [:users])
+  def get_user_projects(project), do: Repo.preload(project, [:users])
 
   def create_project(attrs \\ %{}) do
     %Project{}
