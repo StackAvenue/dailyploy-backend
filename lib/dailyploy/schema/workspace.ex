@@ -5,6 +5,8 @@ defmodule Dailyploy.Schema.Workspace do
   alias Dailyploy.Schema.Invitation
   # alias Dailyploy.Schema.User
   alias Dailyploy.Schema.Member
+  alias Dailyploy.Schema.Tag
+  alias Dailyploy.Schema.Project
 
   schema "workspaces" do
     field :name, :string
@@ -15,6 +17,8 @@ defmodule Dailyploy.Schema.Workspace do
     has_many :users, through: [:members, :user]
     has_many :invitation, Invitation
     # many_to_many :users, User, join_through: "members"
+    has_many :tags, Tag
+    has_many :projects, Project
 
     timestamps()
   end

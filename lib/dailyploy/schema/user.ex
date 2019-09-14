@@ -4,6 +4,10 @@ defmodule Dailyploy.Schema.User do
   alias Dailyploy.Schema.Workspace
   alias Dailyploy.Schema.Member
   alias Dailyploy.Schema.Invitation  
+  alias Dailyploy.Schema.Task
+  alias Dailyploy.Schema.TaskAssignee
+  alias Dailyploy.Schema.Project
+  alias Dailyploy.Schema.ProjectUser
 
   import Comeonin.Bcrypt, only: [hashpwsalt: 1]
 
@@ -17,6 +21,8 @@ defmodule Dailyploy.Schema.User do
     has_many :invitation_to, Invitation
     has_many :invitation_from, Invitation
     many_to_many :workspaces, Workspace, join_through: Member
+    many_to_many :tasks, Task, join_through: TaskAssignee
+    many_to_many :projects, Project, join_through: ProjectUser
 
     timestamps()
   end

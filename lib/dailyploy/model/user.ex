@@ -1,7 +1,10 @@
 defmodule Dailyploy.Model.User do
   alias Dailyploy.Repo
   alias Dailyploy.Schema.User
+  alias Dailyploy.Schema.Member
+  alias Dailyploy.Schema.Workspace
   alias Auth.Guardian
+  import Ecto.Query
   import Comeonin.Bcrypt, only: [checkpw: 2, dummy_checkpw: 0]
 
   @spec list_users :: any
@@ -60,6 +63,19 @@ defmodule Dailyploy.Model.User do
       {:ok, user}
     else
       {:error, :invalid_password}
+    end
+  end
+
+  def get_current_workspace(user) do
+    query = from member in Member,
+      join: workspace in Workspace,
+      on: member.workspace_id == workspace.id,
+      where: member.user_id == ^user.id and workspace.type == "individual"
+    members = Repo.all(query) |> Repo.preload(:workspace)
+    member = List.first members
+    case member do
+      nil -> nil
+      _ -> member.workspace
     end
   end
 end
