@@ -24,7 +24,7 @@ defmodule DailyployWeb.ProjectController do
 
   @spec create(Plug.Conn.t(), map) :: Plug.Conn.t()
   def create(conn, %{"project" => project_params}) do
-    user_workspaces = UserWorkspaceModel.user_workspaces_from_emails(conn.assigns.workspace.id, project_params["user_workspaces"])
+    user_workspaces = UserWorkspaceModel.user_workspaces_from_emails(conn.assigns.workspace.id, project_params["members"])
     project_params = add_workspace_and_user_in_project_params(project_params, user_workspaces, conn)
 
     case ProjectModel.create_project(project_params) do

@@ -16,6 +16,8 @@ defmodule Dailyploy.Model.UserWorkspace do
     List.first(Repo.all(query))
   end
 
+  def get_user_workspace!(id), do: Repo.get!(UserWorkspace, id)
+
   def get_user_workspace!(%{user_id: user_id, workspace_id: workspace_id}, preloads) do
     query =
       from user_workspace in UserWorkspace,
@@ -24,6 +26,8 @@ defmodule Dailyploy.Model.UserWorkspace do
     user_workspace = List.first(Repo.all(query))
     Repo.preload(user_workspace, preloads)
   end
+
+  def get_user_workspace!(id, preloads), do: Repo.get!(UserWorkspace, id) |> Repo.preload(preloads)
 
   def user_workspaces_from_emails(workspace_id, emails) do
     query =
@@ -35,10 +39,6 @@ defmodule Dailyploy.Model.UserWorkspace do
     user_workspaces = Repo.preload(user_workspaces, [:user])
     Enum.map(user_workspaces, fn user_workspace -> user_workspace.user end)
   end
-
-  def get_user_workspace!(id), do: Repo.get!(UserWorkspace, id)
-
-  def get_user_workspace!(id, preloads), do: Repo.get!(UserWorkspace, id) |> Repo.preload(preloads)
 
   def create_user_workspace(attrs \\ %{}) do
     %UserWorkspace{}
