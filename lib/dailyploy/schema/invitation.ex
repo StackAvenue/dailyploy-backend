@@ -27,7 +27,7 @@ defmodule Dailyploy.Schema.Invitation do
         |> put_assoc(:project, attrs["project"])
         |> put_assoc(:assignee, attrs["assignee"])
         |> put_assoc(:sender,   attrs["sender"])
-        |> validate_required([:workspace, :project, :assignee, :sender])
+        |> validate_required([:workspace, :project, :sender])
     end  
     
     def genToken(changeset) do 

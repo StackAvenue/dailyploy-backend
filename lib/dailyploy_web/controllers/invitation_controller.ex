@@ -1,31 +1,51 @@
 defmodule DailyployWeb.InvitationController do
     use DailyployWeb, :controller
+    import Plug.Conn
     
+    alias Dailyploy.Model.User, as: UserModel
+    alias Dailyploy.Schema.User
     alias Dailyploy.Model.Invitation, as: InvitationModel
     alias Dailyploy.Helper.Invitation, as: InvitationHelper
     alias Dailyploy.Schema.Invitation
+    alias Dailyploy.Model.Member, as: MemberModel
+    alias Dailyploy.Schema.Member
+    alias Dailyploy.Helper.User, as: UserHelper
   
     action_fallback DailyployWeb.FallbackController
     plug :get_invitation_by_id when action in [:show, :update, :delete]
-  
+
     def index(conn, _params) do
-      invitations = InvitationModel.list_invitations()
+      invitations = InvitationModel.list_invitations()                        
       render(conn, "index.json", invitations: invitations)
     end
   
     @spec create(Plug.Conn.t(), map) :: Plug.Conn.t()
     def create(conn, %{"invitation" => invite_attrs}) do
-      case InvitationHelper.create_invite(invite_attrs) do
-        :ok ->
-          conn
-          |> put_status(:created)
-          |> render("invite.json", %{isCreated: true})
-  
-        {:error, invitation} ->
-          conn
-          |> put_status(422)
-          |> render("changeset_error.json", %{invitation: invitation.errors})
-      end
+      %{"email" => invitee_email, "project_id" => project_id, "workspace_id"=> workspace_id} = invite_attrs
+      %{role_id: role_id} = MemberModel.get_member_role(workspace_id)
+      case role_id do
+        2 -> send_resp(conn, 401, "UNAUTHORIZED")
+        1 -> 
+          case UserModel.get_by_email(invitee_email) do
+            {:ok , %User{id: actual_user_id }} -> 
+              UserHelper.add_existing_or_non_existing_user_to_member(actual_user_id,workspace_id,project_id)
+              InvitationHelper.create_confirmation(invite_attrs)  
+              {:error , str } -> 
+              %{assigns: %{ invitation: %Invitation{token: token_id}}} = conn
+              invite_attrs = Map.put(invite_attrs,"token",token_id)
+              case InvitationHelper.create_invite(invite_attrs) do
+                :ok ->
+                  conn
+                  |> put_status(:created)
+                  |> render("invite.json", %{isCreated: true})
+      
+                {:error, invitation} ->
+                  conn
+                  |> put_status(422)
+                  |> render("changeset_error.json", %{invitation: invitation.errors})
+              end
+          end
+        end
     end
   
     def show(conn, _) do

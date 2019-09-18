@@ -13,7 +13,7 @@ defmodule DailyployWeb.Router do
     pipe_through :jwt_authenticated
 
     get "/user", UserController, :show
-    resources "/users", UserController, only: [:index]
+    resources "/users", UserController, only: [:index, :update]
   end
 
   scope "/api/v1", DailyployWeb do

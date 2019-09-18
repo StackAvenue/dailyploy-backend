@@ -16,6 +16,22 @@ defmodule Dailyploy.Model.Member do
     List.first(Repo.all(query))
   end
 
+  def get_member_using_user_id(user_id) do
+    query =
+      from member in Member,
+      where: member.user_id == ^user_id
+
+    List.first(Repo.all(query)) 
+  end
+
+  def get_member_role(workspace_id) do
+    query =
+      from member in Member,
+      where: member.workspace_id == ^workspace_id
+
+    List.first(Repo.all(query)) 
+  end
+
   def get_member!(%{user_id: user_id, workspace_id: workspace_id}, preloads) do
     query =
       from member in Member,
