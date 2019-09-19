@@ -7,6 +7,9 @@ defmodule Dailyploy.Helper.User do
   alias Dailyploy.Model.Role, as: RoleModel
   alias Dailyploy.Model.Member, as: MemberModel
   alias Dailyploy.Schema.Member
+  alias Dailyploy.Helper.Invitation, as: InvitationHelper
+  alias Dailyploy.Model.Invitation, as: InvitationModel
+  alias Dailyploy.Schema.Invitation
   alias Dailyploy.Model.ProjectUser, as: ProjectUser
 
   @spec create_user_with_company(%{optional(:__struct__) => none, optional(atom | binary) => any}) ::
@@ -120,11 +123,29 @@ defmodule Dailyploy.Helper.User do
   end
 
   defp create_invited_user(user_attrs) do
-    %{"invitee_details" => %{"token_id" => token_id, "project_id" => project_id, "workspace_id" => workspace_id }} = user_attrs
+    %{"invitee_details" => %{"token_id" => token_id, "project_id" => project_id, "workspace_id" => workspace_id ,"sender_id" => sender_id }} = user_attrs
+    %{"email" => email} = user_attrs
     user_attrs = add_user_workspace(user_attrs)
     case UserModel.create_user(user_attrs) do
       {:ok, user} -> 
         successful_user_creation_without_company(user)
+        %User{id: id} = user
+        add_existing_or_non_existing_user_to_member(id,workspace_id,project_id)
+        %{"invitee_details" => invite_attrs} = user_attrs
+        invite_attrs = Map.put(invite_attrs,"email",email)
+        invite_attrs = Map.put(invite_attrs,"status", "Pending")
+        case InvitationHelper.create_confirmation(invite_attrs) do
+          :ok ->
+            conn
+            |> put_status(:created)
+            |> render("invite.json", %{isCreated: true})
+
+          {:error, invitation} ->
+            conn
+            |> put_status(422)
+            |> render("changeset_error.json", %{invitation: invitation.errors})
+            
+        end
       {:error, user} -> {:error, user}
     end
   end

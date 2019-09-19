@@ -29,7 +29,18 @@ defmodule DailyployWeb.InvitationController do
           case UserModel.get_by_email(invitee_email) do
             {:ok , %User{id: actual_user_id }} -> 
               UserHelper.add_existing_or_non_existing_user_to_member(actual_user_id,workspace_id,project_id)
-              InvitationHelper.create_confirmation(invite_attrs)  
+              case InvitationHelper.create_confirmation(invite_attrs) do
+                :ok ->
+                  conn
+                  |> put_status(:created)
+                  |> render("invite.json", %{isCreated: true})
+      
+                {:error, invitation} ->
+                  conn
+                  |> put_status(422)
+                  |> render("changeset_error.json", %{invitation: invitation.errors})
+                  
+              end
               {:error , str } -> 
               %{assigns: %{ invitation: %Invitation{token: token_id}}} = conn
               invite_attrs = Map.put(invite_attrs,"token",token_id)
