@@ -4,7 +4,7 @@ defmodule DailyployWeb.UserView do
   alias DailyployWeb.ErrorHelpers
 
   def render("index.json", %{users: users}) do
-    %{user: render_many(users, UserView, "user.json")}
+    %{users: render_many(users, UserView, "user.json")}
   end
 
   def render("show.json", %{user: user}) do

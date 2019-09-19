@@ -9,6 +9,13 @@ defmodule Dailyploy.Model.Project do
     Repo.all(Project)
   end
 
+  def list_projects_in_workspace(workspace_id) do
+    query =
+      from project in Project, where: project.workspace_id == ^workspace_id
+
+    Repo.all query
+  end
+
   def list_user_projects_in_workspace(%{workspace_id: workspace_id, user_id: user_id}) do
     query =
       from project in Project,
