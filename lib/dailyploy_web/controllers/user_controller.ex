@@ -7,8 +7,8 @@ defmodule DailyployWeb.UserController do
 
   action_fallback DailyployWeb.FallbackController
 
-  def index(conn, _params) do
-    users = UserModel.list_users()
+  def index(conn, %{"workspace_id" => workspace_id}) do
+    users = UserModel.list_users(workspace_id)
     render(conn, "index.json", users: users)
   end
 

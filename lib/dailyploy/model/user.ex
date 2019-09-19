@@ -1,6 +1,7 @@
 defmodule Dailyploy.Model.User do
   alias Dailyploy.Repo
   alias Dailyploy.Schema.User
+  alias Dailyploy.Schema.Role
   alias Dailyploy.Schema.UserWorkspace
   alias Dailyploy.Schema.Workspace
   alias Auth.Guardian
@@ -86,5 +87,12 @@ defmodule Dailyploy.Model.User do
       nil -> nil
       _ -> user_workspace.workspace
     end
+  end
+
+  def get_admin_user_query do
+    admin_role = Repo.get_by(Role, name: "admin")
+    from user in User,
+      join: userWorkspace in UserWorkspace,
+      where: userWorkspace.role_id == ^admin_role.id
   end
 end

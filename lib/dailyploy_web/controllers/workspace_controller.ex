@@ -4,6 +4,7 @@ defmodule DailyployWeb.WorkspaceController do
   alias Dailyploy.Repo
   alias Dailyploy.Model.Workspace, as: WorkspaceModel
   alias Dailyploy.Model.Task, as: TaskModel
+  alias Dailyploy.Model.User, as: UserModel
 
   plug Auth.Pipeline
   plug :put_view, DailyployWeb.TaskView when action in [:project_tasks]
@@ -12,7 +13,11 @@ defmodule DailyployWeb.WorkspaceController do
 
   def index(conn, _) do
     user = Guardian.Plug.current_resource(conn)
-    workspaces = WorkspaceModel.all_user_workspaces(user)
+
+    workspace_admin_query = UserModel.get_admin_user_query()
+
+    workspaces = WorkspaceModel.all_user_workspaces(user) |> Repo.preload([:company, users: workspace_admin_query])
+
     render(conn, "index.json", workspaces: workspaces)
   end
 
