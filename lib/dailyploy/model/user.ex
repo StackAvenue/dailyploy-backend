@@ -16,10 +16,12 @@ defmodule Dailyploy.Model.User do
   def list_users(workspace_id) do
     query =
       from(user in User,
-        where: user.workspace_id == ^workspace_id
+        join: userWorkspace in UserWorkspace,
+        on: user.id == userWorkspace.user_id,
+        where: userWorkspace.workspace_id == ^workspace_id
       )
 
-    Repo.all query
+    Repo.all(query)
   end
 
   def get_user!(id), do: Repo.get!(User, id)

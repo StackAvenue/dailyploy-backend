@@ -4,7 +4,6 @@ defmodule Dailyploy.Schema.User do
   alias Dailyploy.Schema.Workspace
   alias Dailyploy.Schema.UserWorkspace
   alias Dailyploy.Schema.Task
-  alias Dailyploy.Schema.TaskAssignee
   alias Dailyploy.Schema.Project
   alias Dailyploy.Schema.UserProject
 
@@ -16,8 +15,8 @@ defmodule Dailyploy.Schema.User do
     field :password_hash, :string
     field :password, :string, virtual: true
     field :password_confirmation, :string, virtual: true
+    has_many :tasks, Task
     many_to_many :workspaces, Workspace, join_through: UserWorkspace
-    many_to_many :tasks, Task, join_through: TaskAssignee
     many_to_many :projects, Project, join_through: UserProject
 
     timestamps()

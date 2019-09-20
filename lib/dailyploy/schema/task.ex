@@ -29,11 +29,11 @@ defmodule Dailyploy.Schema.Task do
     |> validate_required([:name, :start_datetime, :end_datetime, :project_id, :user_id])
     |> unique_constraint(:name)
     |> assoc_constraint(:project)
-    |> put_assoc_user_workspaces(attrs["user_workspace_ids"])
+    |> put_assoc_user_workspaces(attrs["member_ids"])
   end
 
-  defp put_assoc_user_workspaces(changeset, user_workspace_ids) do
-    user_workspaces = Repo.all(from(user_workspace in UserWorkspace, where: user_workspace.id in ^user_workspace_ids))
+  defp put_assoc_user_workspaces(changeset, member_ids) do
+    user_workspaces = Repo.all(from(user_workspace in UserWorkspace, where: user_workspace.id in ^member_ids))
 
     put_assoc(changeset, :user_workspaces, Enum.map(user_workspaces, &change/1))
   end

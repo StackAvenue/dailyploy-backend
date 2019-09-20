@@ -7,6 +7,7 @@ defmodule DailyployWeb.WorkspaceController do
   alias Dailyploy.Model.User, as: UserModel
 
   plug Auth.Pipeline
+  plug :put_view, DailyployWeb.UserView when action in [:user_tasks]
   plug :put_view, DailyployWeb.TaskView when action in [:project_tasks]
 
   action_fallback DailyployWeb.FallbackController
@@ -19,6 +20,12 @@ defmodule DailyployWeb.WorkspaceController do
     workspaces = WorkspaceModel.all_user_workspaces(user) |> Repo.preload([:company, users: workspace_admin_query])
 
     render(conn, "index.json", workspaces: workspaces)
+  end
+
+  def user_tasks(conn, %{"workspace_id" => workspace_id}) do
+    users = UserModel.list_users(workspace_id) |> Repo.preload([:tasks])
+
+    render(conn, "user_tasks_index.json", users: users)
   end
 
   def project_tasks(conn, %{"workspace_id" => workspace_id}) do

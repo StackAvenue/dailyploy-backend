@@ -1,10 +1,15 @@
 defmodule DailyployWeb.UserView do
   use DailyployWeb, :view
   alias DailyployWeb.UserView
+  alias DailyployWeb.TaskView
   alias DailyployWeb.ErrorHelpers
 
   def render("index.json", %{users: users}) do
     %{users: render_many(users, UserView, "user.json")}
+  end
+
+  def render("user_tasks_index.json", %{users: users}) do
+    %{users: render_many(users, UserView, "user_tasks.json")}
   end
 
   def render("show.json", %{user: user}) do
@@ -20,6 +25,10 @@ defmodule DailyployWeb.UserView do
       nil -> %{id: user.id, name: user.name, email: user.email, workspace_id: nil}
       _ -> %{id: user.id, name: user.name, email: user.email, workspace_id: workspace.id}
     end
+  end
+
+  def render("user_tasks.json", %{user: user}) do
+    %{id: user.id, name: user.name, email: user.email, tasks: render_many(user.tasks, TaskView, "task.json")}
   end
 
   def render("access_token.json", %{access_token: access_token}) do
