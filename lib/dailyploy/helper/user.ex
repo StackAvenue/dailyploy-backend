@@ -135,17 +135,11 @@ defmodule Dailyploy.Helper.User do
         invite_attrs = Map.put(invite_attrs,"email",email)
         invite_attrs = Map.put(invite_attrs,"status", "Pending")
         case InvitationHelper.create_confirmation(invite_attrs) do
-          :ok ->
-            conn
-            |> put_status(:created)
-            |> render("invite.json", %{isCreated: true})
-
-          {:error, invitation} ->
-            conn
-            |> put_status(422)
-            |> render("changeset_error.json", %{invitation: invitation.errors})
-            
-        end
+          :ok -> 
+            invite_attrs = Map.replace!(invite_attrs,"status", "Active")
+          {:error, invitation} -> 
+            invite_attrs = Map.replace!(invite_attrs,"status", "Pending")
+        end 
       {:error, user} -> {:error, user}
     end
   end

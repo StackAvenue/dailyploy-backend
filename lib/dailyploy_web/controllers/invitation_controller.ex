@@ -14,6 +14,7 @@ defmodule DailyployWeb.InvitationController do
     action_fallback DailyployWeb.FallbackController
     plug :get_invitation_by_id when action in [:show, :update, :delete]
 
+
     def index(conn, _params) do
       invitations = InvitationModel.list_invitations()                        
       render(conn, "index.json", invitations: invitations)
@@ -42,8 +43,8 @@ defmodule DailyployWeb.InvitationController do
                   
               end
               {:error , str } -> 
-              %{assigns: %{ invitation: %Invitation{token: token_id}}} = conn
-              invite_attrs = Map.put(invite_attrs,"token",token_id)
+ #             %{assigns: %{ invitation: %Invitation{token: token_id}}} = conn
+ #             invite_attrs = Map.put(invite_attrs,"token",token_id)
               case InvitationHelper.create_invite(invite_attrs) do
                 :ok ->
                   conn
