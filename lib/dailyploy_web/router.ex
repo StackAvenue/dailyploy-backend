@@ -17,8 +17,11 @@ defmodule DailyployWeb.Router do
   scope "/api/v1", DailyployWeb do
     pipe_through :jwt_authenticated
 
+    get "/logged_in_user", UserController, :show
+    resources "/users", UserController, only: [:show]
+
     resources "/workspaces", WorkspaceController, only: [:index] do
-      resources "/members", UserController, only: [:index, :show]
+      resources "/members", MemberController, only: [:index]
       resources "/tags", TagController, only: [:create, :update, :delete, :index, :show]
 
       resources "/projects", ProjectController do
