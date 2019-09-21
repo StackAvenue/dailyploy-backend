@@ -7,8 +7,8 @@ defmodule DailyployWeb.InvitationController do
     alias Dailyploy.Model.Invitation, as: InvitationModel
     alias Dailyploy.Helper.Invitation, as: InvitationHelper
     alias Dailyploy.Schema.Invitation
-    alias Dailyploy.Model.Member, as: MemberModel
-    alias Dailyploy.Schema.Member
+    alias Dailyploy.Model.UserWorkspace, as: UserWorkspaceModel
+    alias Dailyploy.Schema.UserWorkspace
     alias Dailyploy.Helper.User, as: UserHelper
   
     action_fallback DailyployWeb.FallbackController
@@ -23,7 +23,7 @@ defmodule DailyployWeb.InvitationController do
     @spec create(Plug.Conn.t(), map) :: Plug.Conn.t()
     def create(conn, %{"invitation" => invite_attrs}) do
       %{"email" => invitee_email, "project_id" => project_id, "workspace_id"=> workspace_id} = invite_attrs
-      %{role_id: role_id} = MemberModel.get_member_role(workspace_id)
+      %{role_id: role_id} = UserWorkspaceModel.get_member_role(workspace_id)
       case role_id do
         2 -> send_resp(conn, 401, "UNAUTHORIZED")
         1 -> 

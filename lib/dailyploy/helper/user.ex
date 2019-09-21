@@ -8,7 +8,7 @@ defmodule Dailyploy.Helper.User do
   alias Dailyploy.Helper.Invitation, as: InvitationHelper
   alias Dailyploy.Model.Invitation, as: InvitationModel
   alias Dailyploy.Schema.Invitation
-  alias Dailyploy.Model.ProjectUser, as: ProjectUser
+  alias Dailyploy.Model.UserProject, as: UserProject
   alias Dailyploy.Model.UserWorkspace, as: UserWorkspaceModel
   alias Dailyploy.Schema.UserWorkspace
 
@@ -83,13 +83,13 @@ defmodule Dailyploy.Helper.User do
   end
 
   def add_existing_or_non_existing_user_to_member(user_id,workspace_id,project_id) do
-    member = MemberModel.get_member!(%{user_id: user_id, workspace_id: workspace_id},[:role])
-    MemberModel.create_member(%{
+    member = UserWorkspaceModel.get_member!(%{user_id: user_id, workspace_id: workspace_id},[:role])
+    UserWorkspaceModel.create_member(%{
       workspace_id: workspace_id,
       user_id: user_id,
       role_id: 2
     })
-    ProjectUser.create_project_user(%{
+    UserProject.create_project_user(%{
       user_id: user_id,
       project_id: project_id
     })
