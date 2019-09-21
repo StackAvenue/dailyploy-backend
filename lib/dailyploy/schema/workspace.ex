@@ -3,8 +3,7 @@ defmodule Dailyploy.Schema.Workspace do
   import Ecto.Changeset
   alias Dailyploy.Schema.Company
   alias Dailyploy.Schema.Invitation
-  # alias Dailyploy.Schema.User
-  alias Dailyploy.Schema.Member
+  alias Dailyploy.Schema.UserWorkspace
   alias Dailyploy.Schema.Tag
   alias Dailyploy.Schema.Project
 
@@ -13,10 +12,9 @@ defmodule Dailyploy.Schema.Workspace do
     field :type, WorkspaceTypeEnum
 
     belongs_to :company, Company
-    has_many :members, Member, on_delete: :delete_all, on_replace: :delete
-    has_many :users, through: [:members, :user]
     has_many :invitation, Invitation
-    # many_to_many :users, User, join_through: "members"
+    has_many :user_workspaces, UserWorkspace, on_delete: :delete_all, on_replace: :delete
+    has_many :users, through: [:user_workspaces, :user]
     has_many :tags, Tag
     has_many :projects, Project
 

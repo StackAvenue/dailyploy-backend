@@ -1,15 +1,15 @@
-defmodule Dailyploy.Repo.Migrations.CreateProjectUser do
+defmodule Dailyploy.Repo.Migrations.CreateUserProjects do
   use Ecto.Migration
 
   def change do
-    create table(:project_users) do
+    create table(:user_projects) do
       add :user_id, :integer
       add :project_id, :integer
 
       timestamps()
     end
 
-    create unique_index(:project_users, [:user_id, :project_id],
+    create unique_index(:user_projects, [:user_id, :project_id],
              name: :unique_index_for_user_and_project_in_projectuser
            )
   end
