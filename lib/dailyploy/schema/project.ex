@@ -1,5 +1,6 @@
 defmodule Dailyploy.Schema.Project do
   use Ecto.Schema
+  alias Dailyploy.Schema.Invitation  
   import Ecto.Changeset
   import Ecto.Query
 
@@ -14,6 +15,7 @@ defmodule Dailyploy.Schema.Project do
     field :end_date, :date
     field :description, :string
     field :color_code, :string
+    has_many :invitation, Invitation    
     many_to_many :members, User, join_through: UserProject
     belongs_to :workspace, Workspace
     belongs_to :owner, User

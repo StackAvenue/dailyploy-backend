@@ -36,7 +36,7 @@ defmodule Dailyploy.Model.User do
 
   def update_user(%User{} = user, attrs) do
     user
-    |> User.changeset(attrs)
+    |> User.update_changeset(attrs)
     |> Repo.update()
   end
 
@@ -59,7 +59,7 @@ defmodule Dailyploy.Model.User do
          do: verify_password(password, user)
   end
 
-  defp get_by_email(email) when is_binary(email) do
+  def get_by_email(email) when is_binary(email) do
     case Repo.get_by(User, email: email) do
       nil ->
         dummy_checkpw()

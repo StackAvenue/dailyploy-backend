@@ -46,6 +46,7 @@ defmodule Dailyploy.MixProject do
       {:cors_plug, "~> 2.0"},
       {:guardian, "~> 1.0"},
       {:ecto_enum, "~> 1.3"},
+      {:sendgrid, "~> 1.3.0"},
       {:calendar, "~> 0.17.5"},
       {:timex, "~> 3.5"}
     ]
