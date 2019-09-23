@@ -2,15 +2,15 @@ defmodule DailyployWeb.InvitationController do
     use DailyployWeb, :controller
     import Plug.Conn
     plug Auth.Pipeline
-    alias Dailyploy.Model.User, as: UserModel
-    alias Dailyploy.Schema.User
-    alias Dailyploy.Model.Invitation, as: InvitationModel
-    alias Dailyploy.Helper.Invitation, as: InvitationHelper
     alias Dailyploy.Schema.Invitation
-    alias Dailyploy.Model.UserWorkspace, as: UserWorkspaceModel
+    alias Dailyploy.Schema.User
     alias Dailyploy.Schema.UserWorkspace
+    alias Dailyploy.Model.User, as: UserModel
+    alias Dailyploy.Model.Invitation, as: InvitationModel
+    alias Dailyploy.Model.UserWorkspace, as: UserWorkspaceModel
     alias Dailyploy.Helper.User, as: UserHelper
-  
+    alias Dailyploy.Helper.Invitation, as: InvitationHelper
+    
     action_fallback DailyployWeb.FallbackController
     plug :get_invitation_by_id when action in [:show, :update, :delete]
 
@@ -77,13 +77,13 @@ defmodule DailyployWeb.InvitationController do
       case InvitationModel.update_invitation(invitation, invite_attrs) do
         {:ok, %Invitation{} = invitation} ->
           conn
-          |> put_status(:created)
-          |> render(conn, "show.json", invitation: invitation)
+           |> put_status(:created)
+           |> render(conn, "show.json", invitation: invitation)
 
         {:error, user} ->
           conn
-          |> put_status(422)
-          |> render("changeset_error.json", %{invitation: invitation.errors})  
+           |> put_status(422)
+           |> render("changeset_error.json", %{invitation: invitation.errors})  
       end
     end
   

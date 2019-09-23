@@ -29,7 +29,7 @@ defmodule Dailyploy.Schema.Invitation do
         |> validate_required([:workspace, :project, :sender])
     end  
     
-    def genToken(changeset) do 
+    defp genToken(changeset) do 
         length = 32 
         token =  :crypto.strong_rand_bytes(length) |> Base.encode64 |> binary_part(0, length)
         put_change(changeset, :token, token)
