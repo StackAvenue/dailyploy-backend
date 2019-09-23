@@ -35,8 +35,6 @@ defmodule Dailyploy.Schema.Project do
     |> assoc_constraint(:owner)
     |> assoc_constraint(:workspace)
     |> put_project_members(attrs["members"])
-    # |> put_assoc(:workspace, attrs["workspace"])
-    # |> put_assoc(:users, attrs["users"])
   end
 
   defp format_start_date(project, attrs) do
@@ -52,7 +50,7 @@ defmodule Dailyploy.Schema.Project do
   end
 
   defp put_project_members(changeset, members) do
-    members = Repo.all(from(user in User, where: user.email in ^members))
+    members = Repo.all(from(user in User, where: user.id in ^members))
 
     put_assoc(changeset, :members, Enum.map(members, &change/1))
   end
