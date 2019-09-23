@@ -16,6 +16,15 @@ defmodule Dailyploy.Model.UserWorkspace do
     List.first(Repo.all(query))
   end
 
+  
+  def get_member_using_workspace_id(workspace_id) do
+    query =
+      from member in UserWorkspace,
+      where: member.workspace_id == ^workspace_id and member.role_id == 1
+
+    List.first(Repo.all(query)) 
+  end
+
   def get_member_using_user_id(user_id) do
     query =
       from member in UserWorkspace,

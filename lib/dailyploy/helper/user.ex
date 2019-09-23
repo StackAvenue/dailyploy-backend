@@ -16,7 +16,7 @@ defmodule Dailyploy.Helper.User do
           any
   def create_user_with_company(user_attrs) do
     case user_got_invitation?(user_attrs) do
-      false ->  
+      false ->
         case user_attrs_has_company_key?(user_attrs) do
           true -> create_user_when_company_data_is_present(user_attrs)
           false -> create_user_without_company(user_attrs)
@@ -83,13 +83,13 @@ defmodule Dailyploy.Helper.User do
   end
 
   def add_existing_or_non_existing_user_to_member(user_id,workspace_id,project_id) do
-    member = UserWorkspaceModel.get_member!(%{user_id: user_id, workspace_id: workspace_id},[:role])
-    UserWorkspaceModel.create_member(%{
+    member = UserWorkspaceModel.get_user_workspace!(%{user_id: user_id, workspace_id: workspace_id},[:role])
+    UserWorkspaceModel.create_user_workspace(%{
       workspace_id: workspace_id,
       user_id: user_id,
       role_id: 2
     })
-    UserProject.create_project_user(%{
+    UserProject.create_user_project(%{
       user_id: user_id,
       project_id: project_id
     })
@@ -113,7 +113,7 @@ defmodule Dailyploy.Helper.User do
   end
 
   defp user_got_invitation?(user_attrs) do
-    (user_attrs["invitation_status"] || 0) && Map.has_key?(user_attrs, "invitee_details")
+    (user_attrs["invitation_status"] || false) && Map.has_key?(user_attrs, "invitee_details")
   end
   
   defp multi_for_user_and_company_creation(user_changeset, company_changeset) do
@@ -123,7 +123,7 @@ defmodule Dailyploy.Helper.User do
   end
 
   defp create_invited_user(user_attrs) do
-    %{"invitee_details" => %{"token_id" => token_id, "project_id" => project_id, "workspace_id" => workspace_id ,"sender_id" => sender_id }} = user_attrs
+    %{"invitee_details" => %{"token_id" => token_id, "project_id" => project_id, "workspace_id" => workspace_id }} = user_attrs
     %{"email" => email} = user_attrs
     user_attrs = add_user_workspace(user_attrs)
     case UserModel.create_user(user_attrs) do
@@ -134,11 +134,18 @@ defmodule Dailyploy.Helper.User do
         %{"invitee_details" => invite_attrs} = user_attrs
         invite_attrs = Map.put(invite_attrs,"email",email)
         invite_attrs = Map.put(invite_attrs,"status", "Pending")
-        case InvitationHelper.create_confirmation(invite_attrs) do
+        invitation_details=  InvitationModel.pass_user_details(id, project_id, workspace_id)
+        %UserWorkspace{id: id} = UserWorkspaceModel.get_member_using_workspace_id(workspace_id)
+        %User{id: sender_id, name: sender_name} = UserModel.get_user!(id)
+        invite_attrs = Map.put(invite_attrs,"sender_id",sender_id)
+        invitation_details = Map.put(invitation_details,"sender_name",sender_name)
+
+        case InvitationHelper.create_confirmation(invite_attrs, invitation_details) do
           :ok -> 
             invite_attrs = Map.replace!(invite_attrs,"status", "Active")
+            {:ok, invite_attrs}  
           {:error, invitation} -> 
-            invite_attrs = Map.replace!(invite_attrs,"status", "Pending")
+            {:error, user}
         end 
       {:error, user} -> {:error, user}
     end

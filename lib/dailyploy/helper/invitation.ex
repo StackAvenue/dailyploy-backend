@@ -11,40 +11,42 @@ defmodule Dailyploy.Helper.Invitation do
     alias Dailyploy.Schema.Invitation
     alias SendGrid.{Mailer, Email}
     
-    def create_invite(invite_attrs)  do
+    def create_invite(invite_attrs,invitation_details)  do
         invite_attrs
         |>get_dep_params
         |>InvitationModel.create_invitation
         |>get_created_invite
-        |>send_invite_email
+        |>send_invite_email(invitation_details)
     end
 
-    def create_confirmation(invite_attrs) do
+    def create_confirmation(invite_attrs, invitation_details) do
         invite_attrs
         |>get_dep_params_for_already_registered
         |>InvitationModel.create_invitation
         |>get_created_invite
-        |>send_confirmation_email   
+        |>send_confirmation_email(invitation_details)   
     
     end
 
-    def send_confirmation_email(toEmail) do
+    def send_confirmation_email(toEmail, invitation_details) do
         Email.build()
         |> Email.add_to(toEmail)
         |> Email.put_from("contact@stack-avenue.com")
         |> Email.put_subject("DailyPloy Confirmation")
-        |> Email.put_text("Hi User,you have been successfully added to a workspace")
+        |> Email.put_text("Hi #{invitation_details["user_name"]},you have been invited by #{invitation_details["sender_name"]} and been successfully added to a #{invitation_details["workspace_name"]}'s workspace inside #{invitation_details["project_name"]} project.Kindly proceed to login to proceed https://dailyploy.com/login")
         |> Mailer.send()        
     end
 
-    def send_invite_email(toEmail) do
+    def send_invite_email(toEmail, invitation_details) do
+        [user, mail] = String.split(toEmail,"@")
         Email.build()
         |> Email.add_to(toEmail)
         |> Email.put_from("contact@stack-avenue.com")
         |> Email.put_subject("DailyPloy Invitation")
-        |> Email.put_text("Hi User,
-        DailyPloy is the world's fastest growing Planning Platform and Alam would like you to also join the DailyPloy's StackAvenue workspace.
-        So Aishwarya, whether you are trying to manage your tasks or you want to have a clear visibility of your team's task, check us out and experience the revolution.")
+        |> Email.put_text("Hi #{user},
+        DailyPloy is the world's fastest growing Planning Platform and #{invitation_details["sender_name"]} would like you to also join the DailyPloy's StackAvenue #{invitation_details["workspace_name"]}'s workspace and invited you to contribute to #{invitation_details["project_name"]} project.
+        So #{user}, whether you are trying to manage your tasks or you want to have a clear visibility of your team's task, check us out and experience the revolution.
+        Click on the following link to proceed https://dailyploy.com/signup")
         |> Mailer.send()        
     end
 

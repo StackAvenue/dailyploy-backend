@@ -11,8 +11,8 @@ defmodule Dailyploy.Schema.Invitation do
         field :status, InviteStatusTypeEnum
         belongs_to :workspace, Workspace
         belongs_to :project, Project        
-        belongs_to :assignee, User
         belongs_to :sender, User
+
         timestamps()
     end
 
@@ -25,7 +25,6 @@ defmodule Dailyploy.Schema.Invitation do
         |> unique_constraint(:email)
         |> put_assoc(:workspace, attrs["workspace"])
         |> put_assoc(:project, attrs["project"])
-        |> put_assoc(:assignee, attrs["assignee"])
         |> put_assoc(:sender,   attrs["sender"])
         |> validate_required([:workspace, :project, :sender])
     end  
