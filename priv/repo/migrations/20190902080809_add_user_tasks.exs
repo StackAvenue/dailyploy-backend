@@ -1,4 +1,4 @@
-defmodule Dailyploy.Repo.Migrations.AddUserTask do
+defmodule Dailyploy.Repo.Migrations.AddUserTasks do
   use Ecto.Migration
 
   def change do
@@ -7,6 +7,8 @@ defmodule Dailyploy.Repo.Migrations.AddUserTask do
       add :task_id, references(:tasks, [on_delete: :delete_all])
     end
 
-    create index(:user_tasks, [:user_id, :task_id])
+    create unique_index(:user_tasks, [:user_id, :task_id],
+      name: :unique_index_for_user_and_task_in_user_task
+    )
   end
 end

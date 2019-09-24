@@ -7,23 +7,23 @@ defmodule Dailyploy.Model.Invitation do
     alias Dailyploy.Schema.Workspace
     alias Dailyploy.Model.User, as: UserModel
     import Ecto.Query
-  
+
     def list_invitations() do
       Repo.all(Invitation)
     end
 
-    def already_registered_users_and_workspace(invitee_email, project_id, workspace_id) do
+    def already_registered_users_and_workspace(invitee_email, _project_id, workspace_id) do
       case UserModel.get_by_email(invitee_email) do
         {:ok , %User{id: user_id }} ->
           query =
             from user in UserWorkspace,
             where: user.workspace_id == ^workspace_id and user.user_id == ^user_id and user.role_id == 2
-         
+
           case List.first(Repo.all(query)) do
             nil ->  false
-            _ -> true 
+            _ -> true
           end
-        {:error , str } ->
+        {:error , _} ->
           false
       end
     end
@@ -34,7 +34,7 @@ defmodule Dailyploy.Model.Invitation do
         where: project.id == ^project_id
       %Project{name: name} = List.first(Repo.all(query))
       invitation_details = %{"project_name" => name}
-      
+
       query =
         from user in User,
         where: user.id == ^actual_user_id
@@ -46,7 +46,7 @@ defmodule Dailyploy.Model.Invitation do
         where: workspace.id == ^workspace_id
       %Workspace{name: name} = List.first(Repo.all(query))
       invitation_details = Map.put(invitation_details,"workspace_name",name)
-      
+
       invitation_details
     end
 
@@ -56,13 +56,13 @@ defmodule Dailyploy.Model.Invitation do
         where: project.id == ^project_id
       %Project{name: name} = List.first(Repo.all(query))
       invitation_details = %{"project_name" => name}
-      
+
       query =
         from workspace in Workspace,
         where: workspace.id == ^workspace_id
       %Workspace{name: name} = List.first(Repo.all(query))
       invitation_details = Map.put(invitation_details,"workspace_name",name)
-      
+
       invitation_details
     end
 
@@ -75,13 +75,13 @@ defmodule Dailyploy.Model.Invitation do
       |> Invitation.changeset(attrs)
       |> Repo.insert()
     end
-  
+
     def update_invitation(%Invitation{} = invitation, attrs) do
       invitation
       |> Invitation.changeset(attrs)
       |> Repo.update()
     end
-    
+
     def delete_invitation(%Invitation{} = invitation) do
       Repo.delete(invitation)
     end

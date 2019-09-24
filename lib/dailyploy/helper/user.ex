@@ -3,7 +3,6 @@ defmodule Dailyploy.Helper.User do
   alias Dailyploy.Repo
   alias Dailyploy.Schema.User
   alias Dailyploy.Schema.Company
-  alias Dailyploy.Schema.Invitation
   alias Dailyploy.Schema.UserWorkspace
   alias Dailyploy.Model.Role, as: RoleModel
   alias Dailyploy.Model.User, as: UserModel
@@ -11,7 +10,7 @@ defmodule Dailyploy.Helper.User do
   alias Dailyploy.Model.UserProject, as: UserProject
   alias Dailyploy.Model.UserWorkspace, as: UserWorkspaceModel
   alias Dailyploy.Helper.Invitation, as: InvitationHelper
-  
+
   @spec create_user_with_company(%{optional(:__struct__) => none, optional(atom | binary) => any}) ::
           any
   def create_user_with_company(user_attrs) do
@@ -21,7 +20,7 @@ defmodule Dailyploy.Helper.User do
           true -> create_user_when_company_data_is_present(user_attrs)
           false -> create_user_without_company(user_attrs)
         end
-      true -> create_invited_user(user_attrs)  
+      true -> create_invited_user(user_attrs)
     end
   end
 
@@ -78,7 +77,6 @@ defmodule Dailyploy.Helper.User do
   end
 
   def add_existing_or_non_existing_user_to_member(user_id,workspace_id,project_id) do
-    member = UserWorkspaceModel.get_user_workspace!(%{user_id: user_id, workspace_id: workspace_id},[:role])
     UserWorkspaceModel.create_user_workspace(%{
       workspace_id: workspace_id,
       user_id: user_id,
@@ -89,7 +87,7 @@ defmodule Dailyploy.Helper.User do
       project_id: project_id
     })
   end
-  
+
   defp add_user_workspace(user_attrs) do
     Map.put(user_attrs, "workspaces", [
       %{"name" => "Workspace for #{user_attrs["name"]}", "type" => "individual"}
@@ -110,7 +108,7 @@ defmodule Dailyploy.Helper.User do
   defp user_got_invitation?(user_attrs) do
     (user_attrs["invitation_status"] || false) && Map.has_key?(user_attrs, "invitee_details")
   end
-  
+
   defp multi_for_user_and_company_creation(user_changeset, company_changeset) do
     Multi.new()
       |> Multi.insert(:user, user_changeset)
@@ -118,11 +116,11 @@ defmodule Dailyploy.Helper.User do
   end
 
   defp create_invited_user(user_attrs) do
-    %{"invitee_details" => %{"token_id" => token_id, "project_id" => project_id, "workspace_id" => workspace_id }} = user_attrs
+    %{"invitee_details" => %{"project_id" => project_id, "workspace_id" => workspace_id }} = user_attrs
     %{"email" => email} = user_attrs
     user_attrs = add_user_workspace(user_attrs)
     case UserModel.create_user(user_attrs) do
-      {:ok, user} -> 
+      {:ok, user} ->
         successful_user_creation_without_company(user)
         %User{id: id} = user
         add_existing_or_non_existing_user_to_member(id,workspace_id,project_id)
@@ -135,12 +133,12 @@ defmodule Dailyploy.Helper.User do
         invite_attrs = Map.put(invite_attrs,"sender_id",sender_id)
         invitation_details = Map.put(invitation_details,"sender_name",sender_name)
         case InvitationHelper.create_confirmation(invite_attrs, invitation_details) do
-          :ok -> 
+          :ok ->
             invite_attrs = Map.replace!(invite_attrs,"status", "Active")
-            {:ok, invite_attrs}  
-          {:error, invitation} -> 
+            {:ok, invite_attrs}
+          {:error, _} ->
             {:error, user}
-        end 
+        end
       {:error, user} -> {:error, user}
     end
   end

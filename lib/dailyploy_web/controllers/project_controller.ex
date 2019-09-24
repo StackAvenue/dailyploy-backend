@@ -25,6 +25,7 @@ defmodule DailyployWeb.ProjectController do
       project_params
       |> Map.put("workspace_id", workspace_id)
       |> Map.put("owner_id", user.id)
+      |> Map.put("members", [user.id | project_params["members"]])
 
     case ProjectModel.create_project(project_params) do
       {:ok, %Project{} = project} ->

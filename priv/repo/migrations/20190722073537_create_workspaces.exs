@@ -1,4 +1,4 @@
-defmodule Dailyploy.Repo.Migrations.CreateWorkspace do
+defmodule Dailyploy.Repo.Migrations.CreateWorkspaces do
   use Ecto.Migration
 
   def change do
@@ -9,5 +9,7 @@ defmodule Dailyploy.Repo.Migrations.CreateWorkspace do
 
       timestamps()
     end
+
+    create unique_index(:workspaces, [:name])
   end
 end

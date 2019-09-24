@@ -1,4 +1,4 @@
-defmodule Dailyploy.Repo.Migrations.CreateRole do
+defmodule Dailyploy.Repo.Migrations.CreateRoles do
   use Ecto.Migration
 
   def change do
@@ -6,5 +6,7 @@ defmodule Dailyploy.Repo.Migrations.CreateRole do
       add :name, :string
       timestamps()
     end
+
+    create unique_index(:roles, [:name])
   end
 end

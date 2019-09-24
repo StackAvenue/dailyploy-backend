@@ -2,7 +2,6 @@ defmodule Dailyploy.Schema.User do
   use Ecto.Schema
   import Ecto.Changeset
   alias Dailyploy.Schema.Workspace
-  alias Dailyploy.Schema.Invitation  
   alias Dailyploy.Schema.UserWorkspace
   alias Dailyploy.Schema.Task
   alias Dailyploy.Schema.Project
@@ -16,12 +15,10 @@ defmodule Dailyploy.Schema.User do
     field :password_hash, :string
     field :password, :string, virtual: true
     field :password_confirmation, :string, virtual: true
-    
-    has_many :invitation_to, Invitation
-    has_many :invitation_from, Invitation
-    has_many :tasks, Task
+
     many_to_many :workspaces, Workspace, join_through: UserWorkspace
     many_to_many :projects, Project, join_through: UserProject
+    many_to_many :tasks, Task, join_through: "user_tasks"
 
     timestamps()
   end
@@ -36,7 +33,7 @@ defmodule Dailyploy.Schema.User do
       |> validate_confirmation(:password)
       |> put_password_hash
       |> unique_constraint(:email)
-      |> cast_assoc(:workspaces, required: true, with: &Workspace.changeset/2)
+      |> cast_assoc(:workspaces, with: &Workspace.changeset/2)
   end
 
   def update_changeset(user, attrs) do

@@ -8,5 +8,7 @@ defmodule Dailyploy.Repo.Migrations.CreateCompanies do
 
       timestamps()
     end
+
+    create unique_index(:companies, [:email])
   end
 end

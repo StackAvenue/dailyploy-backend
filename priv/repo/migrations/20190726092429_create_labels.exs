@@ -1,4 +1,4 @@
-defmodule Dailyploy.Repo.Migrations.CreateLabel do
+defmodule Dailyploy.Repo.Migrations.CreateLabels do
   use Ecto.Migration
 
   def change do
