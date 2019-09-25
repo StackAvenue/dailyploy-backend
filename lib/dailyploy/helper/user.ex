@@ -116,7 +116,9 @@ defmodule Dailyploy.Helper.User do
   end
 
   defp create_invited_user(user_attrs) do
-    %{"invitee_details" => %{"project_id" => project_id, "workspace_id" => workspace_id }} = user_attrs
+    %{"invitee_details" => %{"token_id" => token_id}} = user_attrs
+    %{"project_id" => project_id, "workspace_id" => workspace_id } = InvitationModel.fetch_token_details(token_id)
+    invite_attrs = %{"project_id" => project_id, "workspace_id" => workspace_id }
     %{"email" => email} = user_attrs
     user_attrs = add_user_workspace(user_attrs)
     case UserModel.create_user(user_attrs) do
@@ -124,7 +126,6 @@ defmodule Dailyploy.Helper.User do
         successful_user_creation_without_company(user)
         %User{id: id} = user
         add_existing_or_non_existing_user_to_member(id,workspace_id,project_id)
-        %{"invitee_details" => invite_attrs} = user_attrs
         invite_attrs = Map.put(invite_attrs,"email",email)
         invite_attrs = Map.put(invite_attrs,"status", "Pending")
         invitation_details=  InvitationModel.pass_user_details(id, project_id, workspace_id)
@@ -135,7 +136,7 @@ defmodule Dailyploy.Helper.User do
         case InvitationHelper.create_confirmation(invite_attrs, invitation_details) do
           :ok ->
             invite_attrs = Map.replace!(invite_attrs,"status", "Active")
-            {:ok, invite_attrs}
+            {:ok, user}
           {:error, _} ->
             {:error, user}
         end
