@@ -28,6 +28,15 @@ defmodule Dailyploy.Model.Invitation do
       end
     end
 
+    def fetch_token_details(token) do
+      query = 
+        from invitation in Invitation,
+        where: invitation.token == ^token
+        %Invitation{workspace_id: workspace_id, project_id: project_id, sender_id: sender_id} = List.first(Repo.all(query))
+        token_details =  %{"workspace_id" => workspace_id, "project_id" => project_id}
+        token_details
+    end
+
     def pass_user_details(actual_user_id, project_id, workspace_id) do
       query =
         from project in Project,
