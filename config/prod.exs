@@ -25,10 +25,6 @@ config :dailyploy, Dailyploy.Repo,
   pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
   ssl: true
 # ## SSL Support
-config :dailyploy, Dailyploy.Repo,
-  ssl: true,
-  url: database_url,
-  pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10")
 #
 # To get SSL working, you will need to add the `https` key
 # to the previous section and set your `:url` port to 443:
