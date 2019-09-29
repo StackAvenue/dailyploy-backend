@@ -10,9 +10,9 @@ use Mix.Config
 # which you should run after static files are built and
 # before starting your production server.
 config :dailyploy, DailyployWeb.Endpoint,
+  http: [port: {:system, "PORT"}],
   url: [scheme: "https", host: "dailyploy.herokuapp.com", port: 443],
   force_ssl: [rewrite_on: [:x_forwarded_proto]],
-  cache_static_manifest: "priv/static/cache_manifest.json",
   secret_key_base: System.get_env("SECRET_KEY_BASE")
 
 # Do not print debug messages in production
@@ -25,6 +25,10 @@ config :dailyploy, Dailyploy.Repo,
   pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
   ssl: true
 # ## SSL Support
+config :dailyploy, Dailyploy.Repo,
+  ssl: true,
+  url: database_url,
+  pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10")
 #
 # To get SSL working, you will need to add the `https` key
 # to the previous section and set your `:url` port to 443:
@@ -60,4 +64,4 @@ config :dailyploy, Dailyploy.Repo,
 
 # Finally import the config/prod.secret.exs which loads secrets
 # and configuration from environment variables.
-import_config "prod.secret.exs"
+#import_config "prod.secret.exs"
