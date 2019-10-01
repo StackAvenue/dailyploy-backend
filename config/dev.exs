@@ -2,12 +2,14 @@ use Mix.Config
 
 # Configure your database
 config :dailyploy, Dailyploy.Repo,
-  username: "postgres",
-  password: "postgres",
-  database: "dailyploy_dev",
-  hostname: "localhost",
+  adapter: Ecto.Adapters.Postgres,
+  username: "fbvyyirxnzprpl",
+  password: "261bc38ccf4058ca69801070845a32f3dc59bdb6c3f4b462cbe30813f768a2d3",
+  database: "ddrcnad8bdgsrv",
+  hostname: "ec2-23-23-182-18.compute-1.amazonaws.com",
   show_sensitive_data_on_connection_error: true,
-  pool_size: 10
+  pool_size: 10,
+  ssl: true
 
 # For development, we disable any cache and enable
 # debugging and code reloading.
