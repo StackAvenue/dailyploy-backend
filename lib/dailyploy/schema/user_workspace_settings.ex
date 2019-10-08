@@ -14,10 +14,7 @@ defmodule Dailyploy.Schema.UserWorkspaceSettings do
 
     def changeset(user_workspace_settings, attrs) do
         user_workspace_settings
-          |> cast(attrs , [:user_id, :workspace_id])
-          |> validate_required([:user_id, :workspace_id])
-          |> put_assoc(:user, attrs["user"])
-          |> put_assoc(:workspace, attrs["workspace"])
-          |> validate_required([:user, :workspace])
+          |> cast(attrs , [:workspace_id, :user_id])
+          |> validate_required([:workspace_id, :user_id])
     end
 end
