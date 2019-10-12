@@ -4,9 +4,12 @@ defmodule Dailyploy.Model.DailyStatusMailSettings do
     alias Dailyploy.Schema.UserWorkspaceSettings
     alias Dailyploy.Model.DailyStatusMailSettings, as: DailyStatusMailSettingsModel
     alias Dailyploy.Model.UserWorkspaceSettings, as: UserWorkspaceSettingsModel
+    import Ecto.Query
   
   
   def create_daily_status_mail_settings(attrs \\ %{}) do
+    require IEx
+    IEx.pry
     %DailyStatusMailSettings{}
     |> DailyStatusMailSettings.changeset(attrs)
     |> Repo.insert()
@@ -37,8 +40,8 @@ defmodule Dailyploy.Model.DailyStatusMailSettings do
   def stop_and_resume(user_params) do
     %{"user_workspace_settings_id" => user_workspace_settings_id, "is_active" => is_active} = user_params
     query = 
-      from user_workspace_settings_id in UserWorkspaceSettings,
-      where: user_workspace_settings_id.id == ^user_workspace_settings_id
+      from user_workspace_settings_ids in UserWorkspaceSettings,
+      where: user_workspace_settings_ids.id == ^user_workspace_settings_id
     # yaha se age karna he
      List.first(Repo.all(query))
   end  

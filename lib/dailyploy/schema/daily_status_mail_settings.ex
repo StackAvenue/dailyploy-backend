@@ -16,8 +16,7 @@ defmodule Dailyploy.Schema.DailyStatusMailSettings do
 
     def changeset(daily_status_mail_settings, attrs) do 
         daily_status_mail_settings
-        |> cast(attrs, [:is_active, :to_mails, :cc_mails, :bcc_mails, :email_text])
-        |> cast_assoc(:user_workspace_setting_id)
+        |> cast(attrs, [:is_active, :to_mails, :cc_mails, :bcc_mails, :email_text, :user_workspace_setting_id])
         |> validate_required([:is_active, :to_mails, :cc_mails, :bcc_mails, :email_text, :user_workspace_setting_id])    
         #|> put_assoc(:user_workspace_setting_id, with: &UserWorkspaceSettings.changeset/2 )
     end   

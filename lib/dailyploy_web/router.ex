@@ -24,7 +24,7 @@ defmodule DailyployWeb.Router do
       resources "/members", MemberController, only: [:index]
       resources "/tags", TagController, only: [:create, :update, :delete, :index, :show]
       resources "/workspace_settings", UserWorkspaceSettings, only: [:update] do
-        resources "/adminship_removal", AdminshipRemoval, only: [:update]
+        put "/adminship_removal", UserWorkspaceSettings, :adminship_removal
         resources "/daily_status_mail_settings", DailyStatusMailSettings, only: [:update]
       end
 

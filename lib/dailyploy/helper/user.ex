@@ -4,6 +4,7 @@ defmodule Dailyploy.Helper.User do
   alias Dailyploy.Schema.User
   alias Dailyploy.Schema.Company
   alias Dailyploy.Schema.UserWorkspace
+  alias Dailyploy.Schema.Role
   alias Dailyploy.Model.Role, as: RoleModel
   alias Dailyploy.Model.User, as: UserModel
   alias Dailyploy.Model.Invitation, as: InvitationModel
@@ -11,6 +12,7 @@ defmodule Dailyploy.Helper.User do
   alias Dailyploy.Model.UserWorkspace, as: UserWorkspaceModel
   alias Dailyploy.Model.UserWorkspaceSettings, as: UserWorkspaceSettingsModel
   alias Dailyploy.Helper.Invitation, as: InvitationHelper
+  
   
   @spec create_user_with_company(%{optional(:__struct__) => none, optional(atom | binary) => any}) ::
           any
@@ -82,10 +84,11 @@ defmodule Dailyploy.Helper.User do
   end
 
   def add_existing_or_non_existing_user_to_member(user_id,workspace_id,project_id) do
+    %Role{id: role_id} = RoleModel.get_role_by_name!("member")
     UserWorkspaceModel.create_user_workspace(%{
       workspace_id: workspace_id,
       user_id: user_id,
-      role_id: 2
+      role_id: role_id
     })
     UserProject.create_user_project(%{
       user_id: user_id,

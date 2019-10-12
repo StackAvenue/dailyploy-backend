@@ -8,8 +8,8 @@ defmodule DailyployWeb.DailyStatusMailSettings do
     plug Auth.Pipeline
 
     def update(conn, user_params) do
-        #DailyStatusMailSettingsModel.create(user_params)
-         DailyStatusMailSettingsModel.stop_and_resume(user_params)   
+        DailyStatusMailSettingsModel.create(user_params)
+         #DailyStatusMailSettingsModel.stop_and_resume(user_params)   
     end
     
    
