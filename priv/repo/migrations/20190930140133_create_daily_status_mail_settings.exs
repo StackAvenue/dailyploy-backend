@@ -12,5 +12,7 @@ defmodule Dailyploy.Repo.Migrations.CreateDailyStatusMailSettings do
 
       timestamps()
     end
+
+    create unique_index(:daily_status_mail_settings, [:user_workspace_setting_id])
   end
 end

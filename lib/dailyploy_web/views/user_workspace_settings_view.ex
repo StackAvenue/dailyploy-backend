@@ -7,4 +7,17 @@ defmodule DailyployWeb.UserWorkspaceSettingsView do
         %{workspace_id: workspace.user_id, workspace_role: workspace.role_id}
     end
     
+    def render("changeset_error.json", %{errors: errors}) do
+        %{errors: ErrorHelpers.changeset_error_to_map(errors)}
+    end
+
+    def render("index.json", params) do
+      %{
+          id: params.id,
+          user_workspace_setting_id: params.user_workspace_setting_id,
+          is_active: params.is_active
+       }
+    end
+
+
 end
