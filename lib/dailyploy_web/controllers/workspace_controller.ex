@@ -1,10 +1,15 @@
 defmodule DailyployWeb.WorkspaceController do
   use DailyployWeb, :controller
 
+  import Ecto.Query
+
   alias Dailyploy.Repo
   alias Dailyploy.Model.Workspace, as: WorkspaceModel
   alias Dailyploy.Model.Task, as: TaskModel
   alias Dailyploy.Model.User, as: UserModel
+
+  alias Dailyploy.Schema.Task
+  alias Dailyploy.Schema.Project
 
   plug Auth.Pipeline
   plug :put_view, DailyployWeb.UserView when action in [:user_tasks]
@@ -23,13 +28,19 @@ defmodule DailyployWeb.WorkspaceController do
   end
 
   def user_tasks(conn, %{"workspace_id" => workspace_id}) do
-    users = UserModel.list_users(workspace_id) |> Repo.preload([:tasks])
+    query =
+      from task in Task,
+      join: project in Project,
+      on: task.project_id == project.id,
+      where: project.workspace_id == ^workspace_id
+
+    users = UserModel.list_users(workspace_id) |> Repo.preload([tasks: query])
 
     render(conn, "user_tasks_index.json", users: users)
   end
 
   def project_tasks(conn, %{"workspace_id" => workspace_id}) do
-    tasks = TaskModel.list_workspace_tasks(workspace_id) |> Repo.preload([:user])
+    tasks = TaskModel.list_workspace_tasks(workspace_id) |> Repo.preload([:owner, :members])
     render(conn, "index.json", tasks: tasks)
   end
 

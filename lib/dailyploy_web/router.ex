@@ -13,7 +13,7 @@ defmodule DailyployWeb.Router do
     post "/sign_up", SessionController, :sign_up
     post "/sign_in", SessionController, :sign_in
   end
-  
+
   scope "/api/v1", DailyployWeb do
     pipe_through :jwt_authenticated
 
@@ -23,6 +23,7 @@ defmodule DailyployWeb.Router do
     resources "/workspaces", WorkspaceController, only: [:index] do
       resources "/members", MemberController, only: [:index]
       resources "/tags", TagController, only: [:create, :update, :delete, :index, :show]
+      resources "/reports", ReportController, only: [:index]
 
       resources "/projects", ProjectController do
         resources "/tasks", TaskController
