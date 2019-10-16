@@ -8,8 +8,6 @@ defmodule Dailyploy.Model.DailyStatusMailSettings do
   
   
   def create_daily_status_mail_settings(attrs \\ %{}) do
-    require IEx
-    IEx.pry
     %DailyStatusMailSettings{}
     |> DailyStatusMailSettings.changeset(attrs)
     |> Repo.insert()
@@ -33,7 +31,6 @@ defmodule Dailyploy.Model.DailyStatusMailSettings do
       params =  Map.put_new(params, :is_active, is_active)
       params =  Map.put_new(params, :email_text, email_text)
       params =  Map.put_new(params, :user_workspace_setting_id, id)
-      #something need to be done here
       DailyStatusMailSettingsModel.create_daily_status_mail_settings(params)
   end 
 

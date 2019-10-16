@@ -1,6 +1,7 @@
 defmodule Dailyploy.Schema.DailyStatusMailSettings do 
     use Ecto.Schema
     import Ecto.Changeset
+    
     alias Dailyploy.Schema.UserWorkspaceSettings
 
     schema "daily_status_mail_settings" do

@@ -12,4 +12,11 @@ def remove_from_adminship(user_workspace_attr) do
    |> Repo.update()  
 end   
 
+def add_for_adminship(user_workspace_attr) do
+  UserWorkspaceModel.get_user_workspace!(%{user_id: user_workspace_attr["user_id"], workspace_id: user_workspace_attr["workspace_id"]})
+   |> UserWorkspace.changeset(user_workspace_attr)
+   |> Repo.update()  
+end   
+
+
 end

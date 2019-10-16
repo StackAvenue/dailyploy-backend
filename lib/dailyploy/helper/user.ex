@@ -94,8 +94,8 @@ defmodule Dailyploy.Helper.User do
       user_id: user_id,
       project_id: project_id
     })
-    #ye kyu likha he dekhan padega params = %{user_id: user.id, workspace_id: workspace.id}
-    #ye kyu likha he dekhna padega UserWorkspaceSettingsModel.create_user_workspace_settings(params)
+    params = %{user_id: user_id, workspace_id: workspace_id} #user workspace settings creation
+    UserWorkspaceSettingsModel.create_user_workspace_settings(params) #user_workspace settings
   end
 
   defp add_user_workspace(user_attrs) do
