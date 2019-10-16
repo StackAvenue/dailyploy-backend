@@ -12,6 +12,17 @@ defmodule DailyployWeb.ProjectView do
     %{project: render_one(project, ProjectView, "project.json")}
   end
 
+  def render("show_project.json", %{project: project}) do
+    %{
+      id: project.id,
+      name: project.name,
+      start_date: project.start_date,
+      end_date: project.end_date,
+      description: project.description,
+      color_code: project.color_code,
+    }
+  end
+
   def render("project.json", %{project: project}) do
     %{
       id: project.id,
@@ -20,7 +31,7 @@ defmodule DailyployWeb.ProjectView do
       end_date: project.end_date,
       description: project.description,
       color_code: project.color_code,
-      members: UserView.render("index.json", %{users: project.members})
+      members: render_many(project.members, UserView, "user.json")
     }
   end
 
