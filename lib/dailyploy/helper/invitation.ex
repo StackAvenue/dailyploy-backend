@@ -6,23 +6,23 @@ defmodule Dailyploy.Helper.Invitation do
     alias Dailyploy.Model.Workspace, as: WorkspaceModel
 
     def create_invite(invite_attrs,invitation_details)  do
-        invite_attrs
-          |> get_dep_params
-          |> InvitationModel.create_invitation
-          |> get_created_invite(invitation_details)
-          |> send_invite_email
+      invite_attrs
+        |> get_dep_params
+        |> InvitationModel.create_invitation
+        |> get_created_invite(invitation_details)
+        |> send_invite_email
     end
 
     def create_confirmation(invite_attrs, invitation_details) do
-        invite_attrs
-          |> get_dep_params_for_already_registered
-          |> InvitationModel.create_invitation
-          |> get_created_invite(invitation_details)
-          |> send_confirmation_email
+      invite_attrs
+        |> get_dep_params_for_already_registered
+        |> InvitationModel.create_invitation
+        |> get_created_invite(invitation_details)
+        |> send_confirmation_email
     end
 
     def send_confirmation_email(invitation_details) do
-        {:ok, toEmail}  = Map.fetch(invitation_details, "email")
+      {:ok, toEmail}  = Map.fetch(invitation_details, "email")
         Email.build()
           |> Email.add_to(toEmail)
           |> Email.put_from("contact@stack-avenue.com")
@@ -32,26 +32,25 @@ defmodule Dailyploy.Helper.Invitation do
     end
 
     def send_invite_email(invitation_details) do
-        {:ok, toEmail} = Map.fetch(invitation_details, "email")
-        [user, _] = String.split(toEmail,"@")
-        Email.build()
-          |> Email.add_to(toEmail)
-          |> Email.put_from("contact@stack-avenue.com")
-          |> Email.put_subject("DailyPloy Invitation")
-          |> Email.put_text("Hi #{user},
-                             DailyPloy is the world's fastest growing Planning Platform and #{invitation_details["sender_name"]} would like you to also join the DailyPloy's StackAvenue #{invitation_details["workspace_name"]}'s workspace and invited you to contribute to #{invitation_details["project_name"]} project.
-                             So #{user}, whether you are trying to manage your tasks or you want to have a clear visibility of your team's task, check us out and experience the revolution.
-                             Click on the following link to proceed https://dailyploy.com/signup/#{invitation_details["token_id"]}/")
-          |> Mail.send()
+      {:ok, toEmail} = Map.fetch(invitation_details, "email")
+      [user, _] = String.split(toEmail,"@")
+      Email.build()
+        |> Email.add_to(toEmail)
+        |> Email.put_from("contact@stack-avenue.com")
+        |> Email.put_subject("DailyPloy Invitation")
+        |> Email.put_text("Hi #{user}, DailyPloy is the world's fastest growing Planning Platform and #{invitation_details["sender_name"]} would like you to also join the DailyPloy's StackAvenue #{invitation_details["workspace_name"]}'s workspace and invited you to contribute to #{invitation_details["project_name"]} project.
+                           So #{user}, whether you are trying to manage your tasks or you want to have a clear visibility of your team's task, check us out and experience the revolution.
+                           Click on the following link to proceed https://dailyploy.com/signup/#{invitation_details["token_id"]}/")
+        |> Mail.send()
     end
 
     def get_created_invite(attrs,invitation_details) do
         {:ok, invite} = attrs
         {:ok, email} = Map.fetch(invite, :email)
         {:ok, token} = Map.fetch(invite, :token)
-        invitation_details = Map.put_new(invitation_details,"token_id",token)
-        invitation_details = Map.put_new(invitation_details,"email",email)
         invitation_details
+          |> Map.put_new("token_id",token)
+          |> Map.put_new("email",email)
     end
 
     def get_dep_params(attrs) do

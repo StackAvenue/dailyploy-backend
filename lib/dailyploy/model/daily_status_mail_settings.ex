@@ -9,8 +9,8 @@ defmodule Dailyploy.Model.DailyStatusMailSettings do
   
   def create_daily_status_mail_settings(attrs \\ %{}) do
     %DailyStatusMailSettings{}
-    |> DailyStatusMailSettings.changeset(attrs)
-    |> Repo.insert()
+      |> DailyStatusMailSettings.changeset(attrs)
+      |> Repo.insert()
   end
 
   def update_daily_status_mail_settings(daily_status_mail_setting, attrs) do
