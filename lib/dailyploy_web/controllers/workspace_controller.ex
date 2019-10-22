@@ -27,14 +27,29 @@ defmodule DailyployWeb.WorkspaceController do
     render(conn, "index.json", workspaces: workspaces)
   end
 
-  def user_tasks(conn, %{"workspace_id" => workspace_id}) do
+  def user_tasks(conn, %{"workspace_id" => workspace_id, "frequency" => frequency, "start_date" => start_date}) do
+    {:ok, start_date} =
+      start_date
+        |> Date.from_iso8601
+
+    end_date =
+      case frequency do
+        "daily" ->
+          start_date
+        "weekly" ->
+          Date.add(start_date, 6)
+        "monthly" ->
+          days = Date.days_in_month(start_date)
+          Date.add(start_date, days - 1)
+      end
+
     query =
       from task in Task,
       join: project in Project,
       on: task.project_id == project.id,
-      where: project.workspace_id == ^workspace_id
+      where: project.workspace_id == ^workspace_id and fragment("?::date", task.start_datetime) >= ^start_date and fragment("?::date", task.start_datetime) <= ^end_date
 
-    users = UserModel.list_users(workspace_id) |> Repo.preload([tasks: query])
+    users = UserModel.list_users(workspace_id) |> Repo.preload([tasks: {query, project: [:members]}])
 
     render(conn, "user_tasks_index.json", users: users)
   end

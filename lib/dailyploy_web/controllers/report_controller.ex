@@ -7,13 +7,13 @@ defmodule DailyployWeb.ReportController do
   plug Auth.Pipeline
   plug :put_view, DailyployWeb.TaskView when action in [:index]
 
-  def index(conn, %{"workspace_id" => workspace_id, "user_id" => user_id, "report_type" => report_type, "start_date" => start_date}) do
+  def index(conn, %{"workspace_id" => workspace_id, "user_id" => user_id, "frequency" => frequency, "start_date" => start_date}) do
     {:ok, start_date} =
       start_date
         |> Date.from_iso8601
 
     end_date =
-      case report_type do
+      case frequency do
         "daily" ->
           start_date
         "weekly" ->
