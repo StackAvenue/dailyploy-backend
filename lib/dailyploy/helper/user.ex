@@ -4,13 +4,16 @@ defmodule Dailyploy.Helper.User do
   alias Dailyploy.Schema.User
   alias Dailyploy.Schema.Company
   alias Dailyploy.Schema.UserWorkspace
+  alias Dailyploy.Schema.Role
   alias Dailyploy.Model.Role, as: RoleModel
   alias Dailyploy.Model.User, as: UserModel
   alias Dailyploy.Model.Invitation, as: InvitationModel
   alias Dailyploy.Model.UserProject, as: UserProject
   alias Dailyploy.Model.UserWorkspace, as: UserWorkspaceModel
+  alias Dailyploy.Model.UserWorkspaceSettings, as: UserWorkspaceSettingsModel
   alias Dailyploy.Helper.Invitation, as: InvitationHelper
-
+  
+  
   @spec create_user_with_company(%{optional(:__struct__) => none, optional(atom | binary) => any}) ::
           any
   def create_user_with_company(user_attrs) do
@@ -56,6 +59,8 @@ defmodule Dailyploy.Helper.User do
 
   defp successful_user_creation_without_company(user) do
     workspace = List.first(user.workspaces)
+    params = %{user_id: user.id, workspace_id: workspace.id}
+    UserWorkspaceSettingsModel.create_user_workspace_settings(params)
     associate_role_to_user_workspace(user.id, workspace.id)
     {:ok, user}
   end
@@ -67,6 +72,8 @@ defmodule Dailyploy.Helper.User do
       user_id: user.id,
       role_id: role.id
     })
+    params = %{user_id: user.id, workspace_id: company_workspace.id}
+    UserWorkspaceSettingsModel.create_user_workspace_settings(params)
   end
 
   defp associate_role_to_user_workspace(user_id, workspace_id) do
@@ -77,15 +84,18 @@ defmodule Dailyploy.Helper.User do
   end
 
   def add_existing_or_non_existing_user_to_member(user_id,workspace_id,project_id) do
+    %Role{id: role_id} = RoleModel.get_role_by_name!("member")
     UserWorkspaceModel.create_user_workspace(%{
       workspace_id: workspace_id,
       user_id: user_id,
-      role_id: 2
+      role_id: role_id
     })
     UserProject.create_user_project(%{
       user_id: user_id,
       project_id: project_id
     })
+    params = %{user_id: user_id, workspace_id: workspace_id} #user workspace settings creation
+    UserWorkspaceSettingsModel.create_user_workspace_settings(params) #user_workspace settings
   end
 
   defp add_user_workspace(user_attrs) do
@@ -125,6 +135,7 @@ defmodule Dailyploy.Helper.User do
       {:ok, user} ->
         successful_user_creation_without_company(user)
         %User{id: id} = user
+        #ye bhi dekhna padega workspace = List.first(user.workspaces)
         add_existing_or_non_existing_user_to_member(id,workspace_id,project_id)
         invite_attrs = Map.put(invite_attrs,"email",email)
         invite_attrs = Map.put(invite_attrs,"status", "Pending")
