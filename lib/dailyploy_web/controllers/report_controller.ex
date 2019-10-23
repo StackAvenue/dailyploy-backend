@@ -5,7 +5,6 @@ defmodule DailyployWeb.ReportController do
   alias Dailyploy.Model.Task, as: TaskModel
 
   plug Auth.Pipeline
-  plug :put_view, DailyployWeb.TaskView when action in [:index]
 
   def index(conn, %{"workspace_id" => workspace_id, "user_id" => user_id, "frequency" => frequency, "start_date" => start_date}) do
     {:ok, start_date} =
@@ -23,8 +22,16 @@ defmodule DailyployWeb.ReportController do
           Date.add(start_date, days - 1)
       end
 
-    tasks = TaskModel.list_workspace_user_tasks(workspace_id, user_id, start_date, end_date) |> Repo.preload([project: [:members]])
+    reports =
+      workspace_id
+        |> TaskModel.list_workspace_user_tasks(user_id, start_date, end_date)
+        |> Repo.preload([project: [:members]])
+        |> Enum.group_by(fn task ->
+          task.start_datetime
+            |> DateTime.to_date
+            |> Date.to_iso8601
+        end)
 
-    render(conn, "index_with_project.json", tasks: tasks)
+    render(conn, "index.json", reports: reports)
   end
 end

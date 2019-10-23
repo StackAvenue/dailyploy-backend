@@ -25,6 +25,7 @@ defmodule DailyployWeb.MemberView do
       id: member.id,
       name: member.name,
       email: member.email,
+      role: member.role,
       projects: render_many(member.projects, ProjectView, "show_project.json")
     }
   end
