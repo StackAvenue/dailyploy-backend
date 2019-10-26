@@ -32,7 +32,7 @@ defmodule Dailyploy.Model.Invitation do
       query = 
         from invitation in Invitation,
         where: invitation.token == ^token
-        %Invitation{workspace_id: workspace_id, project_id: project_id, sender_id: sender_id} = List.first(Repo.all(query))
+        %Invitation{workspace_id: workspace_id, project_id: project_id} = List.first(Repo.all(query))
         token_details =  %{"workspace_id" => workspace_id, "project_id" => project_id}
         token_details
     end

@@ -4,6 +4,7 @@ defmodule Dailyploy.Model.Task do
   alias Dailyploy.Repo
   alias Dailyploy.Schema.Task
   alias Dailyploy.Schema.Project
+  alias Dailyploy.Schema.UserWorkspaceSettings
   alias Dailyploy.Schema.User
 
   def list_tasks(project_id) do
@@ -48,6 +49,17 @@ defmodule Dailyploy.Model.Task do
       |> Repo.get(user_id)
       |> Repo.preload([tasks: query])
       |> Map.fetch!(:tasks)
+  end
+
+  def get_details_of_task(user_workspace_setting_id, project_id) do
+    query = 
+      from( task in Task,
+      join: project in Project,
+      on: task.project_id == ^project_id,
+      join: userworkspacesettings in UserWorkspaceSettings,
+      on: userworkspacesettings.id == ^user_workspace_setting_id and project.owner_id == userworkspacesettings.user_id
+      )
+    List.first(Repo.all(query))
   end
 
   def get_task!(id), do: Repo.get(Task, id)

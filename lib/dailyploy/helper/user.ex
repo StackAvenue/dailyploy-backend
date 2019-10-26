@@ -146,7 +146,7 @@ defmodule Dailyploy.Helper.User do
         invitation_details = Map.put(invitation_details,"sender_name",sender_name)
         case InvitationHelper.create_confirmation(invite_attrs, invitation_details) do
           :ok ->
-            invite_attrs = Map.replace!(invite_attrs,"status", "Active")
+            #invite_attrs = Map.replace!(invite_attrs,"status", "Active")
             {:ok, user}
           {:error, _} ->
             {:error, user}
