@@ -15,6 +15,7 @@ defmodule Dailyploy.Schema.User do
     field :password_hash, :string
     field :password, :string, virtual: true
     field :password_confirmation, :string, virtual: true
+    field :role, :string, virtual: true
 
     many_to_many :workspaces, Workspace, join_through: UserWorkspace
     many_to_many :projects, Project, join_through: UserProject
