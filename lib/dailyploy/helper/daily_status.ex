@@ -65,7 +65,7 @@ defmodule Dailyploy.Helper.DailyStatus do
               Thanks,
               Dailyploy Support") #task fetch karna he and name and workspace ka naam fetch karna he
           |> Mail.send() 
-      false ->  send_resp(conn, 401, "UNAUTHORIZED") 
+      false ->
     
     end    
   end

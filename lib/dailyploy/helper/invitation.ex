@@ -4,6 +4,7 @@ defmodule Dailyploy.Helper.Invitation do
     alias Dailyploy.Model.User, as: UserModel
     alias Dailyploy.Model.Project, as: ProjectModel
     alias Dailyploy.Model.Workspace, as: WorkspaceModel
+    alias Dailyploy.Model.Role, as: RoleModel
 
     def create_invite(invite_attrs,invitation_details)  do
       invite_attrs
@@ -57,21 +58,25 @@ defmodule Dailyploy.Helper.Invitation do
         sender = UserModel.get_user!(Map.get(attrs, "sender_id"))
         project = ProjectModel.get_project!(Map.get(attrs, "project_id"))
         workspace = WorkspaceModel.get_workspace!(Map.get(attrs, "workspace_id"))
+        role = RoleModel.get_role!(Map.get(attrs, "role_id"))
         token = Map.get(attrs,"token")
         Map.put(attrs, "sender", sender)
           |> Map.put("sender", sender)
           |> Map.put("project", project)
           |> Map.put("workspace", workspace)
           |> Map.put("token", token)
+          |> Map.put("role", role)
     end
 
     def get_dep_params_for_already_registered(attrs) do
         sender = UserModel.get_user!(Map.get(attrs, "sender_id"))
         project = ProjectModel.get_project!(Map.get(attrs, "project_id"))
         workspace = WorkspaceModel.get_workspace!(Map.get(attrs, "workspace_id"))
+        role = RoleModel.get_role!(Map.get(attrs, "role_id"))
         Map.put(attrs, "sender", sender)
           |> Map.put("sender", sender)
           |> Map.put("project", project)
           |> Map.put("workspace", workspace)
+          |> Map.put("role", role)
     end
   end

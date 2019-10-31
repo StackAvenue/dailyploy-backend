@@ -4,11 +4,15 @@ defmodule Dailyploy.Schema.Invitation do
     alias Dailyploy.Schema.Workspace
     alias Dailyploy.Schema.Project
     alias Dailyploy.Schema.User
+    alias Dailyploy.Schema.Role
 
     schema "invitations" do
         field :email, :string
         field :token, :string
+        field :name, :string
+        field :working_hours, :integer
         field :status, InviteStatusTypeEnum
+        belongs_to :role, Role
         belongs_to :workspace, Workspace
         belongs_to :project, Project        
         belongs_to :sender, User
@@ -18,7 +22,7 @@ defmodule Dailyploy.Schema.Invitation do
 
     def changeset(invitation, attrs) do 
         invitation
-        |> cast(attrs, [:email, :status, :token])
+        |> cast(attrs, [:email, :status, :token, :name, :working_hours])
         |> validate_required([:email, :status])
         |> validate_format(:email, ~r/^[A-Za-z0-9._%+-+']+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/)        
         |> genToken(attrs)
@@ -26,7 +30,8 @@ defmodule Dailyploy.Schema.Invitation do
         |> put_assoc(:workspace, attrs["workspace"])
         |> put_assoc(:project, attrs["project"])
         |> put_assoc(:sender,   attrs["sender"])
-        |> validate_required([:workspace, :project, :sender])
+        |> put_assoc(:role, attrs["role"])
+        |> validate_required([:workspace, :project, :sender, :role])
     end  
     
     defp genToken(changeset, attrs) do
