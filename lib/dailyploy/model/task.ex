@@ -38,12 +38,26 @@ defmodule Dailyploy.Model.Task do
       |> Map.fetch!(:tasks)
   end
 
-  def list_workspace_user_tasks(workspace_id, user_id, start_date, end_date) do
+  def list_workspace_user_tasks(workspace_id, user_id, start_date, end_date, project_ids) do
     query =
-      from task in Task,
-      join: project in Project,
-      on: task.project_id == project.id,
-      where: project.workspace_id == ^workspace_id and fragment("?::date", task.start_datetime) >= ^start_date and fragment("?::date", task.start_datetime) <= ^end_date
+      case length(project_ids) == 0 do
+        true ->
+          from task in Task,
+          join: project in Project,
+          on: task.project_id == project.id,
+          where: project.workspace_id == ^workspace_id and
+            fragment("?::date", task.start_datetime) >= ^start_date and
+            fragment("?::date", task.start_datetime) <= ^end_date
+
+        false ->
+          from task in Task,
+          join: project in Project,
+          on: task.project_id == project.id,
+          where: project.workspace_id == ^workspace_id and
+            task.project_id in ^project_ids and
+            fragment("?::date", task.start_datetime) >= ^start_date and
+            fragment("?::date", task.start_datetime) <= ^end_date
+    end
 
     User
       |> Repo.get(user_id)
