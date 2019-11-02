@@ -33,7 +33,8 @@ defmodule DailyployWeb.Router do
         resources "/tasks", TaskController
       end
     end
-
+    
+    get "/token_details/:token_id", TokenDetailsController, :index
     resources "/projects", ProjectController
     resources "/invitations", InvitationController
     get "/workspaces/:workspace_id/project_tasks", WorkspaceController, :project_tasks

@@ -4,7 +4,7 @@ defmodule Dailyploy.Repo.Migrations.CreateInvitations do
   def change do
     create table (:invitations) do 
       add :email, :string
-      add :status,  :integer
+      add :status, :integer
       add :token, :string
       add :name, :string
       add :working_hours, :integer
