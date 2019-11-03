@@ -83,7 +83,7 @@ defmodule Dailyploy.Helper.User do
     UserWorkspaceModel.update_user_workspace_role(user_workspace_changeset, role)
   end
 
-  def add_existing_or_non_existing_user_to_member(user_id,workspace_id,project_id) do
+  def add_existing_or_non_existing_user_to_member(user_id, workspace_id, project_id, working_hours) do
     %Role{id: role_id} = RoleModel.get_role_by_name!("member")
     UserWorkspaceModel.create_user_workspace(%{
       workspace_id: workspace_id,
@@ -94,7 +94,9 @@ defmodule Dailyploy.Helper.User do
       user_id: user_id,
       project_id: project_id
     })
-    params = %{user_id: user_id, workspace_id: workspace_id} #user workspace settings creation
+    params = %{user_id: user_id, workspace_id: workspace_id, working_hours: working_hours} #user workspace settings creation
+    require IEx
+    IEx.pry
     UserWorkspaceSettingsModel.create_user_workspace_settings(params) #user_workspace settings
   end
 
@@ -136,7 +138,7 @@ defmodule Dailyploy.Helper.User do
         successful_user_creation_without_company(user)
         %User{id: id} = user
         #ye bhi dekhna padega workspace = List.first(user.workspaces)
-        add_existing_or_non_existing_user_to_member(id,workspace_id,project_id)
+        add_existing_or_non_existing_user_to_member(id,workspace_id,project_id,working_hours)
         invite_attrs = Map.put(invite_attrs,"email",email)
         invite_attrs = Map.put(invite_attrs,"status", "Pending")
         invitation_details=  InvitationModel.pass_user_details(id, project_id, workspace_id)
