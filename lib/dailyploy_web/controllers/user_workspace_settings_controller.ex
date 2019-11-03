@@ -1,15 +1,15 @@
 defmodule DailyployWeb.UserWorkspaceSettingsController do
   use DailyployWeb, :controller
   import Plug.Conn
-  alias Dailyploy.Schema.Workspace
+  #alias Dailyploy.Schema.WorkspaceS
   alias Dailyploy.Schema.Role
-  alias Dailyploy.Schema.DailyStatusMailSettings
+  #alias Dailyploy.Schema.DailyStatusMailSettings
   alias Dailyploy.Schema.UserWorkspaceSettings
-  alias Dailyploy.Model.User, as: UserModel
-  alias Dailyploy.Model.Workspace, as: WorkspaceModel
+  #alias Dailyploy.Model.User, as: UserModel
+  #alias Dailyploy.Model.Workspace, as: WorkspaceModel
   alias Dailyploy.Model.UserWorkspaceSettings, as: UserWorkspaceSettingsModel  
   alias Dailyploy.Model.AdminshipRemoval, as: AdminshipRemovalModel
-  alias Dailyploy.Model.UserWorkspace, as: UserWorkspaceModel
+  #alias Dailyploy.Model.UserWorkspace, as: UserWorkspaceModel
   alias Dailyploy.Model.Role, as: RoleModel
   alias Dailyploy.Model.DailyStatusMailSettings, as: DailyStatusMailSettingsModel
 
@@ -48,7 +48,7 @@ defmodule DailyployWeb.UserWorkspaceSettingsController do
   def daily_status_mail_settings(conn, user_params) do
      case user_params["is_active"] do
       true -> 
-        %{"workspace_id" => workspace_id, "bcc_mails" => bcc_mails, "cc_mails" => cc_mails, "to_mails" => to_mails, "is_active" => is_active, "email_text" => email_text} = user_params  
+        %{"workspace_id" => workspace_id} = user_params  
         %UserWorkspaceSettings{ id: id } = UserWorkspaceSettingsModel.get_user_workspace_settings_id(workspace_id)
         params = 
          user_params

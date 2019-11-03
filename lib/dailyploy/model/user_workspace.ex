@@ -72,6 +72,14 @@ defmodule Dailyploy.Model.UserWorkspace do
     Enum.map(user_workspaces, fn user_workspace -> user_workspace.user end)
   end
 
+  def get_member_using_workspace_id!(workspace_id) do
+    query =
+      from member in UserWorkspace,
+      where: member.workspace_id == ^workspace_id
+
+    Repo.all(query)
+  end
+
   def create_user_workspace(attrs \\ %{}) do
     %UserWorkspace{}
     |> UserWorkspace.changeset(attrs)
