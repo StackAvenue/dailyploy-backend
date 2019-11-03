@@ -3,10 +3,10 @@ defmodule Dailyploy.Model.UserWorkspaceSettings do
   import Ecto.Query
   alias Dailyploy.Schema.Workspace
   alias Dailyploy.Schema.UserWorkspaceSettings
-  alias Dailyploy.Model.User, as: UserModel
+  #alias Dailyploy.Model.User, as: UserModel
   alias Dailyploy.Model.Workspace, as: WorkspaceModel
   alias Dailyploy.Model.UserWorkspace, as: UserWorkspaceModel 
-  alias Auth.Guardian
+  #alias Auth.Guardian
   
   def create_user_workspace_settings(attrs \\ %{}) do
     %UserWorkspaceSettings{}
@@ -15,7 +15,7 @@ defmodule Dailyploy.Model.UserWorkspaceSettings do
   end
 
 
-  def update(%{"id" => user_id, "user" => user, "workspace_id" => workspace_id} = workspace_params) do
+  def update(%{"user" => user, "workspace_id" => workspace_id} = workspace_params) do
     check_for_name_update(user, workspace_id)
     show_all_the_admins_in_current_workspace(workspace_id)
   end

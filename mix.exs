@@ -48,6 +48,7 @@ defmodule Dailyploy.MixProject do
       {:ecto_enum, "~> 1.3"},
       {:sendgrid, "~> 2.0"},
       {:calendar, "~> 0.17.5"},
+      {:quantum, "~> 2.3"},
       {:timex, "~> 3.5"}
     ]
   end

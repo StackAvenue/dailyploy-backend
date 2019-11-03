@@ -127,8 +127,8 @@ defmodule Dailyploy.Helper.User do
 
   defp create_invited_user(user_attrs) do
     %{"invitee_details" => %{"token_id" => token_id}} = user_attrs
-    %{"project_id" => project_id, "workspace_id" => workspace_id } = InvitationModel.fetch_token_details(token_id)
-    invite_attrs = %{"project_id" => project_id, "workspace_id" => workspace_id }
+    %{"name" => name, "working_hours" => working_hours, "role_id" => role_id, "project_id" => project_id, "workspace_id" => workspace_id } = InvitationModel.fetch_token_details(token_id) #changes are done here too
+    invite_attrs = %{"project_id" => project_id, "workspace_id" => workspace_id, "name" => name, "working_hours" => working_hours, "role_id" => role_id } #changes are done here need to be tested first
     %{"email" => email} = user_attrs
     user_attrs = add_user_workspace(user_attrs)
     case UserModel.create_user(user_attrs) do
@@ -146,7 +146,7 @@ defmodule Dailyploy.Helper.User do
         invitation_details = Map.put(invitation_details,"sender_name",sender_name)
         case InvitationHelper.create_confirmation(invite_attrs, invitation_details) do
           :ok ->
-            invite_attrs = Map.replace!(invite_attrs,"status", "Active")
+            #invite_attrs = Map.replace!(invite_attrs,"status", "Active")
             {:ok, user}
           {:error, _} ->
             {:error, user}

@@ -6,6 +6,9 @@ defmodule Dailyploy.Repo.Migrations.CreateInvitations do
       add :email, :string
       add :status,  :integer
       add :token, :string
+      add :name, :string
+      add :working_hours, :integer
+      add :role_id, references(:roles)
       add :workspace_id, references(:workspaces)
       add :project_id, references(:projects)
       add :assignee_id, references(:users)
