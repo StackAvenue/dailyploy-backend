@@ -1,22 +1,22 @@
-defmodule Dailyploy.Model.UserWorkspaceSettings do
+defmodule Dailyploy.Model.UserWorkspaceSetting do
   alias Dailyploy.Repo
   import Ecto.Query
   alias Dailyploy.Schema.Workspace
-  alias Dailyploy.Schema.UserWorkspaceSettings
+  alias Dailyploy.Schema.UserWorkspaceSetting
   #alias Dailyploy.Model.User, as: UserModel
   alias Dailyploy.Model.Workspace, as: WorkspaceModel
   alias Dailyploy.Model.UserWorkspace, as: UserWorkspaceModel 
   #alias Auth.Guardian
   
   def create_user_workspace_settings(attrs \\ %{}) do
-    %UserWorkspaceSettings{}
-      |> UserWorkspaceSettings.changeset(attrs)
+    %UserWorkspaceSetting{}
+      |> UserWorkspaceSetting.changeset(attrs)
       |> Repo.insert()
   end
 
   def update_user_workspace_settings(user_workspace_settings, attrs) do
     user_workspace_settings
-    |> UserWorkspaceSettings.changeset(attrs)
+    |> UserWorkspaceSetting.changeset(attrs)
     |> Repo.update()
   end
 
@@ -41,13 +41,19 @@ defmodule Dailyploy.Model.UserWorkspaceSettings do
       end
   end
 
+  def list_user_workspace_settings(workspace_id) do
+    from(user_workspace_setting in UserWorkspaceSetting,
+      where: user_workspace_setting.workspace_id == ^workspace_id)
+    |> Repo.all 
+  end
+
   defp show_all_the_admins_in_current_workspace(workspace_id) do
     UserWorkspaceModel.get_all_admins_using_workspace_id(workspace_id)  
   end
 
   def get_user_workspace_settings_id(workspace_id) do
     query = 
-      from user_workspace_settings in UserWorkspaceSettings,
+      from user_workspace_settings in UserWorkspaceSetting,
       where: user_workspace_settings.workspace_id == ^workspace_id
 
      List.first(Repo.all(query)) 
@@ -55,13 +61,13 @@ defmodule Dailyploy.Model.UserWorkspaceSettings do
 
   def get_user_workspace_settings!(%{user_id: user_id, workspace_id: workspace_id}) do
     query =
-      from user_workspace_settings in UserWorkspaceSettings,
+      from user_workspace_settings in UserWorkspaceSetting,
         where: user_workspace_settings.user_id == ^user_id and user_workspace_settings.workspace_id == ^workspace_id
 
     List.first(Repo.all(query))
   end
   
-  def delete_user_workspace_settings(%UserWorkspaceSettings{} = user_workspace_settings) do
+  def delete_user_workspace_settings(%UserWorkspaceSetting{} = user_workspace_settings) do
     Repo.delete(user_workspace_settings)
   end
 

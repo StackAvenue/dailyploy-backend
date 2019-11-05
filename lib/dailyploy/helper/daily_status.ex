@@ -4,13 +4,13 @@ defmodule Dailyploy.Helper.DailyStatus do
   alias Dailyploy.Schema.User
   alias Dailyploy.Schema.Task
   alias Dailyploy.Schema.Project
-  alias Dailyploy.Schema.DailyStatusMailSettings
+  alias Dailyploy.Schema.DailyStatusMailSetting
   alias Dailyploy.Schema.UserWorkspace
   alias Dailyploy.Model.Workspace, as: WorkspaceModel
   alias Dailyploy.Model.User, as: UserModel
   alias Dailyploy.Model.Project, as: ProjectModel
   alias Dailyploy.Model.Task, as: TaskModel
-  alias Dailyploy.Model.DailyStatusMailSettings, as: DailyStatusMailSettingsModel
+  alias Dailyploy.Model.DailyStatusMailSetting, as: DailyStatusMailSettingsModel
 
   
   def schedule_daily_status_mails() do
@@ -30,7 +30,7 @@ defmodule Dailyploy.Helper.DailyStatus do
   end
 
   defp project_and_task_selection(user_id, user_name, workspace_id, workspace_name, user_mail) do
-    [%DailyStatusMailSettings{ bcc_mails: bcc_mails, cc_mails: cc_mails, to_mails: to_mails, 
+    [%DailyStatusMailSetting{ bcc_mails: bcc_mails, cc_mails: cc_mails, to_mails: to_mails, 
       is_active: is_active, user_workspace_setting_id: user_workspace_setting_id}]
          = DailyStatusMailSettingsModel.daily_status_configuration(workspace_id, user_id)
     

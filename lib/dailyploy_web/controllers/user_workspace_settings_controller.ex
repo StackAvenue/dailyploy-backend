@@ -3,15 +3,15 @@ defmodule DailyployWeb.UserWorkspaceSettingsController do
   import Plug.Conn
   #alias Dailyploy.Schema.WorkspaceS
   alias Dailyploy.Schema.Role
-  #alias Dailyploy.Schema.DailyStatusMailSettings
-  alias Dailyploy.Schema.UserWorkspaceSettings
+  #alias Dailyploy.Schema.DailyStatusMailSetting
+  alias Dailyploy.Schema.UserWorkspaceSetting
   #alias Dailyploy.Model.User, as: UserModel
   #alias Dailyploy.Model.Workspace, as: WorkspaceModel
-  alias Dailyploy.Model.UserWorkspaceSettings, as: UserWorkspaceSettingsModel  
+  alias Dailyploy.Model.UserWorkspaceSetting, as: UserWorkspaceSettingsModel  
   alias Dailyploy.Model.AdminshipRemoval, as: AdminshipRemovalModel
   #alias Dailyploy.Model.UserWorkspace, as: UserWorkspaceModel
   alias Dailyploy.Model.Role, as: RoleModel
-  alias Dailyploy.Model.DailyStatusMailSettings, as: DailyStatusMailSettingsModel
+  alias Dailyploy.Model.DailyStatusMailSetting, as: DailyStatusMailSettingsModel
 
   plug Auth.Pipeline
 
@@ -49,7 +49,7 @@ defmodule DailyployWeb.UserWorkspaceSettingsController do
      case user_params["is_active"] do
       true -> 
         %{"workspace_id" => workspace_id} = user_params  
-        %UserWorkspaceSettings{ id: id } = UserWorkspaceSettingsModel.get_user_workspace_settings_id(workspace_id)
+        %UserWorkspaceSetting{ id: id } = UserWorkspaceSettingsModel.get_user_workspace_settings_id(workspace_id)
         params = 
          user_params
           |> Map.new(fn {key,value} -> {String.to_atom(key),value} end)

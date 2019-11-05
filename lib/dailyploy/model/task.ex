@@ -4,7 +4,7 @@ defmodule Dailyploy.Model.Task do
   alias Dailyploy.Repo
   alias Dailyploy.Schema.Task
   alias Dailyploy.Schema.Project
-  alias Dailyploy.Schema.UserWorkspaceSettings
+  alias Dailyploy.Schema.UserWorkspaceSetting
   alias Dailyploy.Schema.User
 
   def list_tasks(project_id) do
@@ -70,7 +70,7 @@ defmodule Dailyploy.Model.Task do
       from( task in Task,
       join: project in Project,
       on: task.project_id == ^project_id,
-      join: userworkspacesettings in UserWorkspaceSettings,
+      join: userworkspacesettings in UserWorkspaceSetting,
       on: userworkspacesettings.id == ^user_workspace_setting_id and project.owner_id == userworkspacesettings.user_id
       )
     List.first(Repo.all(query))
