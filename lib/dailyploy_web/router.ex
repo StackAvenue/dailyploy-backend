@@ -13,7 +13,11 @@ defmodule DailyployWeb.Router do
     post "/sign_up", SessionController, :sign_up
     post "/sign_in", SessionController, :sign_in
   end
-
+  
+  scope "/api/v1", DailyployWeb do
+   get "/token_details/:token_id", TokenDetailsController, :index
+  end
+  
   scope "/api/v1", DailyployWeb do
     pipe_through :jwt_authenticated
 
@@ -21,7 +25,7 @@ defmodule DailyployWeb.Router do
     resources "/users", UserController
 
     resources "/workspaces", WorkspaceController, only: [:index] do
-      resources "/members", MemberController, only: [:index]
+      resources "/members", MemberController, only: [:index , :update, :delete]
       resources "/tags", TagController, only: [:create, :update, :delete, :index, :show]
       resources "/workspace_settings", UserWorkspaceSettingsController, only: [:update] 
       post "/workspace_settings/adminship_removal", UserWorkspaceSettingsController, :remove_workspace_admin 
@@ -34,7 +38,6 @@ defmodule DailyployWeb.Router do
       end
     end
     
-    get "/token_details/:token_id", TokenDetailsController, :index
     resources "/projects", ProjectController
     resources "/invitations", InvitationController
     get "/workspaces/:workspace_id/project_tasks", WorkspaceController, :project_tasks

@@ -4,8 +4,6 @@ defmodule DailyployWeb.TokenDetailsController do
   
   alias Dailyploy.Model.Invitation, as: InvitationModel
 
-  plug Auth.Pipeline
-
   action_fallback DailyployWeb.FallbackController
   
   def index(conn, %{"token_id" => token_id} = attrs) do
