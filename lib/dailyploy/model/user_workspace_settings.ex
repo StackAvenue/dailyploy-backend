@@ -14,6 +14,11 @@ defmodule Dailyploy.Model.UserWorkspaceSettings do
       |> Repo.insert()
   end
 
+  def update_user_workspace_settings(user_workspace_settings, attrs) do
+    user_workspace_settings
+    |> UserWorkspaceSettings.changeset(attrs)
+    |> Repo.update()
+  end
 
   def update(%{"user" => user, "workspace_id" => workspace_id} = workspace_params) do
     check_for_name_update(user, workspace_id)
@@ -47,6 +52,17 @@ defmodule Dailyploy.Model.UserWorkspaceSettings do
 
      List.first(Repo.all(query)) 
   end
+
+  def get_user_workspace_settings!(%{user_id: user_id, workspace_id: workspace_id}) do
+    query =
+      from user_workspace_settings in UserWorkspaceSettings,
+        where: user_workspace_settings.user_id == ^user_id and user_workspace_settings.workspace_id == ^workspace_id
+
+    List.first(Repo.all(query))
+  end
   
+  def delete_user_workspace_settings(%UserWorkspaceSettings{} = user_workspace_settings) do
+    Repo.delete(user_workspace_settings)
+  end
 
 end
