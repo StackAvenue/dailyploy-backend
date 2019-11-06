@@ -22,11 +22,13 @@ defmodule DailyployWeb.MemberView do
 
   def render("member_with_projects.json", %{member: member}) do
     %{
-      id: member.id,
-      name: member.name,
-      email: member.email,
-      role: member.role,
-      projects: render_many(member.projects, ProjectView, "show_project.json")
+      id: member.member.id,
+      name: member.member.name,
+      email: member.member.email,
+      role: member.member.role,
+      created_at: member.member.inserted_at,
+      working_hours: member.user_workspace_setting.working_hours,
+      projects: render_many(member.member.projects, ProjectView, "show_project.json")
     }
   end
 

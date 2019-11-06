@@ -1,7 +1,7 @@
 defmodule DailyployWeb.MemberController do
   use DailyployWeb, :controller
   alias Dailyploy.Model.UserWorkspace, as: UserWorkspaceModel
-  alias Dailyploy.Model.UserWorkspaceSettings, as: UserWorkspaceSettingsModel
+  alias Dailyploy.Model.UserWorkspaceSetting, as: UserWorkspaceSettingsModel
 
   alias Dailyploy.Model.User, as: UserModel
   alias Dailyploy.Repo
@@ -12,8 +12,15 @@ defmodule DailyployWeb.MemberController do
 
   def index(conn, %{"workspace_id" => workspace_id}) do
     members = UserModel.list_users(workspace_id) |> Repo.preload([:projects])
+    #member_settings = UserWorkspaceSettingsModel.list_user_workspace_settings(workspace_id)
 
-    render(conn, "index_with_projects.json", members: members)
+    member_results = 
+      Enum.map(members, fn member -> 
+        user_workspace_setting = UserModel.list_user_workspace_setting(member.id, workspace_id)
+        %{member: member, user_workspace_setting: user_workspace_setting }
+      end)
+
+    render(conn, "index_with_projects.json", members: member_results)
   end
 
   def update(conn, %{"id" => user_id, "role_id" => role_id, "working_hours" => working_hours, "workspace_id" => workspace_id} = attrs) do

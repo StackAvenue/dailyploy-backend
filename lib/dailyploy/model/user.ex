@@ -4,6 +4,7 @@ defmodule Dailyploy.Model.User do
   alias Dailyploy.Schema.Role
   alias Dailyploy.Schema.UserWorkspace
   alias Dailyploy.Schema.Workspace
+  alias Dailyploy.Schema.UserWorkspaceSetting
   alias Auth.Guardian
   import Ecto.Query
   import Comeonin.Bcrypt, only: [checkpw: 2, dummy_checkpw: 0]
@@ -25,6 +26,14 @@ defmodule Dailyploy.Model.User do
       )
 
     Repo.all(query)
+  end
+
+  def list_user_workspace_setting(user_id, workspace_id) do
+    from(user_workspace_setting in UserWorkspaceSetting,
+      where: user_workspace_setting.user_id == ^user_id and user_workspace_setting.workspace_id == ^workspace_id       
+    ) 
+    |> Repo.all
+    |> List.first
   end
 
   def get_user!(id), do: Repo.get!(User, id)

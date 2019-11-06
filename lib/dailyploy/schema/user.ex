@@ -6,6 +6,7 @@ defmodule Dailyploy.Schema.User do
   alias Dailyploy.Schema.Task
   alias Dailyploy.Schema.Project
   alias Dailyploy.Schema.UserProject
+  alias Dailyploy.Schema.UserWorkspaceSetting
 
   import Comeonin.Bcrypt, only: [hashpwsalt: 1]
 
@@ -16,6 +17,8 @@ defmodule Dailyploy.Schema.User do
     field :password, :string, virtual: true
     field :password_confirmation, :string, virtual: true
     field :role, :string, virtual: true
+    #is_invited, :boolean, default: false
+    has_many :user_workspace_settings, UserWorkspaceSetting
 
     many_to_many :workspaces, Workspace, join_through: UserWorkspace
     many_to_many :projects, Project, join_through: UserProject
