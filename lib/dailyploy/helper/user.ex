@@ -10,7 +10,7 @@ defmodule Dailyploy.Helper.User do
   alias Dailyploy.Model.Invitation, as: InvitationModel
   alias Dailyploy.Model.UserProject, as: UserProject
   alias Dailyploy.Model.UserWorkspace, as: UserWorkspaceModel
-  alias Dailyploy.Model.UserWorkspaceSettings, as: UserWorkspaceSettingsModel
+  alias Dailyploy.Model.UserWorkspaceSetting, as: UserWorkspaceSettingsModel
   alias Dailyploy.Helper.Invitation, as: InvitationHelper
   
   
@@ -95,8 +95,6 @@ defmodule Dailyploy.Helper.User do
       project_id: project_id
     })
     params = %{user_id: user_id, workspace_id: workspace_id, working_hours: working_hours} #user workspace settings creation
-    require IEx
-    IEx.pry
     UserWorkspaceSettingsModel.create_user_workspace_settings(params) #user_workspace settings
   end
 

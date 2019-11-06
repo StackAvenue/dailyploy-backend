@@ -1,4 +1,4 @@
-defmodule Dailyploy.Schema.UserWorkspaceSettings do
+defmodule Dailyploy.Schema.UserWorkspaceSetting do
   use Ecto.Schema
   import Ecto.Changeset
 

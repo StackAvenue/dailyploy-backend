@@ -3,7 +3,7 @@ defmodule Dailyploy.Model.Project do
   alias Dailyploy.Schema.Project
   alias Dailyploy.Schema.User
   alias Dailyploy.Schema.UserProject
-  alias Dailyploy.Schema.UserWorkspaceSettings
+  alias Dailyploy.Schema.UserWorkspaceSetting
   import Ecto.Query
 
   def list_projects() do
@@ -20,7 +20,7 @@ defmodule Dailyploy.Model.Project do
   def get_details_of_project(user_workspace_setting_id) do
     query = 
       from( project in Project,
-      join: userworkspacesettings in UserWorkspaceSettings,
+      join: userworkspacesettings in UserWorkspaceSetting,
       on: userworkspacesettings.id == ^user_workspace_setting_id and userworkspacesettings.user_id == project.owner_id and userworkspacesettings.workspace_id == project.workspace_id
       )
     List.first(Repo.all(query))  
