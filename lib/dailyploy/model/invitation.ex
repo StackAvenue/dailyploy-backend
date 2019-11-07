@@ -75,6 +75,13 @@ defmodule Dailyploy.Model.Invitation do
       invitation_details
     end
 
+    def list_invited_users(workspace_id, project_id) do
+      from(invited_users in Invitation,
+        where: invited_users.workspace_id == ^workspace_id and invited_users.project_id == ^project_id and invited_users.status == ^0       
+      ) 
+      |> Repo.all
+    end
+
     def get_invitation!(id), do: Repo.get!(Invitation, id)
 
     def get_invitation!(id, preloads), do: Repo.get!(Invitation, id) |> Repo.preload(preloads)

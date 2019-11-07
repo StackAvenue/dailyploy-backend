@@ -2,6 +2,7 @@ defmodule DailyployWeb.MemberController do
   use DailyployWeb, :controller
   alias Dailyploy.Model.UserWorkspace, as: UserWorkspaceModel
   alias Dailyploy.Model.UserWorkspaceSetting, as: UserWorkspaceSettingsModel
+  alias Dailyploy.Model.Invitation, as: InvitationModel
 
   alias Dailyploy.Model.User, as: UserModel
   alias Dailyploy.Repo
