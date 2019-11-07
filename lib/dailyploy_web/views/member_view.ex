@@ -17,18 +17,30 @@ defmodule DailyployWeb.MemberView do
   end
 
   def render("member.json", %{member: member}) do
-    %{id: member.id, name: member.name, email: member.email}
+    user = member.user
+    role = member.role
+
+    %{
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: role.name
+    }
   end
 
   def render("member_with_projects.json", %{member: member}) do
+    user = member.member
+    user_workspace_setting = member.user_workspace_setting || %{}
+
     %{
-      id: member.member.id,
-      name: member.member.name,
-      email: member.member.email,
-      role: member.member.role,
-      created_at: member.member.inserted_at,
-      working_hours: member.user_workspace_setting.working_hours,
-      projects: render_many(member.member.projects, ProjectView, "show_project.json")
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      created_at: user.inserted_at,
+      working_hours: Map.get(user_workspace_setting, :working_hours),
+      is_invited: false,
+      projects: render_many(user.projects, ProjectView, "show_project.json")
     }
   end
 
