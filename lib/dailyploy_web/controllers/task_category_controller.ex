@@ -3,10 +3,6 @@ defmodule DailyployWeb.TaskCategoryController do
   import Plug.Conn
   alias Dailyploy.Schema.TaskCategory
   alias Dailyploy.Model.TaskCategory, as: TaskCategoryModel
-  
-  def index(conn, attrs) do
-    
-  end
 
   def create(conn, %{"name" => name} = attrs) do
     case TaskCategoryModel.query_already_existing_category(name) do
@@ -30,7 +26,4 @@ defmodule DailyployWeb.TaskCategoryController do
     render(conn, "show.json", task_category: task_category)
   end
   
-  def delete(conn, attrs) do
-    
-  end
 end

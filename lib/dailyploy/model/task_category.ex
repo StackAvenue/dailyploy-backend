@@ -20,5 +20,9 @@ defmodule Dailyploy.Model.TaskCategory do
 
     List.first(Repo.all(query))  
   end
+
+  def delete_task_category(task_category) do
+    Repo.delete(task_category)
+  end
   
 end
