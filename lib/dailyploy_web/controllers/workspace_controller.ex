@@ -51,6 +51,23 @@ defmodule DailyployWeb.WorkspaceController do
 
     users = UserModel.list_users(workspace_id) |> Repo.preload([tasks: {query, project: [:members]}])
 
+    users = Enum.map(users, fn user ->
+      date_formatted_tasks = user.tasks
+      |> Enum.reduce(%{}, fn task, acc ->
+        end_date = DateTime.to_date(task.end_datetime)
+
+        DateTime.to_date(task.start_datetime)
+          |> Date.range(end_date)
+          |> Enum.reduce(acc, fn date, date_acc ->
+            date_acc = Map.put_new(date_acc, Date.to_iso8601(date), [])
+            tasks = Map.get(date_acc, Date.to_iso8601(date)) ++ [task]
+            Map.put(date_acc, Date.to_iso8601(date), tasks)
+          end)
+      end)
+
+      Map.put(user, :tasks, date_formatted_tasks)
+    end)
+
     render(conn, "user_tasks_index.json", users: users)
   end
 

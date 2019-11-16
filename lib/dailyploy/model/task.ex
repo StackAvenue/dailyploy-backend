@@ -66,7 +66,7 @@ defmodule Dailyploy.Model.Task do
   end
 
   def get_details_of_task(user_workspace_setting_id, project_id) do
-    query = 
+    query =
       from( task in Task,
       join: project in Project,
       on: task.project_id == ^project_id,
