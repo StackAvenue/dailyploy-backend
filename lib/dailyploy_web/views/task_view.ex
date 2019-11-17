@@ -50,6 +50,13 @@ defmodule DailyployWeb.TaskView do
     }
   end
 
+  def render("date_formatted_user_tasks.json", %{task: {date, tasks}}) do
+    %{
+      date: date,
+      tasks: render_many(tasks, TaskView, "task_with_project.json")
+    }
+  end
+
 
   def render("changeset_error.json", %{errors: errors}) do
     %{errors: ErrorHelpers.changeset_error_to_map(errors)}
