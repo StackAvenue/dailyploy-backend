@@ -48,4 +48,10 @@ defmodule DailyployWeb.TaskController do
         |> render("changeset_error.json", %{errors: task.errors})
     end
   end
+
+  def show(conn, %{"id" => id}) do
+    task = TaskModel.get_task!(id) |> Repo.preload([:members, :owner])
+
+    render(conn, "task_with_user.json", task: task)
+  end
 end
