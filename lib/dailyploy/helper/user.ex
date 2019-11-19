@@ -70,7 +70,7 @@ defmodule Dailyploy.Helper.User do
     UserWorkspaceModel.create_user_workspace(%{
       workspace_id: company_workspace.id,
       user_id: user.id,
-      role_id: 2
+      role_id: role.id
     })
     params = %{user_id: user.id, workspace_id: company_workspace.id}
     UserWorkspaceSettingsModel.create_user_workspace_settings(params)
