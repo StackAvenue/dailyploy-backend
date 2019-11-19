@@ -11,7 +11,7 @@ use Mix.Config
 # before starting your production server.
 config :dailyploy, DailyployWeb.Endpoint,
   http: [port: {:system, "PORT"}],
-  url: [scheme: "https", host: "dailyploy.herokuapp.com", port: 443],
+  url: [scheme: "https", host: "dailyploy-backend.herokuapp.com", port: 443],
   force_ssl: [rewrite_on: [:x_forwarded_proto]],
   secret_key_base: System.get_env("SECRET_KEY_BASE")
 
