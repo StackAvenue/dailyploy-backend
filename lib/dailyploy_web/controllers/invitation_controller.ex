@@ -34,7 +34,7 @@ defmodule DailyployWeb.InvitationController do
               {:ok , %User{id: actual_user_id }} ->
                 invitation_details = InvitationModel.pass_user_details(actual_user_id, project_id, workspace_id)
                 invitation_details = Map.put(invitation_details,"sender_name",sender_name)
-                UserHelper.add_existing_or_non_existing_user_to_member(actual_user_id,workspace_id,project_id)
+                UserHelper.add_existing_or_non_existing_user_to_member(actual_user_id,workspace_id,project_id,8)
                 case InvitationHelper.create_confirmation(invite_attrs,invitation_details) do
                   :ok ->
                     conn
