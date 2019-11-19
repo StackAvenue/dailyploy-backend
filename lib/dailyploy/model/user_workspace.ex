@@ -37,6 +37,14 @@ defmodule Dailyploy.Model.UserWorkspace do
     List.first(Repo.all(query))
   end
 
+  def get_all_admins_using_workspace_id(workspace_id) do
+    query =
+      from member in UserWorkspace,
+      where: member.workspace_id == ^workspace_id and member.role_id == 1
+
+    Repo.all(query)
+  end
+
   def get_member_using_user_id(user_id) do
     query =
       from member in UserWorkspace,
@@ -64,6 +72,14 @@ defmodule Dailyploy.Model.UserWorkspace do
     Enum.map(user_workspaces, fn user_workspace -> user_workspace.user end)
   end
 
+  def get_member_using_workspace_id!(workspace_id) do
+    query =
+      from member in UserWorkspace,
+      where: member.workspace_id == ^workspace_id
+
+    Repo.all(query)
+  end
+
   def create_user_workspace(attrs \\ %{}) do
     %UserWorkspace{}
     |> UserWorkspace.changeset(attrs)
@@ -81,6 +97,12 @@ defmodule Dailyploy.Model.UserWorkspace do
     |> UserWorkspace.update_role_changeset(role)
     |> Repo.update()
   end
+
+  #def change_user_workspace_role(user_workspace, role) do
+  #  user_workspace
+  #  |> put_change(:role, role)
+  #  |> Repo.update()
+  #end
 
   def delete_user_workspace(%UserWorkspace{} = user_workspace) do
     Repo.delete(user_workspace)

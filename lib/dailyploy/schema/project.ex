@@ -6,6 +6,7 @@ defmodule Dailyploy.Schema.Project do
 
   alias Dailyploy.Repo
   alias Dailyploy.Schema.User
+  alias Dailyploy.Schema.Task
   alias Dailyploy.Schema.Workspace
   alias Dailyploy.Schema.UserProject
 
@@ -19,6 +20,7 @@ defmodule Dailyploy.Schema.Project do
     belongs_to :workspace, Workspace
     belongs_to :owner, User
     has_many :invitation, Invitation
+    has_many :tasks, Task
     many_to_many :members, User, join_through: UserProject
 
     timestamps()

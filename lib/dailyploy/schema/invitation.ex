@@ -4,11 +4,15 @@ defmodule Dailyploy.Schema.Invitation do
     alias Dailyploy.Schema.Workspace
     alias Dailyploy.Schema.Project
     alias Dailyploy.Schema.User
+    alias Dailyploy.Schema.Role
 
     schema "invitations" do
         field :email, :string
         field :token, :string
+        field :name, :string
+        field :working_hours, :integer
         field :status, InviteStatusTypeEnum
+        belongs_to :role, Role
         belongs_to :workspace, Workspace
         belongs_to :project, Project        
         belongs_to :sender, User
@@ -18,20 +22,22 @@ defmodule Dailyploy.Schema.Invitation do
 
     def changeset(invitation, attrs) do 
         invitation
-        |> cast(attrs, [:email, :status, :token])
+        |> cast(attrs, [:email, :status, :token, :name, :working_hours])
         |> validate_required([:email, :status])
         |> validate_format(:email, ~r/^[A-Za-z0-9._%+-+']+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/)        
-        |> genToken
+        |> genToken(attrs)
         |> unique_constraint(:email)
         |> put_assoc(:workspace, attrs["workspace"])
         |> put_assoc(:project, attrs["project"])
         |> put_assoc(:sender,   attrs["sender"])
-        |> validate_required([:workspace, :project, :sender])
+        |> put_assoc(:role, attrs["role"])
+        |> validate_required([:workspace, :project, :sender, :role])
     end  
     
-    defp genToken(changeset) do 
-        length = 32 
-        token =  :crypto.strong_rand_bytes(length) |> Base.encode64 |> binary_part(0, length)
+    defp genToken(changeset, attrs) do
+        %{"email" => email, "project" => %Project{name: project_name} , "workspace" => %Workspace{name: workspace_name}} = attrs
+        str = "#{email}#{project_name}#{workspace_name}"
+        token =  String.length(str)|> :crypto.strong_rand_bytes |> Base.encode32 |> binary_part(0, String.length(str)) # workspace id project_id email _id unique id
         put_change(changeset, :token, token)
     end   
 end   
