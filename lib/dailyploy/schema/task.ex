@@ -27,9 +27,6 @@ defmodule Dailyploy.Schema.Task do
     |> validate_required([:name, :start_datetime, :end_datetime, :project_id, :owner_id])
     |> assoc_constraint(:owner)
     |> assoc_constraint(:project)
-    |> unique_constraint(:task_name_project_uniqueness,
-      name: :unique_index_for_task_name_and_project_id_in_task
-    )
     |> put_task_members(attrs["member_ids"])
   end
 
@@ -37,9 +34,6 @@ defmodule Dailyploy.Schema.Task do
     task
     |> Repo.preload([:members])
     |> cast(attrs, [:name, :start_datetime, :end_datetime, :comments])
-    |> unique_constraint(:task_name_project_uniqueness,
-      name: :unique_index_for_task_name_and_project_id_in_task
-    )
     |> put_task_members(attrs["member_ids"])
   end
 
