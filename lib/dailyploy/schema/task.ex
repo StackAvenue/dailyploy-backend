@@ -15,7 +15,7 @@ defmodule Dailyploy.Schema.Task do
 
     belongs_to :owner, User
     belongs_to :project, Project
-    many_to_many :members, User, join_through: "user_tasks"
+    many_to_many :members, User, join_through: "user_tasks", on_replace: :delete
 
     timestamps()
   end
@@ -27,6 +27,16 @@ defmodule Dailyploy.Schema.Task do
     |> validate_required([:name, :start_datetime, :end_datetime, :project_id, :owner_id])
     |> assoc_constraint(:owner)
     |> assoc_constraint(:project)
+    |> unique_constraint(:task_name_project_uniqueness,
+      name: :unique_index_for_task_name_and_project_id_in_task
+    )
+    |> put_task_members(attrs["member_ids"])
+  end
+
+  def update_changeset(task, attrs) do
+    task
+    |> Repo.preload([:members])
+    |> cast(attrs, [:name, :start_datetime, :end_datetime, :comments])
     |> unique_constraint(:task_name_project_uniqueness,
       name: :unique_index_for_task_name_and_project_id_in_task
     )
