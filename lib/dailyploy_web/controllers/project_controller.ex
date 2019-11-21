@@ -8,7 +8,7 @@ defmodule DailyployWeb.ProjectController do
 
   plug Auth.Pipeline
   plug :load_workspace_by_user
-  plug :load_user_project_in_workspace when action in [:show, :update, :delete]
+  plug :load_user_project_in_workspace when action in [:show, :delete]
 
   @spec index(Plug.Conn.t(), any) :: Plug.Conn.t()
   def index(conn, %{"workspace_id" => workspace_id}) do
@@ -25,7 +25,6 @@ defmodule DailyployWeb.ProjectController do
       project_params
       |> Map.put("workspace_id", workspace_id)
       |> Map.put("owner_id", user.id)
-      |> Map.put("members", [user.id | project_params["members"]])
 
     case ProjectModel.create_project(project_params) do
       {:ok, %Project{} = project} ->
@@ -44,8 +43,8 @@ defmodule DailyployWeb.ProjectController do
   end
 
   @spec update(Plug.Conn.t(), map) :: Plug.Conn.t()
-  def update(conn, %{"project" => project_params}) do
-    project = ProjectModel.get_project!(conn.assigns.project.id, [:users, :workspace])
+  def update(conn, %{ "id" => id, "project" => project_params}) do
+    project = ProjectModel.get_project!(id)
 
     case ProjectModel.update_project(project, project_params) do
       {:ok, %Project{} = project} ->

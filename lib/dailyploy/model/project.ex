@@ -18,12 +18,12 @@ defmodule Dailyploy.Model.Project do
   end
 
   def get_details_of_project(user_workspace_setting_id) do
-    query = 
+    query =
       from( project in Project,
       join: userworkspacesettings in UserWorkspaceSetting,
       on: userworkspacesettings.id == ^user_workspace_setting_id and userworkspacesettings.user_id == project.owner_id and userworkspacesettings.workspace_id == project.workspace_id
       )
-    List.first(Repo.all(query))  
+    List.first(Repo.all(query))
   end
 
   def list_user_projects_in_workspace(%{workspace_id: workspace_id, user_id: user_id}) do
@@ -70,7 +70,7 @@ defmodule Dailyploy.Model.Project do
 
   def update_project(project, attrs) do
     project
-    |> Project.changeset(attrs)
+    |> Project.update_changeset(attrs)
     |> Repo.update()
   end
 

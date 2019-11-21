@@ -50,6 +50,19 @@ defmodule DailyployWeb.TaskView do
     }
   end
 
+  def render("task_with_user_and_project.json", %{task: task}) do
+    %{
+      id: task.id,
+      name: task.name,
+      start_datetime: task.start_datetime,
+      end_datetime: task.end_datetime,
+      comments: task.comments,
+      members: render_many(task.members, UserView, "user.json"),
+      owner: render_one(task.owner, UserView, "user.json"),
+      project: render_one(task.project, ProjectView, "project_for_listing.json")
+    }
+  end
+
   def render("date_formatted_user_tasks.json", %{task: {date, tasks}}) do
     %{
       date: date,

@@ -21,7 +21,7 @@ defmodule Dailyploy.Schema.Project do
     belongs_to :owner, User
     has_many :invitation, Invitation
     has_many :tasks, Task
-    many_to_many :members, User, join_through: UserProject
+    many_to_many :members, User, join_through: UserProject, on_replace: :delete
 
     timestamps()
   end
@@ -34,6 +34,17 @@ defmodule Dailyploy.Schema.Project do
     |> format_start_date(attrs)
     |> assoc_constraint(:owner)
     |> assoc_constraint(:workspace)
+    |> unique_constraint(:project_name_workspace_uniqueness,
+      name: :unique_index_for_project_name_and_workspace_id_in_project
+    )
+    |> put_project_members(attrs["members"])
+  end
+
+  def update_changeset(project, attrs) do
+    project
+    |> Repo.preload([:members])
+    |> cast(attrs, [:name, :start_date, :end_date, :description, :color_code])
+    |> format_start_date(attrs)
     |> unique_constraint(:project_name_workspace_uniqueness,
       name: :unique_index_for_project_name_and_workspace_id_in_project
     )
