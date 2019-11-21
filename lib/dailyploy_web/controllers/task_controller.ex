@@ -24,7 +24,6 @@ defmodule DailyployWeb.TaskController do
       task_params
       |> Map.put("project_id", project_id)
       |> Map.put("owner_id", user.id)
-      |> Map.put("member_ids", task_params["member_ids"])
 
     case TaskModel.create_task(task_params) do
       {:ok, %Task{} = task} ->
@@ -47,5 +46,11 @@ defmodule DailyployWeb.TaskController do
         |> put_status(422)
         |> render("changeset_error.json", %{errors: task.errors})
     end
+  end
+
+  def show(conn, %{"id" => id}) do
+    task = TaskModel.get_task!(id) |> Repo.preload([:members, :owner])
+
+    render(conn, "task_with_user.json", task: task)
   end
 end

@@ -86,7 +86,7 @@ defmodule Dailyploy.Model.Task do
 
   def update_task(task, attrs) do
     task
-    |> Task.changeset(attrs)
+    |> Task.update_changeset(attrs)
     |> Repo.update()
   end
 

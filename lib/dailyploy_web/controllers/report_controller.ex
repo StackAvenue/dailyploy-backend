@@ -7,7 +7,6 @@ defmodule DailyployWeb.ReportController do
   plug Auth.Pipeline
 
   def index(conn, %{"workspace_id" => workspace_id, "user_id" => user_id, "frequency" => frequency, "start_date" => start_date, "project_ids" => project_ids}) do
-
     project_ids =
       project_ids
         |> String.split(",")
@@ -33,7 +32,7 @@ defmodule DailyployWeb.ReportController do
     reports =
       workspace_id
         |> TaskModel.list_workspace_user_tasks(user_id, start_date, end_date, project_ids)
-        |> Repo.preload([project: [:members]])
+        |> Repo.preload([:owner, :members, project: [:owner, :members]])
         |> Enum.reduce(%{}, fn task, acc ->
           end_date = DateTime.to_date(task.end_datetime)
 

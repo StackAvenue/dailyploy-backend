@@ -10,7 +10,7 @@ defmodule DailyployWeb.ReportView do
   def render("report.json", %{report: {date, tasks}}) do
     %{
       date: date,
-      tasks: render_many(tasks, TaskView, "task_with_project.json")
+      tasks: render_many(tasks, TaskView, "task_with_user_and_project.json")
     }
   end
 end

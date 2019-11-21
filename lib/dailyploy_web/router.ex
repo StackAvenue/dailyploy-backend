@@ -40,7 +40,7 @@ defmodule DailyployWeb.Router do
       end
     end
 
-    resources "/projects", ProjectController
+    # resources "/projects", ProjectController
     resources "/invitations", InvitationController
     get "/workspaces/:workspace_id/project_tasks", WorkspaceController, :project_tasks
     get "/workspaces/:workspace_id/user_tasks", WorkspaceController, :user_tasks
