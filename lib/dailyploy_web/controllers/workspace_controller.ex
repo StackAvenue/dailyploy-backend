@@ -47,17 +47,22 @@ defmodule DailyployWeb.WorkspaceController do
       from task in Task,
       join: project in Project,
       on: task.project_id == project.id,
-      where: project.workspace_id == ^workspace_id and fragment("?::date", task.start_datetime) >= ^start_date and fragment("?::date", task.start_datetime) <= ^end_date
+      where: project.workspace_id == ^workspace_id and
+        fragment("?::date BETWEEN ? AND ?", task.start_datetime, ^start_date, ^end_date) or
+        fragment("?::date BETWEEN ? AND ?", task.end_datetime, ^start_date, ^end_date) or
+        fragment("?::date <= ? AND ?::date >= ?", task.start_datetime, ^start_date, task.end_datetime, ^end_date)
 
     users = UserModel.list_users(workspace_id) |> Repo.preload([tasks: {query, project: [:members]}])
 
     users = Enum.map(users, fn user ->
       date_formatted_tasks = user.tasks
       |> Enum.reduce(%{}, fn task, acc ->
-        end_date = DateTime.to_date(task.end_datetime)
 
-        DateTime.to_date(task.start_datetime)
-          |> Date.range(end_date)
+        range_end_date = smaller_date(DateTime.to_date(task.end_datetime), end_date)
+        range_start_date = greater_date(DateTime.to_date(task.start_datetime), start_date)
+
+        range_start_date
+          |> Date.range(range_end_date)
           |> Enum.reduce(acc, fn date, date_acc ->
             date_acc = Map.put_new(date_acc, Date.to_iso8601(date), [])
             tasks = Map.get(date_acc, Date.to_iso8601(date)) ++ [task]
@@ -76,4 +81,17 @@ defmodule DailyployWeb.WorkspaceController do
     render(conn, "index.json", tasks: tasks)
   end
 
+  defp greater_date(date1, date2) do
+    case Date.compare(date1, date2) do
+      :lt -> date2
+      _ -> date1
+    end
+  end
+
+  defp smaller_date(date1, date2) do
+    case Date.compare(date1, date2) do
+      :lt -> date1
+      _ -> date2
+    end
+  end
 end
