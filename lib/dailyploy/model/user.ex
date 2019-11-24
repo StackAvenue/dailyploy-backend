@@ -74,7 +74,7 @@ defmodule Dailyploy.Model.User do
   def get_by_email(email) when is_binary(email) do
     case Repo.get_by(User, email: email) do
       nil ->
-        dummy_checkpw()
+        Bcrypt.no_user_verify()
         {:error, "Email does not match"}
 
       user ->
@@ -83,7 +83,7 @@ defmodule Dailyploy.Model.User do
   end
 
   defp verify_password(password, %User{} = user) when is_binary(password) do
-    if checkpw(password, user.password_hash) do
+    if Bcrypt.verify_pass(password, user.password_hash) do
       {:ok, user}
     else
       {:error, :invalid_password}
