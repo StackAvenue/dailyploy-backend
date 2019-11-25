@@ -8,7 +8,7 @@ defmodule Dailyploy.Schema.User do
   alias Dailyploy.Schema.UserProject
   alias Dailyploy.Schema.UserWorkspaceSetting
 
-  import Comeonin.Bcrypt, only: [hashpwsalt: 1]
+  alias Bcrypt
 
   schema "users" do
     field :name, :string
@@ -54,7 +54,7 @@ defmodule Dailyploy.Schema.User do
   defp put_password_hash(changeset) do
     case changeset do
       %Ecto.Changeset{valid?: true, changes: %{password: pass}} ->
-        put_change(changeset, :password_hash, hashpwsalt(pass))
+        put_change(changeset, :password_hash, Bcrypt.hash_pwd_salt(pass))
 
       _ ->
         changeset
