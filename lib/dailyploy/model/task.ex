@@ -46,8 +46,9 @@ defmodule Dailyploy.Model.Task do
           join: project in Project,
           on: task.project_id == project.id,
           where: project.workspace_id == ^workspace_id and
-            fragment("?::date", task.start_datetime) >= ^start_date and
-            fragment("?::date", task.start_datetime) <= ^end_date
+            fragment("?::date BETWEEN ? AND ?", task.start_datetime, ^start_date, ^end_date) or
+            fragment("?::date BETWEEN ? AND ?", task.end_datetime, ^start_date, ^end_date) or
+            fragment("?::date <= ? AND ?::date >= ?", task.start_datetime, ^start_date, task.end_datetime, ^end_date)
 
         false ->
           from task in Task,
@@ -55,8 +56,9 @@ defmodule Dailyploy.Model.Task do
           on: task.project_id == project.id,
           where: project.workspace_id == ^workspace_id and
             task.project_id in ^project_ids and
-            fragment("?::date", task.start_datetime) >= ^start_date and
-            fragment("?::date", task.start_datetime) <= ^end_date
+            fragment("?::date BETWEEN ? AND ?", task.start_datetime, ^start_date, ^end_date) or
+            fragment("?::date BETWEEN ? AND ?", task.end_datetime, ^start_date, ^end_date) or
+            fragment("?::date <= ? AND ?::date >= ?", task.start_datetime, ^start_date, task.end_datetime, ^end_date)
     end
 
     User
