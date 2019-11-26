@@ -13,8 +13,7 @@ defmodule DailyployWeb.TaskCategoryView do
 
   def render("task_category.json", %{task_category: task_category}) do
     %{
-        name: task_category.name
-     }
+      name: task_category.name
+    }
   end
-
 end

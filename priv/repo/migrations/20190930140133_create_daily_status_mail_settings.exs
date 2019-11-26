@@ -8,7 +8,7 @@ defmodule Dailyploy.Repo.Migrations.CreateDailyStatusMailSettings do
       add :cc_mails, {:array, :string}
       add :bcc_mails, {:array, :string}
       add :email_text, :text
-      add :user_workspace_setting_id, references(:user_workspace_settings, [on_delete: :delete_all])
+      add :user_workspace_setting_id, references(:user_workspace_settings, on_delete: :delete_all)
 
       timestamps()
     end

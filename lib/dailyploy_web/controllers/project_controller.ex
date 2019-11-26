@@ -12,7 +12,8 @@ defmodule DailyployWeb.ProjectController do
 
   @spec index(Plug.Conn.t(), any) :: Plug.Conn.t()
   def index(conn, %{"workspace_id" => workspace_id}) do
-    projects = ProjectModel.list_projects_in_workspace(workspace_id) |> Repo.preload([:members, :owner])
+    projects =
+      ProjectModel.list_projects_in_workspace(workspace_id) |> Repo.preload([:members, :owner])
 
     render(conn, "index.json", projects: projects)
   end
@@ -29,6 +30,7 @@ defmodule DailyployWeb.ProjectController do
     case ProjectModel.create_project(project_params) do
       {:ok, %Project{} = project} ->
         render(conn, "show.json", project: project)
+
       {:error, project} ->
         conn
         |> put_status(422)
@@ -43,7 +45,7 @@ defmodule DailyployWeb.ProjectController do
   end
 
   @spec update(Plug.Conn.t(), map) :: Plug.Conn.t()
-  def update(conn, %{ "id" => id, "project" => project_params}) do
+  def update(conn, %{"id" => id, "project" => project_params}) do
     project = ProjectModel.get_project!(id)
 
     case ProjectModel.update_project(project, project_params) do
@@ -100,5 +102,4 @@ defmodule DailyployWeb.ProjectController do
         send_resp(conn, 404, "Resource Not Found")
     end
   end
-
 end

@@ -7,7 +7,7 @@ defmodule Dailyploy.Model.User do
   alias Dailyploy.Schema.UserWorkspaceSetting
   alias Auth.Guardian
   import Ecto.Query
-  import Comeonin.Bcrypt, only: [checkpw: 2, dummy_checkpw: 0]
+  import Comeonin.Bcrypt
 
   @spec list_users :: any
   def list_users() do
@@ -30,10 +30,12 @@ defmodule Dailyploy.Model.User do
 
   def list_user_workspace_setting(user_id, workspace_id) do
     from(user_workspace_setting in UserWorkspaceSetting,
-      where: user_workspace_setting.user_id == ^user_id and user_workspace_setting.workspace_id == ^workspace_id       
-    ) 
-    |> Repo.all
-    |> List.first
+      where:
+        user_workspace_setting.user_id == ^user_id and
+          user_workspace_setting.workspace_id == ^workspace_id
+    )
+    |> Repo.all()
+    |> List.first()
   end
 
   def get_user!(id), do: Repo.get!(User, id)
@@ -74,7 +76,7 @@ defmodule Dailyploy.Model.User do
   def get_by_email(email) when is_binary(email) do
     case Repo.get_by(User, email: email) do
       nil ->
-        dummy_checkpw()
+        Bcrypt.no_user_verify()
         {:error, "Email does not match"}
 
       user ->
@@ -83,7 +85,7 @@ defmodule Dailyploy.Model.User do
   end
 
   defp verify_password(password, %User{} = user) when is_binary(password) do
-    if checkpw(password, user.password_hash) do
+    if Bcrypt.verify_pass(password, user.password_hash) do
       {:ok, user}
     else
       {:error, :invalid_password}
@@ -91,12 +93,15 @@ defmodule Dailyploy.Model.User do
   end
 
   def get_current_workspace(user) do
-    query = from user_workspace in UserWorkspace,
-      join: workspace in Workspace,
-      on: user_workspace.workspace_id == workspace.id,
-      where: user_workspace.user_id == ^user.id and workspace.type == "individual"
+    query =
+      from user_workspace in UserWorkspace,
+        join: workspace in Workspace,
+        on: user_workspace.workspace_id == workspace.id,
+        where: user_workspace.user_id == ^user.id and workspace.type == "individual"
+
     user_workspaces = Repo.all(query) |> Repo.preload(:workspace)
-    user_workspace = List.first user_workspaces
+    user_workspace = List.first(user_workspaces)
+
     case user_workspace do
       nil -> nil
       _ -> user_workspace.workspace
@@ -105,6 +110,7 @@ defmodule Dailyploy.Model.User do
 
   def get_admin_user_query do
     admin_role = Repo.get_by(Role, name: "admin")
+
     from user in User,
       join: userWorkspace in UserWorkspace,
       where: userWorkspace.role_id == ^admin_role.id

@@ -15,8 +15,9 @@ defmodule Dailyploy.Repo.Migrations.CreateProjects do
     end
 
     create index(:projects, [:owner_id, :workspace_id])
+
     create unique_index(:projects, [:workspace_id, :name],
-      name: :unique_index_for_project_name_and_workspace_id_in_project
-    )
+             name: :unique_index_for_project_name_and_workspace_id_in_project
+           )
   end
 end

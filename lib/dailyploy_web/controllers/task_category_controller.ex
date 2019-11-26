@@ -6,18 +6,20 @@ defmodule DailyployWeb.TaskCategoryController do
 
   def create(conn, %{"name" => name} = attrs) do
     case TaskCategoryModel.query_already_existing_category(name) do
-      nil -> 
+      nil ->
         case TaskCategoryModel.create(attrs) do
-          {:ok, _} -> 
+          {:ok, _} ->
             conn
             |> json(%{"category_created" => true})
-          {:error, errors} -> 
+
+          {:error, errors} ->
             conn
-            |> render("changeset_error.json", %{errors: errors})  
+            |> render("changeset_error.json", %{errors: errors})
         end
-       _ -> 
-          conn
-          |> json(%{"category_created" => true}) 
+
+      _ ->
+        conn
+        |> json(%{"category_created" => true})
     end
   end
 
@@ -25,5 +27,4 @@ defmodule DailyployWeb.TaskCategoryController do
     task_category = TaskCategoryModel.list_all_categories()
     render(conn, "show.json", task_category: task_category)
   end
-  
 end

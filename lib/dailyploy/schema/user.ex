@@ -17,7 +17,7 @@ defmodule Dailyploy.Schema.User do
     field :password, :string, virtual: true
     field :password_confirmation, :string, virtual: true
     field :role, :string, virtual: true
-    #is_invited, :boolean, default: false
+    # is_invited, :boolean, default: false
     has_many :user_workspace_settings, UserWorkspaceSetting
 
     many_to_many :workspaces, Workspace, join_through: UserWorkspace
@@ -30,25 +30,25 @@ defmodule Dailyploy.Schema.User do
   @doc false
   def changeset(user, attrs) do
     user
-      |> cast(attrs, [:name, :email, :password, :password_confirmation])
-      |> validate_required([:name, :email, :password, :password_confirmation])
-      |> validate_format(:email, ~r/^[A-Za-z0-9._%+-+']+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/)
-      |> validate_length(:password, min: 8)
-      |> validate_confirmation(:password)
-      |> put_password_hash
-      |> unique_constraint(:email)
-      |> cast_assoc(:workspaces, with: &Workspace.changeset/2)
+    |> cast(attrs, [:name, :email, :password, :password_confirmation])
+    |> validate_required([:name, :email, :password, :password_confirmation])
+    |> validate_format(:email, ~r/^[A-Za-z0-9._%+-+']+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/)
+    |> validate_length(:password, min: 8)
+    |> validate_confirmation(:password)
+    |> put_password_hash
+    |> unique_constraint(:email)
+    |> cast_assoc(:workspaces, with: &Workspace.changeset/2)
   end
 
   def update_changeset(user, attrs) do
     user
-      |> cast(attrs, [:name, :email, :password, :password_confirmation])
-      |> validate_required([:name, :email, :password, :password_confirmation])
-      |> validate_format(:email, ~r/^[A-Za-z0-9._%+-+']+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/)
-      |> validate_length(:password, min: 8)
-      |> validate_confirmation(:password)
-      |> put_password_hash
-      |> unique_constraint(:email)
+    |> cast(attrs, [:name, :email, :password, :password_confirmation])
+    |> validate_required([:name, :email, :password, :password_confirmation])
+    |> validate_format(:email, ~r/^[A-Za-z0-9._%+-+']+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/)
+    |> validate_length(:password, min: 8)
+    |> validate_confirmation(:password)
+    |> put_password_hash
+    |> unique_constraint(:email)
   end
 
   defp put_password_hash(changeset) do

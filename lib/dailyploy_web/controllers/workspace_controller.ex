@@ -22,22 +22,30 @@ defmodule DailyployWeb.WorkspaceController do
 
     workspace_admin_query = UserModel.get_admin_user_query()
 
-    workspaces = WorkspaceModel.all_user_workspaces(user) |> Repo.preload([:company, users: workspace_admin_query])
+    workspaces =
+      WorkspaceModel.all_user_workspaces(user)
+      |> Repo.preload([:company, users: workspace_admin_query])
 
     render(conn, "index.json", workspaces: workspaces)
   end
 
-  def user_tasks(conn, %{"workspace_id" => workspace_id, "frequency" => frequency, "start_date" => start_date}) do
+  def user_tasks(conn, %{
+        "workspace_id" => workspace_id,
+        "frequency" => frequency,
+        "start_date" => start_date
+      }) do
     {:ok, start_date} =
       start_date
-        |> Date.from_iso8601
+      |> Date.from_iso8601()
 
     end_date =
       case frequency do
         "daily" ->
           start_date
+
         "weekly" ->
           Date.add(start_date, 6)
+
         "monthly" ->
           days = Date.days_in_month(start_date)
           Date.add(start_date, days - 1)
@@ -45,33 +53,42 @@ defmodule DailyployWeb.WorkspaceController do
 
     query =
       from task in Task,
-      join: project in Project,
-      on: task.project_id == project.id,
-      where: project.workspace_id == ^workspace_id and
-        fragment("?::date BETWEEN ? AND ?", task.start_datetime, ^start_date, ^end_date) or
-        fragment("?::date BETWEEN ? AND ?", task.end_datetime, ^start_date, ^end_date) or
-        fragment("?::date <= ? AND ?::date >= ?", task.start_datetime, ^start_date, task.end_datetime, ^end_date)
+        join: project in Project,
+        on: task.project_id == project.id,
+        where:
+          (project.workspace_id == ^workspace_id and
+             fragment("?::date BETWEEN ? AND ?", task.start_datetime, ^start_date, ^end_date)) or
+            fragment("?::date BETWEEN ? AND ?", task.end_datetime, ^start_date, ^end_date) or
+            fragment(
+              "?::date <= ? AND ?::date >= ?",
+              task.start_datetime,
+              ^start_date,
+              task.end_datetime,
+              ^end_date
+            )
 
-    users = UserModel.list_users(workspace_id) |> Repo.preload([tasks: {query, project: [:members]}])
+    users =
+      UserModel.list_users(workspace_id) |> Repo.preload(tasks: {query, project: [:members]})
 
-    users = Enum.map(users, fn user ->
-      date_formatted_tasks = user.tasks
-      |> Enum.reduce(%{}, fn task, acc ->
+    users =
+      Enum.map(users, fn user ->
+        date_formatted_tasks =
+          user.tasks
+          |> Enum.reduce(%{}, fn task, acc ->
+            range_end_date = smaller_date(DateTime.to_date(task.end_datetime), end_date)
+            range_start_date = greater_date(DateTime.to_date(task.start_datetime), start_date)
 
-        range_end_date = smaller_date(DateTime.to_date(task.end_datetime), end_date)
-        range_start_date = greater_date(DateTime.to_date(task.start_datetime), start_date)
-
-        range_start_date
-          |> Date.range(range_end_date)
-          |> Enum.reduce(acc, fn date, date_acc ->
-            date_acc = Map.put_new(date_acc, Date.to_iso8601(date), [])
-            tasks = Map.get(date_acc, Date.to_iso8601(date)) ++ [task]
-            Map.put(date_acc, Date.to_iso8601(date), tasks)
+            range_start_date
+            |> Date.range(range_end_date)
+            |> Enum.reduce(acc, fn date, date_acc ->
+              date_acc = Map.put_new(date_acc, Date.to_iso8601(date), [])
+              tasks = Map.get(date_acc, Date.to_iso8601(date)) ++ [task]
+              Map.put(date_acc, Date.to_iso8601(date), tasks)
+            end)
           end)
-      end)
 
-      Map.put(user, :tasks, date_formatted_tasks)
-    end)
+        Map.put(user, :tasks, date_formatted_tasks)
+      end)
 
     render(conn, "user_tasks_index.json", users: users)
   end

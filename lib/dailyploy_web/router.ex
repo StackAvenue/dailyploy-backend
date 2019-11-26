@@ -15,9 +15,9 @@ defmodule DailyployWeb.Router do
   end
 
   scope "/api/v1", DailyployWeb do
-   get "/token_details/:token_id", TokenDetailsController, :index
-   get "/roles", RoleController, :index
-   resources "/task_category", TaskCategoryController, only: [:create, :delete, :show]
+    get "/token_details/:token_id", TokenDetailsController, :index
+    get "/roles", RoleController, :index
+    resources "/task_category", TaskCategoryController, only: [:create, :delete, :show]
   end
 
   scope "/api/v1", DailyployWeb do
@@ -27,12 +27,20 @@ defmodule DailyployWeb.Router do
     resources "/users", UserController
 
     resources "/workspaces", WorkspaceController, only: [:index] do
-      resources "/members", MemberController, only: [:index , :show, :update, :delete]
+      resources "/members", MemberController, only: [:index, :show, :update, :delete]
       resources "/tags", TagController, only: [:create, :update, :delete, :index, :show]
       resources "/workspace_settings", UserWorkspaceSettingsController, only: [:update]
-      post "/workspace_settings/adminship_removal", UserWorkspaceSettingsController, :remove_workspace_admin
+
+      post "/workspace_settings/adminship_removal",
+           UserWorkspaceSettingsController,
+           :remove_workspace_admin
+
       post "/workspace_settings/add_admin", UserWorkspaceSettingsController, :add_workspace_admin
-      post "/workspace_settings/daily_status_mail_settings", UserWorkspaceSettingsController, :daily_status_mail_settings
+
+      post "/workspace_settings/daily_status_mail_settings",
+           UserWorkspaceSettingsController,
+           :daily_status_mail_settings
+
       resources "/reports", ReportController, only: [:index]
 
       resources "/projects", ProjectController do

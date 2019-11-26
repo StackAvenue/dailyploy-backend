@@ -11,7 +11,7 @@ defmodule Dailyploy.Repo.Migrations.CreateTags do
     end
 
     create unique_index(:tags, [:workspace_id, :name],
-      name: :unique_index_for_tag_name_and_workspace_in_tag
-    )
+             name: :unique_index_for_tag_name_and_workspace_in_tag
+           )
   end
 end

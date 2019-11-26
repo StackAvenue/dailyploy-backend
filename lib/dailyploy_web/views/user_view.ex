@@ -28,7 +28,12 @@ defmodule DailyployWeb.UserView do
   end
 
   def render("user_tasks.json", %{user: user}) do
-    %{id: user.id, name: user.name, email: user.email, date_formatted_tasks: render_many(user.tasks, TaskView, "date_formatted_user_tasks.json")}
+    %{
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      date_formatted_tasks: render_many(user.tasks, TaskView, "date_formatted_user_tasks.json")
+    }
   end
 
   def render("access_token.json", %{access_token: access_token}) do
