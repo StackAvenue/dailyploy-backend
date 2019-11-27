@@ -16,6 +16,8 @@ defmodule DailyployWeb.Router do
 
   scope "/api/v1", DailyployWeb do
    get "/token_details/:token_id", TokenDetailsController, :index
+   get "/roles", RoleController, :index
+   resources "/task_category", TaskCategoryController, only: [:create, :delete, :show]
   end
 
   scope "/api/v1", DailyployWeb do
