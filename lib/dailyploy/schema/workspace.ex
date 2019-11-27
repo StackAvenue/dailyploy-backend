@@ -26,5 +26,6 @@ defmodule Dailyploy.Schema.Workspace do
     workspace
     |> cast(attrs, [:name, :type, :company_id])
     |> validate_required([:name, :type])
+    |> unique_constraint(:name)
   end
 end
