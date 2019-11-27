@@ -7,6 +7,5 @@ defmodule Dailyploy.Repo.Migrations.CreateTaskCategories do
 
       timestamps()
     end
-
   end
 end

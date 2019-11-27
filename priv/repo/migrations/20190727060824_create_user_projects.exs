@@ -10,7 +10,7 @@ defmodule Dailyploy.Repo.Migrations.CreateUserProjects do
     end
 
     create unique_index(:user_projects, [:user_id, :project_id],
-      name: :unique_index_for_user_and_project_in_user_project
-    )
+             name: :unique_index_for_user_and_project_in_user_project
+           )
   end
 end

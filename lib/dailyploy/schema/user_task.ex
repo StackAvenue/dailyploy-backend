@@ -13,10 +13,10 @@ defmodule Dailyploy.Schema.UserTask do
 
   def changeset(user_task, attrs) do
     user_task
-      |> cast(attrs, [:user_id, :task_id])
-      |> validate_required([:user_id, :task_id])
-      |> unique_constraint(:user_task_uniqueness,
-        name: :unique_index_for_user_and_task_in_user_task
-      )
+    |> cast(attrs, [:user_id, :task_id])
+    |> validate_required([:user_id, :task_id])
+    |> unique_constraint(:user_task_uniqueness,
+      name: :unique_index_for_user_and_task_in_user_task
+    )
   end
 end

@@ -28,6 +28,7 @@ defmodule DailyployWeb.TaskController do
     case TaskModel.create_task(task_params) do
       {:ok, %Task{} = task} ->
         render(conn, "show.json", task: task |> Repo.preload([:owner]))
+
       {:error, task} ->
         conn
         |> put_status(422)
@@ -41,6 +42,7 @@ defmodule DailyployWeb.TaskController do
     case TaskModel.update_task(task, task_params) do
       {:ok, %Task{} = task} ->
         render(conn, "show.json", task: task |> Repo.preload([:owner]))
+
       {:error, task} ->
         conn
         |> put_status(422)

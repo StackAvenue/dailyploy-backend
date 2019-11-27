@@ -29,7 +29,15 @@ defmodule Dailyploy.Schema.Project do
   @doc false
   def changeset(project, attrs) do
     project
-    |> cast(attrs, [:name, :start_date, :end_date, :description, :color_code, :owner_id, :workspace_id])
+    |> cast(attrs, [
+      :name,
+      :start_date,
+      :end_date,
+      :description,
+      :color_code,
+      :owner_id,
+      :workspace_id
+    ])
     |> validate_required([:name, :start_date])
     |> format_start_date(attrs)
     |> assoc_constraint(:owner)
@@ -68,5 +76,4 @@ defmodule Dailyploy.Schema.Project do
 
     put_assoc(changeset, :members, Enum.map(members, &change/1))
   end
-
 end

@@ -70,7 +70,6 @@ defmodule DailyployWeb.TaskView do
     }
   end
 
-
   def render("changeset_error.json", %{errors: errors}) do
     %{errors: ErrorHelpers.changeset_error_to_map(errors)}
   end
