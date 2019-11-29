@@ -25,12 +25,12 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
-#config quantum
+# config quantum
 config :dailyploy, Dailyploy.Helper.Scheduler,
   jobs: [
     {"@daily", {Dailyploy.Helper.DailyStatus, :schedule_daily_status_mails, []}}
   ]
-  
+
 config :guardian, Auth.Guardian,
   issuer: "guardian",
   secret_key: "5iN7jguYnpqwt71+7R2kGMPNzdCJWWWknC+nrBXPyfWE8Jsw1lEWmTtZo1YisZ4A"

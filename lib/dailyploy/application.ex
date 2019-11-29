@@ -15,6 +15,7 @@ defmodule Dailyploy.Application do
       # Start the endpoint when the application starts
       DailyployWeb.Endpoint
     ]
+
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: Dailyploy.Supervisor]

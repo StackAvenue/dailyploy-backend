@@ -14,5 +14,4 @@ defmodule DailyployWeb.CompanyView do
       name: company.name
     }
   end
-
 end

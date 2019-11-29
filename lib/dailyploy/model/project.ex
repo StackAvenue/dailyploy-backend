@@ -11,18 +11,21 @@ defmodule Dailyploy.Model.Project do
   end
 
   def list_projects_in_workspace(workspace_id) do
-    query =
-      from project in Project, where: project.workspace_id == ^workspace_id
+    query = from project in Project, where: project.workspace_id == ^workspace_id
 
-    Repo.all query
+    Repo.all(query)
   end
 
   def get_details_of_project(user_workspace_setting_id) do
     query =
-      from( project in Project,
-      join: userworkspacesettings in UserWorkspaceSetting,
-      on: userworkspacesettings.id == ^user_workspace_setting_id and userworkspacesettings.user_id == project.owner_id and userworkspacesettings.workspace_id == project.workspace_id
+      from(project in Project,
+        join: userworkspacesettings in UserWorkspaceSetting,
+        on:
+          userworkspacesettings.id == ^user_workspace_setting_id and
+            userworkspacesettings.user_id == project.owner_id and
+            userworkspacesettings.workspace_id == project.workspace_id
       )
+
     List.first(Repo.all(query))
   end
 

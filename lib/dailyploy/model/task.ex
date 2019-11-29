@@ -18,24 +18,26 @@ defmodule Dailyploy.Model.Task do
   end
 
   def list_workspace_tasks(workspace_id) do
-    project_query = from(project in Project, where: project.workspace_id == ^workspace_id, select: project.id)
-    project_ids = Repo.all project_query
+    project_query =
+      from(project in Project, where: project.workspace_id == ^workspace_id, select: project.id)
+
+    project_ids = Repo.all(project_query)
 
     task_query = from(task in Task, where: task.project_id in ^project_ids)
-    Repo.all task_query
+    Repo.all(task_query)
   end
 
   def list_workspace_user_tasks(workspace_id, user_id) do
     query =
       from task in Task,
-      join: project in Project,
-      on: task.project_id == project.id,
-      where: project.workspace_id == ^workspace_id
+        join: project in Project,
+        on: task.project_id == project.id,
+        where: project.workspace_id == ^workspace_id
 
     User
-      |> Repo.get(user_id)
-      |> Repo.preload([tasks: query])
-      |> Map.fetch!(:tasks)
+    |> Repo.get(user_id)
+    |> Repo.preload(tasks: query)
+    |> Map.fetch!(:tasks)
   end
 
   def list_workspace_user_tasks(workspace_id, user_id, start_date, end_date, project_ids) do
@@ -43,38 +45,55 @@ defmodule Dailyploy.Model.Task do
       case length(project_ids) == 0 do
         true ->
           from task in Task,
-          join: project in Project,
-          on: task.project_id == project.id,
-          where: project.workspace_id == ^workspace_id and
-            fragment("?::date BETWEEN ? AND ?", task.start_datetime, ^start_date, ^end_date) or
-            fragment("?::date BETWEEN ? AND ?", task.end_datetime, ^start_date, ^end_date) or
-            fragment("?::date <= ? AND ?::date >= ?", task.start_datetime, ^start_date, task.end_datetime, ^end_date)
+            join: project in Project,
+            on: task.project_id == project.id,
+            where:
+              (project.workspace_id == ^workspace_id and
+                 fragment("?::date BETWEEN ? AND ?", task.start_datetime, ^start_date, ^end_date)) or
+                fragment("?::date BETWEEN ? AND ?", task.end_datetime, ^start_date, ^end_date) or
+                fragment(
+                  "?::date <= ? AND ?::date >= ?",
+                  task.start_datetime,
+                  ^start_date,
+                  task.end_datetime,
+                  ^end_date
+                )
 
         false ->
           from task in Task,
-          join: project in Project,
-          on: task.project_id == project.id,
-          where: project.workspace_id == ^workspace_id and
-            task.project_id in ^project_ids and
-            fragment("?::date BETWEEN ? AND ?", task.start_datetime, ^start_date, ^end_date) or
-            fragment("?::date BETWEEN ? AND ?", task.end_datetime, ^start_date, ^end_date) or
-            fragment("?::date <= ? AND ?::date >= ?", task.start_datetime, ^start_date, task.end_datetime, ^end_date)
-    end
+            join: project in Project,
+            on: task.project_id == project.id,
+            where:
+              (project.workspace_id == ^workspace_id and
+                 task.project_id in ^project_ids and
+                 fragment("?::date BETWEEN ? AND ?", task.start_datetime, ^start_date, ^end_date)) or
+                fragment("?::date BETWEEN ? AND ?", task.end_datetime, ^start_date, ^end_date) or
+                fragment(
+                  "?::date <= ? AND ?::date >= ?",
+                  task.start_datetime,
+                  ^start_date,
+                  task.end_datetime,
+                  ^end_date
+                )
+      end
 
     User
-      |> Repo.get(user_id)
-      |> Repo.preload([tasks: query])
-      |> Map.fetch!(:tasks)
+    |> Repo.get(user_id)
+    |> Repo.preload(tasks: query)
+    |> Map.fetch!(:tasks)
   end
 
   def get_details_of_task(user_workspace_setting_id, project_id) do
     query =
-      from( task in Task,
-      join: project in Project,
-      on: task.project_id == ^project_id,
-      join: userworkspacesettings in UserWorkspaceSetting,
-      on: userworkspacesettings.id == ^user_workspace_setting_id and project.owner_id == userworkspacesettings.user_id
+      from(task in Task,
+        join: project in Project,
+        on: task.project_id == ^project_id,
+        join: userworkspacesettings in UserWorkspaceSetting,
+        on:
+          userworkspacesettings.id == ^user_workspace_setting_id and
+            project.owner_id == userworkspacesettings.user_id
       )
+
     List.first(Repo.all(query))
   end
 

@@ -52,6 +52,7 @@ defmodule DailyployWeb.UserController do
 
   def update(conn, %{"id" => id, "user" => user_params}) do
     user = UserModel.get_user!(id)
+
     with {:ok, %User{} = user} <- UserModel.update_user(user, user_params) do
       render(conn, "show.json", user: user)
     end

@@ -3,8 +3,7 @@ defmodule DailyployWeb.UserSocket do
 
   ## Channels
   # channel "room:*", DailyployWeb.RoomChannel
-  transport :websocket, Phoenix.Transports.WebSocket,
-    timeout: 45_000
+  transport(:websocket, Phoenix.Transports.WebSocket, timeout: 45_000)
   # Socket params are passed from the client and can
   # be used to verify and authenticate a user. After
   # verification, you can put default assigns into

@@ -2,12 +2,14 @@ use Mix.Config
 
 # Configure your database
 config :dailyploy, Dailyploy.Repo,
+  adapter: Ecto.Adapters.Postgres,
   username: "postgres",
   password: "postgres",
   database: "dailyploy_dev",
   hostname: "localhost",
   show_sensitive_data_on_connection_error: true,
-  pool_size: 10
+  pool_size: 10,
+  ssl: true
 
 # For development, we disable any cache and enable
 # debugging and code reloading.
@@ -21,7 +23,6 @@ config :dailyploy, DailyployWeb.Endpoint,
   code_reloader: true,
   check_origin: false,
   watchers: []
-
 
 # config :dailyploy, DailyployWeb.EmailConfig,
 #   api_key: "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",

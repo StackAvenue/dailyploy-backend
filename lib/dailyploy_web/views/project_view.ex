@@ -19,7 +19,7 @@ defmodule DailyployWeb.ProjectView do
       start_date: project.start_date,
       end_date: project.end_date,
       description: project.description,
-      color_code: project.color_code,
+      color_code: project.color_code
     }
   end
 
