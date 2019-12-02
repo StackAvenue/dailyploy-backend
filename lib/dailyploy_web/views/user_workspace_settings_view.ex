@@ -4,7 +4,7 @@ defmodule DailyployWeb.UserWorkspaceSettingsView do
   alias DailyployWeb.ErrorHelpers
 
   def render("show.json", %{workspace: workspace}) do
-    %{workspace_id: workspace.user_id, workspace_role: workspace.role_id}
+    %{workspace_id: workspace.id, workspace_role: workspace.name}
   end
 
   def render("changeset_error.json", %{errors: errors}) do

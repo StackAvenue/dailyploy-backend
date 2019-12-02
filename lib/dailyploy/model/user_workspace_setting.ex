@@ -22,7 +22,7 @@ defmodule Dailyploy.Model.UserWorkspaceSetting do
 
   def update(%{"user" => user, "workspace_id" => workspace_id} = workspace_params) do
     check_for_name_update(user, workspace_id)
-    show_all_the_admins_in_current_workspace(workspace_id)
+    #show_all_the_admins_in_current_workspace(workspace_id)
   end
 
   defp check_for_name_update(user, workspace_id) do

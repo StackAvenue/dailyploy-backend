@@ -28,8 +28,6 @@ defmodule Dailyploy.Schema.DailyStatusMailSetting do
     |> validate_required([
       :is_active,
       :to_mails,
-      :cc_mails,
-      :bcc_mails,
       :email_text,
       :user_workspace_setting_id
     ])

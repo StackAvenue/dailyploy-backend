@@ -22,7 +22,8 @@ defmodule DailyployWeb.UserWorkspaceSettingsController do
 
     case UserWorkspaceSettingsModel.update(params) do
       :error -> send_resp(conn, 401, "UNAUTHORIZED")
-      workspace -> render(conn, "show.json", workspace: workspace)
+      workspace ->  
+        render(conn, "show.json", workspace: workspace)
     end
   end
 
