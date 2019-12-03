@@ -25,6 +25,9 @@ config :dailyploy, Dailyploy.Repo,
   pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
   ssl: true
 
+config :sendgrid,
+  api_key: System.get_env("SENDGRID_API_KEY")
+  
 # ## SSL Support
 #
 # To get SSL working, you will need to add the `https` key
