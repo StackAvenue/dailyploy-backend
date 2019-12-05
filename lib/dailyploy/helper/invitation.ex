@@ -50,7 +50,7 @@ defmodule Dailyploy.Helper.Invitation do
         invitation_details["sender_name"]
       } and been successfully added to a #{invitation_details["workspace_name"]}'s workspace inside #{
         invitation_details["project_name"]
-      } project.Kindly proceed to login to proceed https://dailyploy.com/login/#{
+      } project.Kindly proceed to login to proceed https://dailyploy-test.herokuapp.com/login/#{
         invitation_details["token_id"]
       }/"
     )
@@ -67,7 +67,7 @@ defmodule Dailyploy.Helper.Invitation do
     |> Email.put_text(
       "Hi #{invitation_details["user_name"]},you have been invited by #{
         invitation_details["sender_name"]
-      } and been successfully added to a #{invitation_details["workspace_name"]}'s workspace.Kindly proceed to login to proceed https://dailyploy.com/login/#{
+      } and been successfully added to a #{invitation_details["workspace_name"]}'s workspace.Kindly proceed to login to proceed https://dailyploy-test.herokuapp.com/login/#{
         invitation_details["token_id"]
       }/"
     )
@@ -89,7 +89,7 @@ defmodule Dailyploy.Helper.Invitation do
         invitation_details["workspace_name"]
       }'s workspace and invited you to contribute to #{invitation_details["project_name"]} project.
                            So #{user}, whether you are trying to manage your tasks or you want to have a clear visibility of your team's task, check us out and experience the revolution.
-                           Click on the following link to proceed https://dailyploy.com/signup/#{
+                           Click on the following link to proceed https://dailyploy-test.herokuapp.com/signup/#{
         invitation_details["token_id"]
       }/"
     )
@@ -111,7 +111,7 @@ defmodule Dailyploy.Helper.Invitation do
         invitation_details["workspace_name"]
       }'s workspace.
                            So #{user}, whether you are trying to manage your tasks or you want to have a clear visibility of your team's task, check us out and experience the revolution.
-                           Click on the following link to proceed https://dailyploy.com/signup/#{
+                           Click on the following link to proceed https://dailyploy-test.herokuapp.com/signup/#{
         invitation_details["token_id"]
       }/"
     )
