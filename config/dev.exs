@@ -9,6 +9,7 @@ config :dailyploy, Dailyploy.Repo,
   hostname: "ec2-23-23-182-18.compute-1.amazonaws.com",
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
+  ssl: true
 
 # For development, we disable any cache and enable
 # debugging and code reloading.
