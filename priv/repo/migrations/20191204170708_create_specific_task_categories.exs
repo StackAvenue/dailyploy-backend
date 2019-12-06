@@ -3,7 +3,7 @@ defmodule Dailyploy.Repo.Migrations.CreateSpecificTaskCategories do
 
   def change do
     create table(:specific_task_categories) do
-      add(:task_id, references(:tasks), on_delete: :delete_all), null: false)
+      add(:task_id, references(:tasks), on_delete: :delete_all, null: false)
       add(:task_category_id, references(:task_categories), null: false)
     end
 
