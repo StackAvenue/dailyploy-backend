@@ -3,7 +3,7 @@ use Mix.Config
 # Configure your database
 config :dailyploy, Dailyploy.Repo,
   adapter: Ecto.Adapters.Postgres,
-  username: "postgres",
+  username: "postgres1111",
   password: "postgres",
   database: "dailyploy_dev",
   hostname: "localhost",
