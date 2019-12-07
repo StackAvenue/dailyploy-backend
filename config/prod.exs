@@ -21,21 +21,8 @@ config :logger, level: :info
 # Configure your database
 config :dailyploy, Dailyploy.Repo,
   adapter: Ecto.Adapters.Postgres,
-  username: "ojmzdtgabqatvn",
-  password: "031c22a09d9862c8632e18e3cc014695712bfb34ee8f21050ecc4f7b815088a4",
-  database: "db5nnfvj8mgji",
-  hostname: "ec2-174-129-255-37.compute-1.amazonaws.com",
-  show_sensitive_data_on_connection_error: true,
-  pool_size: 10,
-  # adapter: Ecto.Adapters.Postgres,
-  # username: "postgres",
-  # password: "postgres",
-  # database: "dailyploy_dev",
-  # hostname: "localhost",
-  # show_sensitive_data_on_connection_error: true,
-  # pool_size: 10
-  # # url: System.get_env("DATABASE_URL"),
-  # pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
+  url: System.get_env("DATABASE_URL"),
+  pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
   ssl: false
 
 config :sendgrid,
