@@ -8,7 +8,7 @@ defmodule Dailyploy.Repo.Migrations.CreateSpecificTaskCategories do
     end
 
     create unique_index(:specific_task_categories, [:task_id, :task_category_id],
-                        name: :unique_index_for_task_and_category
-                 )
+             name: :unique_index_for_task_and_category
+           )
   end
 end

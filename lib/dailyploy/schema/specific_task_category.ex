@@ -7,7 +7,6 @@ defmodule Dailyploy.Schema.SpecificTaskCategory do
   alias Dailyploy.Schema.TaskCategory
 
   schema "specific_task_categories" do
-    
     timestamps()
   end
 end

@@ -64,8 +64,7 @@ defmodule Dailyploy.Model.Task do
             join: project in Project,
             on: task.project_id == project.id,
             where:
-              (project.workspace_id == ^workspace_id and
-                 task.project_id in ^project_ids and
+              (project.workspace_id == ^workspace_id and task.project_id in ^project_ids and
                  fragment("?::date BETWEEN ? AND ?", task.start_datetime, ^start_date, ^end_date)) or
                 fragment("?::date BETWEEN ? AND ?", task.end_datetime, ^start_date, ^end_date) or
                 fragment(
