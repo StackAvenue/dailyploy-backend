@@ -23,7 +23,10 @@ config :dailyploy, Dailyploy.Repo,
   adapter: Ecto.Adapters.Postgres,
   url: System.get_env("DATABASE_URL"),
   pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
-  ssl: true
+  ssl: false
+
+config :sendgrid,
+  api_key: System.get_env("SENDGRID_API_KEY")
 
 # ## SSL Support
 #
