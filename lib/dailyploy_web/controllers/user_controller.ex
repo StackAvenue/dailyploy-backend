@@ -52,11 +52,30 @@ defmodule DailyployWeb.UserController do
 
   def update(conn, %{"id" => id, "user" => user_params}) do
     user = UserModel.get_user!(id)
-
-    with {:ok, %User{} = user} <- UserModel.update_user(user, user_params) do
-      render(conn, "show.json", user: user)
-    end
-  end
+    case user_params["password"] do
+      nil->
+        with {:ok, %User{} = user} <- UserModel.update_user(user, user_params) do
+          render(conn, "show.json", user: user)
+        end
+      _ ->
+        case user_params["old_password"] do
+          nil ->
+            conn
+            |> put_status(400)
+            |> json(%{"old_password_missing" => true})
+          
+          _ ->
+            case UserModel.token_sign_in(user.email, user_params["old_password"]) do
+              {:ok, token, _claims} ->
+                with {:ok, %User{} = user} <- UserModel.update_user(user, user_params) do
+                  render(conn, "show.json", user: user)
+                end
+              _ ->
+                {:error, :unauthorized}
+            end
+          end
+        end
+      end
 
   def delete(conn, %{"id" => id}) do
     user = UserModel.get_user!(id)
