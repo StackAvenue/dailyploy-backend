@@ -17,14 +17,22 @@ defmodule Dailyploy.Schema.Task do
     belongs_to :owner, User
     belongs_to :project, Project
     many_to_many :members, User, join_through: "user_tasks", on_replace: :delete
-    belongs_to :category, TaskCategory 
+    belongs_to :category, TaskCategory
     timestamps()
   end
 
   @doc false
   def changeset(task, attrs) do
     task
-    |> cast(attrs, [:name, :start_datetime, :end_datetime, :comments, :project_id, :owner_id, :category_id])
+    |> cast(attrs, [
+      :name,
+      :start_datetime,
+      :end_datetime,
+      :comments,
+      :project_id,
+      :owner_id,
+      :category_id
+    ])
     |> validate_required([:name, :start_datetime, :end_datetime, :project_id, :owner_id])
     |> assoc_constraint(:owner)
     |> assoc_constraint(:project)

@@ -16,13 +16,13 @@ defmodule DailyployWeb.TaskCategoryController do
         |> put_status(200)
         |> render("task_category.json", %{task_category: task_category})
 
-        404 ->
-          conn
-          |> put_status(404)
-          |> json(%{"Resource Not Found" => true})
+      404 ->
+        conn
+        |> put_status(404)
+        |> json(%{"Resource Not Found" => true})
     end
   end
-  
+
   def create(conn, %{"name" => name} = attrs) do
     case TaskCategoryModel.query_already_existing_category(name) do
       nil ->
@@ -42,7 +42,7 @@ defmodule DailyployWeb.TaskCategoryController do
         |> json(%{"category_already_exist" => true})
     end
   end
-  
+
   def index(conn, attrs) do
     task_category = TaskCategoryModel.list_all_categories()
     render(conn, "index.json", task_category: task_category)
@@ -52,6 +52,7 @@ defmodule DailyployWeb.TaskCategoryController do
     case conn.status do
       nil ->
         %{assigns: %{task_category: task_category}} = conn
+
         case TaskCategoryModel.update(task_category, params) do
           {:ok, task_category} ->
             conn
@@ -75,6 +76,7 @@ defmodule DailyployWeb.TaskCategoryController do
     case conn.status do
       nil ->
         %{assigns: %{task_category: task_category}} = conn
+
         case TaskCategoryModel.delete(task_category) do
           {:ok, task_category} ->
             conn

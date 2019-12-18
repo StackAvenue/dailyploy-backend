@@ -44,12 +44,11 @@ defmodule Dailyploy.Model.Invitation do
       email: email
     } = List.first(Repo.all(query))
 
-    query = 
+    query =
       from workspace in Workspace,
-      where: workspace.id == ^workspace_id
+        where: workspace.id == ^workspace_id
 
     %Workspace{name: workspace_name} = List.first(Repo.all(query))
-
 
     token_details = %{
       "name" => name,

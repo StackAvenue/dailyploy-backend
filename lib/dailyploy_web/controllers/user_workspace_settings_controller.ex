@@ -21,8 +21,10 @@ defmodule DailyployWeb.UserWorkspaceSettingsController do
     {:ok, params} = Map.fetch(conn, :params)
 
     case UserWorkspaceSettingsModel.update(params) do
-      :error -> send_resp(conn, 401, "UNAUTHORIZED")
-      workspace ->  
+      :error ->
+        send_resp(conn, 401, "UNAUTHORIZED")
+
+      workspace ->
         render(conn, "show.json", workspace: workspace)
     end
   end
@@ -92,11 +94,15 @@ defmodule DailyployWeb.UserWorkspaceSettingsController do
     end
   end
 
- def update_daily_status_mail(conn, params) do
+  def update_daily_status_mail(conn, params) do
     case conn.status do
       nil ->
         %{assigns: %{daily_status_mail: daily_status_mail}} = conn
-        case DailyStatusMailSettingsModel.update_daily_status_mail_settings(daily_status_mail, params) do
+
+        case DailyStatusMailSettingsModel.update_daily_status_mail_settings(
+               daily_status_mail,
+               params
+             ) do
           {:ok, daily_status_mail} ->
             conn
             |> put_status(200)

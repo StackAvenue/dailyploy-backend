@@ -21,11 +21,13 @@ defmodule DailyployWeb.Router do
 
   scope "/api/v1", DailyployWeb do
     pipe_through :jwt_authenticated
-    resources "/task_category", TaskCategoryController, only: [:create, :delete, :index, :update, :show]
+
+    resources "/task_category", TaskCategoryController,
+      only: [:create, :delete, :index, :update, :show]
+
     get "/logged_in_user", UserController, :show
     resources "/users", UserController
-    
-    
+
     resources "/workspaces", WorkspaceController, only: [:index] do
       resources "/members", MemberController, only: [:index, :show, :update, :delete]
       resources "/tags", TagController, only: [:create, :update, :delete, :index, :show]
@@ -41,7 +43,9 @@ defmodule DailyployWeb.Router do
            UserWorkspaceSettingsController,
            :daily_status_mail_settings
 
-      put "/update_daily_status_mail/:id", UserWorkspaceSettingsController, :update_daily_status_mail     
+      put "/update_daily_status_mail/:id",
+          UserWorkspaceSettingsController,
+          :update_daily_status_mail
 
       resources "/reports", ReportController, only: [:index]
 
