@@ -53,4 +53,14 @@ defmodule Dailyploy.Model.DailyStatusMailSetting do
       "is_active" => is_active
     })
   end
+
+  def get(id) when is_integer(id) do
+    case Repo.get(DailyStatusMailSetting, id) do
+      nil ->
+        {:error, "not found"}
+
+      daily_status_mail ->
+        {:ok, daily_status_mail}
+    end
+  end
 end

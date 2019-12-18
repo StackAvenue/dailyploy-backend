@@ -41,17 +41,23 @@ defmodule Dailyploy.Model.Invitation do
       working_hours: working_hours,
       role_id: role_id,
       workspace_id: workspace_id,
-      project_id: project_id,
       email: email
     } = List.first(Repo.all(query))
+
+    query = 
+      from workspace in Workspace,
+      where: workspace.id == ^workspace_id
+
+    %Workspace{name: workspace_name} = List.first(Repo.all(query))
+
 
     token_details = %{
       "name" => name,
       "email" => email,
       "working_hours" => working_hours,
       "role_id" => role_id,
-      "project_id" => project_id,
-      "workspace_id" => workspace_id
+      "workspace_id" => workspace_id,
+      "workspace_name" => workspace_name
     }
 
     token_details

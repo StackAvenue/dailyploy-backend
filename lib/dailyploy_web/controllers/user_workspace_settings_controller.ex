@@ -14,7 +14,7 @@ defmodule DailyployWeb.UserWorkspaceSettingsController do
   alias Dailyploy.Model.DailyStatusMailSetting, as: DailyStatusMailSettingsModel
 
   plug Auth.Pipeline
-
+  plug :load_daily_status_mail when action in [:update_daily_status_mail, :show_daily_status_mail]
   action_fallback DailyployWeb.FallbackController
 
   def update(conn, _) do
@@ -89,6 +89,42 @@ defmodule DailyployWeb.UserWorkspaceSettingsController do
           {:error, _} -> send_resp(conn, 401, "UNAUTHORIZED")
           {:ok, params} -> render(conn, "index.json", params)
         end
+    end
+  end
+
+ def update_daily_status_mail(conn, params) do
+    case conn.status do
+      nil ->
+        %{assigns: %{daily_status_mail: daily_status_mail}} = conn
+        case DailyStatusMailSettingsModel.update_daily_status_mail_settings(daily_status_mail, params) do
+          {:ok, daily_status_mail} ->
+            conn
+            |> put_status(200)
+            |> render("daily_status_mail.json", %{daily_status_mail: daily_status_mail})
+
+          {:error, errors} ->
+            conn
+            |> put_status(400)
+            |> render("changeset_error.json", %{errors: errors})
+        end
+
+      404 ->
+        conn
+        |> put_status(404)
+        |> json(%{"Resource Not Found" => true})
+    end
+  end
+
+  defp load_daily_status_mail(%{params: %{"id" => daily_status_mail_id}} = conn, _params) do
+    {daily_status_mail_id, _} = Integer.parse(daily_status_mail_id)
+
+    case DailyStatusMailSettingsModel.get(daily_status_mail_id) do
+      {:ok, daily_status_mail} ->
+        assign(conn, :daily_status_mail, daily_status_mail)
+
+      {:error, _message} ->
+        conn
+        |> put_status(404)
     end
   end
 end

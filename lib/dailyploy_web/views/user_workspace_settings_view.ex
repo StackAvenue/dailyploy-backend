@@ -18,4 +18,13 @@ defmodule DailyployWeb.UserWorkspaceSettingsView do
       is_active: params.is_active
     }
   end
+
+  def render("daily_status_mail.json", %{daily_status_mail: daily_status_mail}) do
+    %{
+      email_description: daily_status_mail.email_text,
+      to_mails: daily_status_mail.to_mails,
+      daily_status_mail_id: daily_status_mail.id,
+      is_active: daily_status_mail.is_active
+    }
+  end
 end
