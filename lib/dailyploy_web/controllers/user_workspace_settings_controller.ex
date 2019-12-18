@@ -94,6 +94,23 @@ defmodule DailyployWeb.UserWorkspaceSettingsController do
     end
   end
 
+  def show_daily_status_mail(conn, %{"id" => id}) do
+    case conn.status do
+      nil ->
+        {id, _} = Integer.parse(id)
+        {:list, {:ok, daily_status_mail}} = {:list, DailyStatusMailSettingsModel.get(id)}
+
+        conn
+        |> put_status(200)
+        |> render("daily_status_mail.json", %{daily_status_mail: daily_status_mail})
+
+      404 ->
+        conn
+        |> put_status(404)
+        |> json(%{"Resource Not Found" => true})
+    end
+  end
+
   def update_daily_status_mail(conn, params) do
     case conn.status do
       nil ->
@@ -111,7 +128,7 @@ defmodule DailyployWeb.UserWorkspaceSettingsController do
           {:error, errors} ->
             conn
             |> put_status(400)
-            |> render("changeset_error.json", %{errors: errors})
+            |> render("changeset_error.json", %{errors: errors.errors})
         end
 
       404 ->

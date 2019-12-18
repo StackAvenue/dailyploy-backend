@@ -47,6 +47,10 @@ defmodule DailyployWeb.Router do
           UserWorkspaceSettingsController,
           :update_daily_status_mail
 
+      get "/show_daily_status_mail/:id",
+          UserWorkspaceSettingsController,
+          :show_daily_status_mail   
+
       resources "/reports", ReportController, only: [:index]
 
       resources "/projects", ProjectController do

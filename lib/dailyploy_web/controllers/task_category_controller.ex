@@ -35,7 +35,7 @@ defmodule DailyployWeb.TaskCategoryController do
           {:error, errors} ->
             conn
             |> put_status(400)
-            |> render("changeset_error.json", %{errors: errors})
+            |> render("changeset_error.json", %{errors: errors.errors})
         end
 
       _ ->
@@ -63,7 +63,7 @@ defmodule DailyployWeb.TaskCategoryController do
           {:error, errors} ->
             conn
             |> put_status(400)
-            |> render("changeset_error.json", %{errors: errors})
+            |> render("changeset_error.json", %{errors: errors.errors})
         end
 
       404 ->
@@ -87,7 +87,7 @@ defmodule DailyployWeb.TaskCategoryController do
           {:error, errors} ->
             conn
             |> put_status(400)
-            |> render("changeset_error.json", %{errors: errors})
+            |> render("changeset_error.json", %{errors: errors.errors})
         end
 
       404 ->
