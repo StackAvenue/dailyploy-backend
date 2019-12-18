@@ -34,6 +34,7 @@ defmodule DailyployWeb.TaskCategoryController do
 
           {:error, errors} ->
             conn
+            |> put_status(400)
             |> render("changeset_error.json", %{errors: errors})
         end
 
