@@ -109,10 +109,9 @@ defmodule Dailyploy.Helper.User do
         user_id,
         workspace_id,
         project_id,
-        working_hours
+        working_hours,
+        role_id
       ) do
-    %Role{id: role_id} = RoleModel.get_role_by_name!("member")
-
     UserWorkspaceModel.create_user_workspace(%{
       workspace_id: workspace_id,
       user_id: user_id,
@@ -130,9 +129,7 @@ defmodule Dailyploy.Helper.User do
     UserWorkspaceSettingsModel.create_user_workspace_settings(params)
   end
 
-  def add_existing_or_non_existing_user_to_member(user_id, workspace_id, working_hours) do
-    %Role{id: role_id} = RoleModel.get_role_by_name!("member")
-
+  def add_existing_or_non_existing_user_to_member_for_invite(user_id, workspace_id, working_hours, role_id) do
     UserWorkspaceModel.create_user_workspace(%{
       workspace_id: workspace_id,
       user_id: user_id,
@@ -193,19 +190,19 @@ defmodule Dailyploy.Helper.User do
     }
 
     %{"email" => email} = user_attrs
-    user_attrs = add_user_workspace(user_attrs)
+    # user_attrs = add_user_workspace(user_attrs)
 
     case UserModel.create_user(user_attrs) do
       {:ok, user} ->
-        successful_user_creation_without_company(user)
+        #successful_user_creation_without_company(user)
         invite_attrs = Map.put(invite_attrs, "email", email)
         invite_attrs = Map.put(invite_attrs, "status", "Pending")
         # %UserWorkspace{id: id} = UserWorkspaceModel.get_member_using_workspace_id(workspace_id)
         case project_id do
           nil ->
             %User{id: id} = user
-            add_existing_or_non_existing_user_to_member(id, workspace_id, working_hours)
-            invitation_details = InvitationModel.pass_user_details(id, workspace_id)
+           add_existing_or_non_existing_user_to_member_for_invite(id, workspace_id, working_hours, role_id)
+           invitation_details = InvitationModel.pass_user_details(id, workspace_id)
             %User{id: sender_id, name: sender_name} = UserModel.get_user!(id)
             invitation_details = Map.put(invitation_details, "sender_name", sender_name)
             invite_attrs = Map.put(invite_attrs, "sender_id", sender_id)
@@ -220,12 +217,12 @@ defmodule Dailyploy.Helper.User do
 
           _ ->
             %User{id: id} = user
-
             add_existing_or_non_existing_user_to_member(
               id,
               workspace_id,
               project_id,
-              working_hours
+              working_hours,
+              role_id
             )
 
             invitation_details = InvitationModel.pass_user_details(id, project_id, workspace_id)
