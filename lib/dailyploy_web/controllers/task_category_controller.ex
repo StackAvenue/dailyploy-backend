@@ -1,7 +1,7 @@
 defmodule DailyployWeb.TaskCategoryController do
   use DailyployWeb, :controller
   import Plug.Conn
-  alias Dailyploy.Schema.TaskCategory
+  # alias Dailyploy.Schema.TaskCategory
   alias Dailyploy.Model.TaskCategory, as: TaskCategoryModel
 
   plug :load_category when action in [:show, :update, :delete]
@@ -44,7 +44,7 @@ defmodule DailyployWeb.TaskCategoryController do
     end
   end
 
-  def index(conn, attrs) do
+  def index(conn, _attrs) do
     task_category = TaskCategoryModel.list_all_categories()
     render(conn, "index.json", task_category: task_category)
   end

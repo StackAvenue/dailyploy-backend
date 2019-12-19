@@ -36,7 +36,7 @@ defmodule DailyployWeb.TaskController do
     end
   end
 
-  def update(conn, %{"project_id" => project_id, "id" => id, "task" => task_params}) do
+  def update(conn, %{"id" => id, "task" => task_params}) do
     task = TaskModel.get_task!(id)
 
     case TaskModel.update_task(task, task_params) do

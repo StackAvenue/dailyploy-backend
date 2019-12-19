@@ -7,6 +7,12 @@ defmodule Dailyploy.Model.DailyStatusMailSetting do
   # alias Dailyploy.Model.UserWorkspaceSetting, as: UserWorkspaceSettingsModel
   import Ecto.Query
 
+  def list_daily_status_mail() do
+    DailyStatusMailSetting
+    |> Repo.all()
+    |> Repo.preload(workspace: [:users, :projects])
+  end
+
   def daily_status_configuration(workspace_id, user_id) do
     query =
       from(daily_status_mail_setting in DailyStatusMailSetting,
@@ -55,10 +61,10 @@ defmodule Dailyploy.Model.DailyStatusMailSetting do
   end
 
   def get(id) when is_integer(id) do
-    query = 
+    query =
       from daily_status in DailyStatusMailSetting,
-      where: daily_status.workspace_id == ^id
-    
+        where: daily_status.workspace_id == ^id
+
     with {:ok, daily_status_mail} <- {:ok, List.first(Repo.all(query))} do
       {:ok, daily_status_mail}
     else

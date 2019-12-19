@@ -14,21 +14,23 @@ defmodule DailyployWeb.UserWorkspaceSettingsView do
   def render("index.json", %{daily_status: daily_status}) do
     bcc_mails = %{}
     cc_mails = %{}
-    {:ok, bcc_mails} = 
-    with false <- is_nil(daily_status.bcc_mails) do
-      {:ok, Map.put(bcc_mails, :bcc_mails, daily_status.bcc_mails)}
-    else
-      true ->
-      {:ok, %{}}
-    end
 
-    {:ok, cc_mails} = 
-    with false <- is_nil(daily_status.cc_mails) do
-      {:ok, Map.put(cc_mails, :cc_mails, daily_status.cc_mails)}
-    else
-      true ->
-      {:ok, %{}}
-    end
+    {:ok, bcc_mails} =
+      with false <- is_nil(daily_status.bcc_mails) do
+        {:ok, Map.put(bcc_mails, :bcc_mails, daily_status.bcc_mails)}
+      else
+        true ->
+          {:ok, %{}}
+      end
+
+    {:ok, cc_mails} =
+      with false <- is_nil(daily_status.cc_mails) do
+        {:ok, Map.put(cc_mails, :cc_mails, daily_status.cc_mails)}
+      else
+        true ->
+          {:ok, %{}}
+      end
+
     %{
       to_mails: daily_status.to_mails,
       id: daily_status.id,
@@ -42,21 +44,23 @@ defmodule DailyployWeb.UserWorkspaceSettingsView do
   def render("index_for_show.json", %{daily_status_mail: daily_status_mail}) do
     bcc_mails = %{}
     cc_mails = %{}
-    {:ok, bcc_mails} = 
-    with false <- is_nil(daily_status_mail.bcc_mails) do
-      {:ok, Map.put(bcc_mails, :bcc_mails, daily_status_mail.bcc_mails)}
-    else
-      true ->
-      {:ok, %{}}
-    end
 
-    {:ok, cc_mails} = 
-    with false <- is_nil(daily_status_mail.cc_mails) do
-      {:ok, Map.put(cc_mails, :cc_mails, daily_status_mail.cc_mails)}
-    else
-      true ->
-      {:ok, %{}}
-    end
+    {:ok, bcc_mails} =
+      with false <- is_nil(daily_status_mail.bcc_mails) do
+        {:ok, Map.put(bcc_mails, :bcc_mails, daily_status_mail.bcc_mails)}
+      else
+        true ->
+          {:ok, %{}}
+      end
+
+    {:ok, cc_mails} =
+      with false <- is_nil(daily_status_mail.cc_mails) do
+        {:ok, Map.put(cc_mails, :cc_mails, daily_status_mail.cc_mails)}
+      else
+        true ->
+          {:ok, %{}}
+      end
+
     %{
       to_mails: daily_status_mail.to_mails,
       id: daily_status_mail.id,

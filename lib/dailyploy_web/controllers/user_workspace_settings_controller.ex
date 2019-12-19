@@ -13,7 +13,6 @@ defmodule DailyployWeb.UserWorkspaceSettingsController do
   alias Dailyploy.Model.Role, as: RoleModel
   alias Dailyploy.Model.DailyStatusMailSetting, as: DailyStatusMailSettingsModel
 
-  
   plug Auth.Pipeline
   plug :load_daily_status_mail when action in [:update_daily_status_mail, :show_daily_status_mail]
   plug :load_workspace when action in [:daily_status_mail_settings]
@@ -68,22 +67,26 @@ defmodule DailyployWeb.UserWorkspaceSettingsController do
     case conn.status do
       nil ->
         %{"workspace_id" => workspace_id} = user_params
-      params =
-        user_params
-        |> Map.new(fn {key, value} -> {String.to_atom(key), value} end)
-        |> Map.put_new(:workspace_id, user_params["workspace_id"])
-      case DailyStatusMailSettingsModel.create_daily_status_mail_settings(params) do
-       {:error, status} ->
-        conn
-        |> put_status(422)
-        |> render("changeset_error.json", %{errors: status.errors})
-        {:ok, daily_status} -> 
-          render(conn, "index.json", daily_status: daily_status)
-      end
+
+        params =
+          user_params
+          |> Map.new(fn {key, value} -> {String.to_atom(key), value} end)
+          |> Map.put_new(:workspace_id, user_params["workspace_id"])
+
+        case DailyStatusMailSettingsModel.create_daily_status_mail_settings(params) do
+          {:error, status} ->
+            conn
+            |> put_status(422)
+            |> render("changeset_error.json", %{errors: status.errors})
+
+          {:ok, daily_status} ->
+            render(conn, "index.json", daily_status: daily_status)
+        end
+
       404 ->
         conn
         |> put_status(404)
-        |> json(%{"workspace_exist" => false})  
+        |> json(%{"workspace_exist" => false})
     end
   end
 
@@ -91,6 +94,7 @@ defmodule DailyployWeb.UserWorkspaceSettingsController do
     case conn.status do
       nil ->
         %{assigns: %{daily_status_mail: daily_status_mail}} = conn
+
         conn
         |> put_status(200)
         |> render("index_for_show.json", daily_status_mail: daily_status_mail)
@@ -103,10 +107,10 @@ defmodule DailyployWeb.UserWorkspaceSettingsController do
   end
 
   def update_daily_status_mail(conn, params) do
-    
     case conn.status do
       nil ->
         %{assigns: %{daily_status_mail: daily_status_mail}} = conn
+
         case DailyStatusMailSettingsModel.update_daily_status_mail_settings(
                daily_status_mail,
                params
@@ -131,6 +135,7 @@ defmodule DailyployWeb.UserWorkspaceSettingsController do
 
   defp load_workspace(%{params: %{"workspace_id" => workspace_id}} = conn, _params) do
     {workspace_id, _} = Integer.parse(workspace_id)
+
     case WorkspaceModel.get(workspace_id) do
       {:ok, workspace} ->
         assign(conn, :workspace, workspace)
@@ -143,6 +148,7 @@ defmodule DailyployWeb.UserWorkspaceSettingsController do
 
   defp load_daily_status_mail(%{params: %{"workspace_id" => workspace_id}} = conn, _params) do
     {workspace_id, _} = Integer.parse(workspace_id)
+
     case DailyStatusMailSettingsModel.get(workspace_id) do
       {:ok, daily_status_mail} ->
         assign(conn, :daily_status_mail, daily_status_mail)

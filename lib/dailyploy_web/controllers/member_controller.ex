@@ -2,7 +2,7 @@ defmodule DailyployWeb.MemberController do
   use DailyployWeb, :controller
   alias Dailyploy.Model.UserWorkspace, as: UserWorkspaceModel
   alias Dailyploy.Model.UserWorkspaceSetting, as: UserWorkspaceSettingsModel
-  alias Dailyploy.Model.Invitation, as: InvitationModel
+  # alias Dailyploy.Model.Invitation, as: InvitationModel
 
   alias Dailyploy.Model.User, as: UserModel
   alias Dailyploy.Repo
@@ -81,7 +81,7 @@ defmodule DailyployWeb.MemberController do
     end
   end
 
-  def delete(conn, %{"id" => user_id, "workspace_id" => workspace_id} = attrs) do
+  def delete(conn, %{"id" => user_id, "workspace_id" => workspace_id}) do
     user_workspace =
       UserWorkspaceModel.get_user_workspace!(%{user_id: user_id, workspace_id: workspace_id})
 

@@ -73,7 +73,7 @@ defmodule DailyployWeb.UserController do
 
           _ ->
             case UserModel.token_sign_in(user.email, user_params["old_password"]) do
-              {:ok, token, _claims} ->
+              {:ok, _token, _claims} ->
                 with {:ok, %User{} = user} <- UserModel.update_user(user, user_params) do
                   render(conn, "show.json", user: user)
                 else

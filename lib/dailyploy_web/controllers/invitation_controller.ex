@@ -31,7 +31,13 @@ defmodule DailyployWeb.InvitationController do
 
         case check_for_new_or_already_registered_user(invitee_email) do
           {true, invited_user} ->
-            check_for_user_workspace(conn, invited_user, invite_attrs["workspace_id"], Guardian.Plug.current_resource(conn))
+            check_for_user_workspace(
+              conn,
+              invited_user,
+              invite_attrs["workspace_id"],
+              Guardian.Plug.current_resource(conn)
+            )
+
           true ->
             create_invitation_for_new_user(
               conn,
@@ -54,12 +60,25 @@ defmodule DailyployWeb.InvitationController do
       true ->
         %{params: %{"invitation" => invite_attrs}} = conn
         invite_attrs = Map.put(invite_attrs, "sender_id", current_user.id)
+
         case is_number(invite_attrs["project_id"]) do
           false ->
-            invitation_details = InvitationModel.pass_user_details(invited_user.id, invited_workspace_id)
+            invitation_details =
+              InvitationModel.pass_user_details(invited_user.id, invited_workspace_id)
+
             invitation_details = Map.put(invitation_details, "sender_name", current_user.name)
-            UserHelper.add_existing_or_non_existing_user_to_member_for_invite(invited_user.id,invited_workspace_id,invite_attrs["working_hours"], invite_attrs["role_id"])
-            case InvitationHelper.create_confirmation_without_project(invite_attrs, invitation_details) do
+
+            UserHelper.add_existing_or_non_existing_user_to_member_for_invite(
+              invited_user.id,
+              invited_workspace_id,
+              invite_attrs["working_hours"],
+              invite_attrs["role_id"]
+            )
+
+            case InvitationHelper.create_confirmation_without_project(
+                   invite_attrs,
+                   invitation_details
+                 ) do
               :ok ->
                 conn
                 |> put_status(:created)
@@ -69,11 +88,26 @@ defmodule DailyployWeb.InvitationController do
                 conn
                 |> put_status(422)
                 |> render("changeset_error.json", %{invitation: invitation.errors})
-             end
-          true -> 
-            invitation_details = InvitationModel.pass_user_details(invited_user.id, invite_attrs["project_id"], invited_workspace_id)
+            end
+
+          true ->
+            invitation_details =
+              InvitationModel.pass_user_details(
+                invited_user.id,
+                invite_attrs["project_id"],
+                invited_workspace_id
+              )
+
             invitation_details = Map.put(invitation_details, "sender_name", current_user.name)
-            UserHelper.add_existing_or_non_existing_user_to_member(invited_user.id,invited_workspace_id,invite_attrs["project_id"], invite_attrs["working_hours"], invite_attrs["role_id"])
+
+            UserHelper.add_existing_or_non_existing_user_to_member(
+              invited_user.id,
+              invited_workspace_id,
+              invite_attrs["project_id"],
+              invite_attrs["working_hours"],
+              invite_attrs["role_id"]
+            )
+
             case InvitationHelper.create_confirmation(invite_attrs, invitation_details) do
               :ok ->
                 conn
@@ -84,8 +118,8 @@ defmodule DailyployWeb.InvitationController do
                 conn
                 |> put_status(422)
                 |> render("changeset_error.json", %{invitation: invitation.errors})
-             end
-          end
+            end
+        end
     end
   end
 

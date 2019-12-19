@@ -1,8 +1,8 @@
 defmodule Dailyploy.Schema.DailyStatusMailSetting do
   use Ecto.Schema
   import Ecto.Changeset
-  
-  alias Dailyploy.Schema.Workspace 
+
+  alias Dailyploy.Schema.Workspace
 
   schema "daily_status_mail_settings" do
     field :is_active, :boolean, default: true
