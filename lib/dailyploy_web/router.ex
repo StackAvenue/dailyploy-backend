@@ -49,7 +49,7 @@ defmodule DailyployWeb.Router do
 
       get "/show_daily_status_mail/:id",
           UserWorkspaceSettingsController,
-          :show_daily_status_mail   
+          :show_daily_status_mail
 
       resources "/reports", ReportController, only: [:index]
 

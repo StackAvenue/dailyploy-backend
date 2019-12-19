@@ -37,7 +37,7 @@ defmodule DailyployWeb.TaskView do
       comments: task.comments,
       members: render_many(task.members, UserView, "user.json"),
       owner: render_one(task.owner, UserView, "user.json"),
-      category: render_one(task.category , TaskCategoryView, "task_category.json")
+      category: render_one(task.category, TaskCategoryView, "task_category.json")
     }
   end
 
@@ -61,7 +61,7 @@ defmodule DailyployWeb.TaskView do
       comments: task.comments,
       members: render_many(task.members, UserView, "user.json"),
       owner: render_one(task.owner, UserView, "user.json"),
-      category: render_one(task.category , TaskCategoryView, "task_category.json"),
+      category: render_one(task.category, TaskCategoryView, "task_category.json"),
       project: render_one(task.project, ProjectView, "project_for_listing.json")
     }
   end

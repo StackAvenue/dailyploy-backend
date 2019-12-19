@@ -12,24 +12,41 @@ defmodule Dailyploy.Model.Invitation do
     Repo.all(Invitation)
   end
 
-  def already_registered_users_and_workspace(invitee_email, workspace_id) do
-    case UserModel.get_by_email(invitee_email) do
-      {:ok, %User{id: user_id}} ->
-        query =
-          from user in UserWorkspace,
-            where:
-              user.workspace_id == ^workspace_id and user.user_id == ^user_id and
-                user.role_id == 2
-
-        case List.first(Repo.all(query)) do
-          nil -> false
-          _ -> true
-        end
-
-      {:error, _} ->
-        false
+  def check_invitee_user(email) do
+    case UserModel.get_by_email(email) do
+      {:ok, user} -> {true, user}
+      {:error, error} -> {false, error}
     end
   end
+
+  def check_for_user_current_workspace(current_user, invited_workspace_id) do
+    query =
+      from user_workspace in UserWorkspace,
+        where:
+          user_workspace.user_id == ^current_user.id and
+            user_workspace.workspace_id == ^invited_workspace_id
+
+    List.first(Repo.all(query))
+  end
+
+  # def already_registered_users_and_workspace(invitee_email, workspace_id, role_id) do
+  #   case UserModel.get_by_email(invitee_email) do
+  #     {:ok, %User{id: user_id}} ->
+  #       query =
+  #         from user in UserWorkspace,
+  #           where:
+  #             user.workspace_id == ^workspace_id and user.user_id == ^user_id and
+  #               user.role_id == ^role_id
+
+  #       case List.first(Repo.all(query)) do
+  #         nil -> false
+  #         _ -> true
+  #       end
+
+  #     {:error, _} ->
+  #       false
+  #   end
+  # end
 
   def fetch_token_details(token) do
     query =
@@ -60,7 +77,7 @@ defmodule Dailyploy.Model.Invitation do
       "workspace_name" => workspace_name,
       "project_id" => project_id
     }
-    
+
     token_details
   end
 
