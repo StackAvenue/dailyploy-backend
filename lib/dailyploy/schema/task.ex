@@ -42,7 +42,7 @@ defmodule Dailyploy.Schema.Task do
   def update_changeset(task, attrs) do
     task
     |> Repo.preload([:members])
-    |> cast(attrs, [:name, :start_datetime, :end_datetime, :comments, :project_id])
+    |> cast(attrs, [:name, :start_datetime, :end_datetime, :comments, :project_id, :category_id])
     |> assoc_constraint(:project)
     |> put_task_members(attrs["member_ids"])
   end

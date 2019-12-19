@@ -31,8 +31,7 @@ defmodule DailyployWeb.InvitationController do
 
         case check_for_new_or_already_registered_user(invitee_email) do
           {true, invited_user} ->
-            check_for_user_workspace(conn, invited_user, invite_attrs["workspace_id"])
-
+            check_for_user_workspace(conn, invited_user, invite_attrs["workspace_id"], Guardian.Plug.current_resource(conn))
           true ->
             create_invitation_for_new_user(
               conn,
@@ -43,7 +42,7 @@ defmodule DailyployWeb.InvitationController do
     end
   end
 
-  defp check_for_user_workspace(conn, invited_user, invited_workspace_id) do
+  defp check_for_user_workspace(conn, invited_user, invited_workspace_id, current_user) do
     case is_nil(
            InvitationModel.check_for_user_current_workspace(invited_user, invited_workspace_id)
          ) do
@@ -53,8 +52,39 @@ defmodule DailyployWeb.InvitationController do
 
       true ->
         %{params: %{"invitation" => invite_attrs}} = conn
-        require IEx
-        IEx.pry()
+        invite_attrs = Map.put(invite_attrs, "sender_id", current_user.id)
+        case is_number(invite_attrs["project_id"]) do
+          false ->
+            invitation_details = InvitationModel.pass_user_details(invited_user.id, invited_workspace_id)
+            invitation_details = Map.put(invitation_details, "sender_name", current_user.name)
+            UserHelper.add_existing_or_non_existing_user_to_member_for_invite(invited_user.id,invited_workspace_id,invite_attrs["working_hours"], invite_attrs["role_id"])
+            case InvitationHelper.create_confirmation_without_project(invite_attrs, invitation_details) do
+              :ok ->
+                conn
+                |> put_status(:created)
+                |> render("invite.json", %{isCreated: true})
+
+              {:error, invitation} ->
+                conn
+                |> put_status(422)
+                |> render("changeset_error.json", %{invitation: invitation.errors})
+             end
+          true -> 
+            invitation_details = InvitationModel.pass_user_details(invited_user.id, invite_attrs["project_id"], invited_workspace_id)
+            invitation_details = Map.put(invitation_details, "sender_name", current_user.name)
+            UserHelper.add_existing_or_non_existing_user_to_member(invited_user.id,invited_workspace_id,invite_attrs["project_id"], invite_attrs["working_hours"], invite_attrs["role_id"])
+            case InvitationHelper.create_confirmation(invite_attrs, invitation_details) do
+              :ok ->
+                conn
+                |> put_status(:created)
+                |> render("invite.json", %{isCreated: true})
+
+              {:error, invitation} ->
+                conn
+                |> put_status(422)
+                |> render("changeset_error.json", %{invitation: invitation.errors})
+             end
+          end
     end
   end
 
@@ -89,7 +119,7 @@ defmodule DailyployWeb.InvitationController do
         invitation_details = Map.put(invitation_details, "sender_name", current_user.name)
         invite_attrs = Map.put(invite_attrs, "sender_id", current_user.id)
 
-        case InvitationHelper.create_invite_without_project(invite_attrs, invitation_details) do
+        case InvitationHelper.create_invite(invite_attrs, invitation_details) do
           :ok ->
             conn
             |> put_status(:created)
@@ -109,157 +139,6 @@ defmodule DailyployWeb.InvitationController do
     else
       {false, error} -> true
     end
-  end
-
-  defp temp() do
-    # case invite_attrs["project_id"] do
-    #   nil ->
-    #     %User{id: sender_id, email: user_email, name: sender_name} =
-    #       Guardian.Plug.current_resource(conn)
-
-    #     invite_attrs = Map.put(invite_attrs, "sender_id", sender_id)
-    #     #%{role_id: role_id} = UserWorkspaceModel.get_member_role(workspace_id)
-    #     case user_email == invitee_email do
-    #       true ->
-    #         send_resp(conn, 401, "Inviting To Oneself")
-
-    #       false ->
-    #         case InvitationModel.already_registered_users_and_workspace(
-    #                invitee_email,
-    #                workspace_id,
-    #                role_id
-    #              ) do
-    #           true ->
-    #             {:ok, %User{id: actual_user_id}} = UserModel.get_by_email(invitee_email)
-
-    #             invitation_details =
-    #               InvitationModel.pass_user_details(actual_user_id, workspace_id)
-
-    #             UserHelper.add_existing_or_non_existing_user_to_member(
-    #               actual_user_id,
-    #               workspace_id,
-    #               8
-    #             )
-
-    #             invitation_details = Map.put(invitation_details, "sender_name", sender_name)
-
-    #             case InvitationHelper.create_confirmation_without_project(
-    #                    invite_attrs,
-    #                    invitation_details
-    #                  ) do
-    #               :ok ->
-    #                 conn
-    #                 |> put_status(:created)
-    #                 |> render("invite.json", %{isCreated: true})
-
-    #               {:error, invitation} ->
-    #                 conn
-    #                 |> put_status(422)
-    #                 |> render("changeset_error.json", %{invitation: invitation.errors})
-    #             end
-
-    #           false ->
-    #             case role_id do
-    #               2 ->
-    #                 send_resp(conn, 401, "UNAUTHORIZED")
-
-    #               1 ->
-    #                 invitation_details =
-    #                   InvitationModel.pass_user_details_for_non_existing(workspace_id)
-
-    #                 invitation_details = Map.put(invitation_details, "sender_name", sender_name)
-
-    #                 case InvitationHelper.create_invite_without_project(
-    #                        invite_attrs,
-    #                        invitation_details
-    #                      ) do
-    #                   :ok ->
-    #                     conn
-    #                     |> put_status(:created)
-    #                     |> render("invite.json", %{isCreated: true})
-
-    #                   {:error, invitation} ->
-    #                     conn
-    #                     |> put_status(422)
-    #                     |> render("changeset_error.json", %{invitation: invitation.errors})
-    #                 end
-    #             end
-    #         end
-    #     end
-
-    #   _ ->
-    #     %{"email" => invitee_email, "project_id" => project_id, "workspace_id" => workspace_id} =
-    #       invite_attrs
-
-    #     %User{id: sender_id, email: user_email, name: sender_name} =
-    #       Guardian.Plug.current_resource(conn)
-
-    #     invite_attrs = Map.put(invite_attrs, "sender_id", sender_id)
-    #     %{role_id: role_id} = UserWorkspaceModel.get_member_role(workspace_id)
-
-    #     case user_email == invitee_email do
-    #       true ->
-    #         send_resp(conn, 401, "UNAUTHORIZED")
-
-    #       false ->
-    #         case InvitationModel.already_registered_users_and_workspace(
-    #                invitee_email,
-    #                workspace_id,
-    #                role_id
-    #              ) do
-    #           true ->
-    #             {:ok, %User{id: actual_user_id}} = UserModel.get_by_email(invitee_email)
-
-    #             invitation_details =
-    #               InvitationModel.pass_user_details(actual_user_id, project_id, workspace_id)
-
-    #             UserHelper.add_existing_or_non_existing_user_to_member(
-    #               actual_user_id,
-    #               workspace_id,
-    #               project_id,
-    #               8
-    #             )
-
-    #             invitation_details = Map.put(invitation_details, "sender_name", sender_name)
-
-    #             case InvitationHelper.create_confirmation(invite_attrs, invitation_details) do
-    #               :ok ->
-    #                 conn
-    #                 |> put_status(:created)
-    #                 |> render("invite.json", %{isCreated: true})
-
-    #               {:error, invitation} ->
-    #                 conn
-    #                 |> put_status(422)
-    #                 |> render("changeset_error.json", %{invitation: invitation.errors})
-    #             end
-
-    #           false ->
-    #             case role_id do
-    #               2 ->
-    #                 send_resp(conn, 401, "UNAUTHORIZED")
-
-    #               1 ->
-    #                 invitation_details =
-    #                   InvitationModel.pass_user_details_for_non_existing(project_id, workspace_id)
-
-    #                 invitation_details = Map.put(invitation_details, "sender_name", sender_name)
-
-    #                 case InvitationHelper.create_invite(invite_attrs, invitation_details) do
-    #                   :ok ->
-    #                     conn
-    #                     |> put_status(:created)
-    #                     |> render("invite.json", %{isCreated: true})
-
-    #                   {:error, invitation} ->
-    #                     conn
-    #                     |> put_status(422)
-    #                     |> render("changeset_error.json", %{invitation: invitation.errors})
-    #                 end
-    #             end
-    #         end
-    #     end
-    # end
   end
 
   def show(conn, _) do
