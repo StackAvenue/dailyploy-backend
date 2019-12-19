@@ -43,11 +43,11 @@ defmodule DailyployWeb.Router do
            UserWorkspaceSettingsController,
            :daily_status_mail_settings
 
-      put "/update_daily_status_mail/:id",
+      put "/update_daily_status_mail",
           UserWorkspaceSettingsController,
           :update_daily_status_mail
 
-      get "/show_daily_status_mail/:id",
+      get "/workspace_settings/show_daily_status_mail",
           UserWorkspaceSettingsController,
           :show_daily_status_mail
 

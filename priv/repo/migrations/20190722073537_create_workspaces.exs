@@ -9,7 +9,5 @@ defmodule Dailyploy.Repo.Migrations.CreateWorkspaces do
 
       timestamps()
     end
-
-    create unique_index(:workspaces, [:name])
   end
 end

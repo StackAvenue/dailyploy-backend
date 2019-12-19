@@ -1,6 +1,6 @@
 defmodule DailyployWeb.UserWorkspaceSettingsView do
   use DailyployWeb, :view
-  # alias DailyployWeb.UserWorkspaceSettingsView
+  alias DailyployWeb.UserWorkspaceSettingsView
   alias DailyployWeb.ErrorHelpers
 
   def render("show.json", %{workspace: workspace}) do
@@ -11,11 +11,59 @@ defmodule DailyployWeb.UserWorkspaceSettingsView do
     %{errors: ErrorHelpers.changeset_error_to_map(errors)}
   end
 
-  def render("index.json", params) do
+  def render("index.json", %{daily_status: daily_status}) do
+    bcc_mails = %{}
+    cc_mails = %{}
+    {:ok, bcc_mails} = 
+    with false <- is_nil(daily_status.bcc_mails) do
+      {:ok, Map.put(bcc_mails, :bcc_mails, daily_status.bcc_mails)}
+    else
+      true ->
+      {:ok, %{}}
+    end
+
+    {:ok, cc_mails} = 
+    with false <- is_nil(daily_status.cc_mails) do
+      {:ok, Map.put(cc_mails, :cc_mails, daily_status.cc_mails)}
+    else
+      true ->
+      {:ok, %{}}
+    end
     %{
-      id: params.id,
-      user_workspace_setting_id: params.user_workspace_setting_id,
-      is_active: params.is_active
+      to_mails: daily_status.to_mails,
+      id: daily_status.id,
+      workspace_id: daily_status.workspace_id,
+      is_active: daily_status.is_active,
+      bcc_mails: bcc_mails,
+      cc_mails: cc_mails
+    }
+  end
+
+  def render("index_for_show.json", %{daily_status_mail: daily_status_mail}) do
+    bcc_mails = %{}
+    cc_mails = %{}
+    {:ok, bcc_mails} = 
+    with false <- is_nil(daily_status_mail.bcc_mails) do
+      {:ok, Map.put(bcc_mails, :bcc_mails, daily_status_mail.bcc_mails)}
+    else
+      true ->
+      {:ok, %{}}
+    end
+
+    {:ok, cc_mails} = 
+    with false <- is_nil(daily_status_mail.cc_mails) do
+      {:ok, Map.put(cc_mails, :cc_mails, daily_status_mail.cc_mails)}
+    else
+      true ->
+      {:ok, %{}}
+    end
+    %{
+      to_mails: daily_status_mail.to_mails,
+      id: daily_status_mail.id,
+      workspace_id: daily_status_mail.workspace_id,
+      is_active: daily_status_mail.is_active,
+      bcc_mails: bcc_mails,
+      cc_mails: cc_mails
     }
   end
 

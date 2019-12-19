@@ -48,7 +48,8 @@ defmodule DailyployWeb.InvitationController do
          ) do
       false ->
         conn
-        |> send_resp(200, "Invited user exist in invited workspace")
+        |> put_status(402)
+        |> json(%{"user_already_exists" => true})
 
       true ->
         %{params: %{"invitation" => invite_attrs}} = conn

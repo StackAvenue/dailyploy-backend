@@ -55,12 +55,15 @@ defmodule Dailyploy.Model.DailyStatusMailSetting do
   end
 
   def get(id) when is_integer(id) do
-    case Repo.get(DailyStatusMailSetting, id) do
+    query = 
+      from daily_status in DailyStatusMailSetting,
+      where: daily_status.workspace_id == ^id
+    
+    with {:ok, daily_status_mail} <- {:ok, List.first(Repo.all(query))} do
+      {:ok, daily_status_mail}
+    else
       nil ->
         {:error, "not found"}
-
-      daily_status_mail ->
-        {:ok, daily_status_mail}
     end
   end
 end

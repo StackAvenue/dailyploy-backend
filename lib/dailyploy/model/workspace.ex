@@ -19,6 +19,16 @@ defmodule Dailyploy.Model.Workspace do
     end
   end
 
+  def get(id) when is_integer(id) do
+    case Repo.get(Workspace, id) do
+      nil ->
+        {:error, "not found"}
+
+      workspace ->
+        {:ok, workspace}
+    end
+  end
+
   def get_workspace!(id), do: Repo.get(Workspace, id)
 
   def get_workspace!(id, preloads), do: Repo.get(Workspace, id) |> Repo.preload(preloads)
