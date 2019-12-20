@@ -7,6 +7,7 @@ defmodule Dailyploy.Schema.Task do
   alias Dailyploy.Schema.Project
   alias Dailyploy.Schema.User
   alias Dailyploy.Schema.TaskCategory
+  alias Dailyploy.Schema.WorkspaceTaskCategory
 
   schema "tasks" do
     field :name, :string
@@ -18,6 +19,7 @@ defmodule Dailyploy.Schema.Task do
     belongs_to :project, Project
     many_to_many :members, User, join_through: "user_tasks", on_replace: :delete
     belongs_to :category, TaskCategory
+    many_to_many :task_category, WorkspaceTaskCategory, join_through: "workspace_task_categories"
     timestamps()
   end
 

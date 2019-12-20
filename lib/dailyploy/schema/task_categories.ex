@@ -4,10 +4,11 @@ defmodule Dailyploy.Schema.TaskCategory do
   import Ecto.Query
 
   alias Daily.Repo
+  alias Dailyploy.Schema.WorkspaceTaskCategory
 
   schema "task_categories" do
     field :name, :string
-
+    many_to_many :task_category, WorkspaceTaskCategory, join_through: "workspace_task_categories"
     timestamps()
   end
 
