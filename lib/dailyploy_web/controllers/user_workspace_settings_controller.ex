@@ -43,14 +43,13 @@ defmodule DailyployWeb.UserWorkspaceSettingsController do
 
     case AdminshipRemovalModel.remove_from_adminship(user_workspace_attributes) do
       :error -> send_resp(conn, 401, "UNAUTHORIZED")
-      {:ok, workspace} -> render(conn, "show.json", workspace: workspace)
+      {:ok, workspace} -> render(conn, "show_something.json", workspace: workspace)
     end
   end
 
   def add_workspace_admin(conn, user_params) do
     %{"user_id" => user_id, "workspace_id" => workspace_id} = user_params
     %Role{id: role_id} = RoleModel.get_role_by_name!("admin")
-    # role id extract
     user_workspace_attributes = %{
       "user_id" => user_id,
       "workspace_id" => workspace_id,
@@ -59,7 +58,7 @@ defmodule DailyployWeb.UserWorkspaceSettingsController do
 
     case AdminshipRemovalModel.add_for_adminship(user_workspace_attributes) do
       :error -> send_resp(conn, 401, "UNAUTHORIZED")
-      {:ok, workspace} -> render(conn, "show.json", workspace: workspace)
+      {:ok, workspace} -> render(conn, "show_something.json", workspace: workspace)
     end
   end
 
