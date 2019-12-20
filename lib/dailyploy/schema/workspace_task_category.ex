@@ -20,6 +20,6 @@ defmodule Dailyploy.Schema.WorkspaceTaskCategory do
     workspace_task_category
     |> cast(attrs, [:workspace_id, :task_category_id])
     |> validate_required([:workspace_id, :task_category_id])
-    |> unique_constraint([:workspace_id, :task_category_id], name: :unique_index_for_workspace_and_category, message: @already_exist)
+    |> unique_constraint(:workspace_task_category_uniqueness, name: :unique_index_for_workspace_and_category, message: @already_exist)
   end
 end
