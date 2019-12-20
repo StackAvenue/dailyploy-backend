@@ -15,20 +15,20 @@ defmodule DailyployWeb.UserWorkspaceSettingsView do
     bcc_mails = %{}
     cc_mails = %{}
 
-    {:ok, bcc_mails} =
+    {:ok, %{bcc_mails: bcc_mails}} =
       with false <- is_nil(daily_status.bcc_mails) do
         {:ok, Map.put(bcc_mails, :bcc_mails, daily_status.bcc_mails)}
       else
         true ->
-          {:ok, %{}}
+          {:ok, %{bcc_mails: []}}
       end
 
-    {:ok, cc_mails} =
+    {:ok, %{cc_mails: cc_mails}} =
       with false <- is_nil(daily_status.cc_mails) do
         {:ok, Map.put(cc_mails, :cc_mails, daily_status.cc_mails)}
       else
         true ->
-          {:ok, %{}}
+          {:ok, %{cc_mails: []}}
       end
 
     %{
@@ -45,20 +45,20 @@ defmodule DailyployWeb.UserWorkspaceSettingsView do
     bcc_mails = %{}
     cc_mails = %{}
 
-    {:ok, bcc_mails} =
+    {:ok, %{bcc_mails: bcc_mails}} =
       with false <- is_nil(daily_status_mail.bcc_mails) do
         {:ok, Map.put(bcc_mails, :bcc_mails, daily_status_mail.bcc_mails)}
       else
         true ->
-          {:ok, %{}}
+          {:ok, %{bcc_mails: []}}
       end
 
-    {:ok, cc_mails} =
+      {:ok, %{cc_mails: cc_mails}} =
       with false <- is_nil(daily_status_mail.cc_mails) do
         {:ok, Map.put(cc_mails, :cc_mails, daily_status_mail.cc_mails)}
       else
         true ->
-          {:ok, %{}}
+          {:ok, %{cc_mails: []}}
       end
 
     %{
@@ -68,13 +68,13 @@ defmodule DailyployWeb.UserWorkspaceSettingsView do
       is_active: daily_status_mail.is_active,
       bcc_mails: bcc_mails,
       cc_mails: cc_mails,
-      email_text: daily_status_mail.email_text
+      email_description: daily_status_mail.email_text
     }
   end
 
   def render("daily_status_mail.json", %{daily_status_mail: daily_status_mail}) do
     %{
-      email_text: daily_status_mail.email_text,
+      email_description: daily_status_mail.email_text,
       to_mails: daily_status_mail.to_mails,
       daily_status_mail_id: daily_status_mail.id,
       is_active: daily_status_mail.is_active

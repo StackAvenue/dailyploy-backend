@@ -4,6 +4,7 @@ defmodule DailyployWeb.TaskCategoryController do
   # alias Dailyploy.Schema.TaskCategory
   alias Dailyploy.Model.TaskCategory, as: TaskCategoryModel
   alias Dailyploy.Schema.Workspace
+  alias Dailyploy.Model.WorkspaceTaskCategory, as: WorkspaceTaskCategoryModel
 
   alias Dailyploy.Repo
 
@@ -42,20 +43,19 @@ defmodule DailyployWeb.TaskCategoryController do
         end
 
       task_category ->
-        case TaskCategoryModel.create(attrs) do
-          {:ok, task_category} ->
+        case WorkspaceTaskCategoryModel.check_for_already_exist_in_workspace_category(task_category.id, workspace_id) do
+          false -> 
+            params = %{task_category_id: task_category.id, workspace_id: workspace_id}
+            WorkspaceTaskCategoryModel.create(params)
             conn
-            |> put_status(200)
-            |> render("task_category.json", %{task_category: task_category})
-
-          {:error, errors} ->
+            |> json(%{"task_added_to_workspace" => true})
+          true -> 
             conn
-            |> put_status(400)
-            |> render("changeset_error.json", %{errors: errors.errors})
+            |> json(%{"category_already_present" => true})  
         end
       end
   end
-
+  
   def index(conn, _attrs) do
     task_category = TaskCategoryModel.list_all_categories()
     render(conn, "index.json", task_category: task_category)
