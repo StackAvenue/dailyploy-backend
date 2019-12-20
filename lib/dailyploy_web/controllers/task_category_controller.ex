@@ -28,9 +28,9 @@ defmodule DailyployWeb.TaskCategoryController do
   end
 
   def create(conn, attrs) do
+    %{"name" => name, "workspace_id" => workspace_id} = attrs
     case TaskCategoryModel.query_already_existing_category(name) do
       nil ->
-        %{"name" => name, "workspace_id" => workspace_id} = attrs
         case TaskCategoryModel.create(attrs) do
           {:ok, task_category} ->
             conn
