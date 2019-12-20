@@ -11,7 +11,7 @@ defmodule DailyployWeb.TaskController do
 
   @spec index(Plug.Conn.t(), any) :: Plug.Conn.t()
   def index(conn, %{"project_id" => project_id}) do
-    tasks = TaskModel.list_tasks(project_id) |> Repo.preload([:members, :owner])
+    tasks = TaskModel.list_tasks(project_id) |> Repo.preload([:members, :owner, :category])
 
     render(conn, "index.json", tasks: tasks)
   end
@@ -27,7 +27,9 @@ defmodule DailyployWeb.TaskController do
 
     case TaskModel.create_task(task_params) do
       {:ok, %Task{} = task} ->
-        render(conn, "show.json", task: task |> Repo.preload([:owner]))
+        require IEx
+        IEx.pry
+        render(conn, "show.json", task: task |> Repo.preload([:owner, :category]))
 
       {:error, task} ->
         conn
@@ -36,12 +38,12 @@ defmodule DailyployWeb.TaskController do
     end
   end
 
-  def update(conn, %{"project_id" => project_id, "id" => id, "task" => task_params}) do
+  def update(conn, %{"id" => id, "task" => task_params}) do
     task = TaskModel.get_task!(id)
 
     case TaskModel.update_task(task, task_params) do
       {:ok, %Task{} = task} ->
-        render(conn, "show.json", task: task |> Repo.preload([:owner]))
+        render(conn, "show.json", task: task |> Repo.preload([:owner, :category]))
 
       {:error, task} ->
         conn
@@ -51,7 +53,7 @@ defmodule DailyployWeb.TaskController do
   end
 
   def show(conn, %{"id" => id}) do
-    task = TaskModel.get_task!(id) |> Repo.preload([:members, :owner])
+    task = TaskModel.get_task!(id) |> Repo.preload([:members, :owner, :category])
 
     render(conn, "task_with_user.json", task: task)
   end

@@ -107,9 +107,7 @@ defmodule Dailyploy.Helper.Invitation do
     |> Email.put_text(
       "Hi #{user}, DailyPloy is the world's fastest growing Planning Platform and #{
         invitation_details["sender_name"]
-      } would like you to also join the DailyPloy's StackAvenue #{
-        invitation_details["workspace_name"]
-      }'s workspace.
+      } would like you to oin the DailyPloy's StackAvenue #{invitation_details["workspace_name"]}'s workspace.
                            So #{user}, whether you are trying to manage your tasks or you want to have a clear visibility of your team's task, check us out and experience the revolution.
                            Click on the following link to proceed https://dailyploy-test.herokuapp.com/signup/#{
         invitation_details["token_id"]

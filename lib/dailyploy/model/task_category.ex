@@ -13,6 +13,11 @@ defmodule Dailyploy.Model.TaskCategory do
     Repo.all(TaskCategory)
   end
 
+  def update(task_category, params) do
+    changeset = TaskCategory.changeset(task_category, params)
+    Repo.update(changeset)
+  end
+
   def query_already_existing_category(name) do
     query =
       from task_category in TaskCategory,
@@ -21,7 +26,17 @@ defmodule Dailyploy.Model.TaskCategory do
     List.first(Repo.all(query))
   end
 
-  def delete_task_category(task_category) do
+  def delete(task_category) do
     Repo.delete(task_category)
+  end
+
+  def get(id) when is_integer(id) do
+    case Repo.get(TaskCategory, id) do
+      nil ->
+        {:error, "not found"}
+
+      task_category ->
+        {:ok, task_category}
+    end
   end
 end

@@ -3,6 +3,7 @@ defmodule DailyployWeb.TaskView do
   alias DailyployWeb.TaskView
   alias DailyployWeb.UserView
   alias DailyployWeb.ProjectView
+  alias DailyployWeb.TaskCategoryView
   alias DailyployWeb.ErrorHelpers
 
   def render("index.json", %{tasks: tasks}) do
@@ -35,7 +36,8 @@ defmodule DailyployWeb.TaskView do
       end_datetime: task.end_datetime,
       comments: task.comments,
       members: render_many(task.members, UserView, "user.json"),
-      owner: render_one(task.owner, UserView, "user.json")
+      owner: render_one(task.owner, UserView, "user.json"),
+      category: render_one(task.category, TaskCategoryView, "task_category.json")
     }
   end
 
@@ -59,6 +61,7 @@ defmodule DailyployWeb.TaskView do
       comments: task.comments,
       members: render_many(task.members, UserView, "user.json"),
       owner: render_one(task.owner, UserView, "user.json"),
+      category: render_one(task.category, TaskCategoryView, "task_category.json"),
       project: render_one(task.project, ProjectView, "project_for_listing.json")
     }
   end

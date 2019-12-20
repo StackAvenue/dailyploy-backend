@@ -6,7 +6,7 @@ defmodule DailyployWeb.UserWorkspaceSettingsController do
   # alias Dailyploy.Schema.DailyStatusMailSetting
   alias Dailyploy.Schema.UserWorkspaceSetting
   # alias Dailyploy.Model.User, as: UserModel
-  # alias Dailyploy.Model.Workspace, as: WorkspaceModel
+  alias Dailyploy.Model.Workspace, as: WorkspaceModel
   alias Dailyploy.Model.UserWorkspaceSetting, as: UserWorkspaceSettingsModel
   alias Dailyploy.Model.AdminshipRemoval, as: AdminshipRemovalModel
   # alias Dailyploy.Model.UserWorkspace, as: UserWorkspaceModel
@@ -14,15 +14,19 @@ defmodule DailyployWeb.UserWorkspaceSettingsController do
   alias Dailyploy.Model.DailyStatusMailSetting, as: DailyStatusMailSettingsModel
 
   plug Auth.Pipeline
-
+  plug :load_daily_status_mail when action in [:update_daily_status_mail, :show_daily_status_mail]
+  plug :load_workspace when action in [:daily_status_mail_settings]
   action_fallback DailyployWeb.FallbackController
 
   def update(conn, _) do
     {:ok, params} = Map.fetch(conn, :params)
 
     case UserWorkspaceSettingsModel.update(params) do
-      :error -> send_resp(conn, 401, "UNAUTHORIZED")
-      workspace -> render(conn, "show.json", workspace: workspace)
+      :error ->
+        send_resp(conn, 401, "UNAUTHORIZED")
+
+      workspace ->
+        render(conn, "show.json", workspace: workspace)
     end
   end
 
@@ -60,18 +64,14 @@ defmodule DailyployWeb.UserWorkspaceSettingsController do
   end
 
   def daily_status_mail_settings(conn, user_params) do
-    case user_params["is_active"] do
-      true ->
+    case conn.status do
+      nil ->
         %{"workspace_id" => workspace_id} = user_params
-
-        %UserWorkspaceSetting{id: id} =
-          UserWorkspaceSettingsModel.get_user_workspace_settings_id(workspace_id)
 
         params =
           user_params
           |> Map.new(fn {key, value} -> {String.to_atom(key), value} end)
-          # changes 
-          |> Map.put_new(:user_workspace_setting_id, id)
+          |> Map.put_new(:workspace_id, user_params["workspace_id"])
 
         case DailyStatusMailSettingsModel.create_daily_status_mail_settings(params) do
           {:error, status} ->
@@ -79,15 +79,83 @@ defmodule DailyployWeb.UserWorkspaceSettingsController do
             |> put_status(422)
             |> render("changeset_error.json", %{errors: status.errors})
 
-          {:ok, status} ->
-            render(conn, "index.json", status)
+          {:ok, daily_status} ->
+            render(conn, "index.json", daily_status: daily_status)
         end
 
-      false ->
-        case DailyStatusMailSettingsModel.stop_and_resume(user_params) do
-          {:error, _} -> send_resp(conn, 401, "UNAUTHORIZED")
-          {:ok, params} -> render(conn, "index.json", params)
+      404 ->
+        conn
+        |> put_status(404)
+        |> json(%{"workspace_exist" => false})
+    end
+  end
+
+  def show_daily_status_mail(conn, params) do
+    case conn.status do
+      nil ->
+        %{assigns: %{daily_status_mail: daily_status_mail}} = conn
+
+        conn
+        |> put_status(200)
+        |> render("index_for_show.json", daily_status_mail: daily_status_mail)
+
+      404 ->
+        conn
+        |> put_status(404)
+        |> json(%{"Resource Not Found" => true})
+    end
+  end
+
+  def update_daily_status_mail(conn, params) do
+    case conn.status do
+      nil ->
+        %{assigns: %{daily_status_mail: daily_status_mail}} = conn
+
+        case DailyStatusMailSettingsModel.update_daily_status_mail_settings(
+               daily_status_mail,
+               params
+             ) do
+          {:ok, daily_status_mail} ->
+            conn
+            |> put_status(200)
+            |> render("index_for_show.json", daily_status_mail: daily_status_mail)
+
+          {:error, errors} ->
+            conn
+            |> put_status(400)
+            |> render("changeset_error.json", %{errors: errors.errors})
         end
+
+      404 ->
+        conn
+        |> put_status(404)
+        |> json(%{"Resource Not Found" => true})
+    end
+  end
+
+  defp load_workspace(%{params: %{"workspace_id" => workspace_id}} = conn, _params) do
+    {workspace_id, _} = Integer.parse(workspace_id)
+
+    case WorkspaceModel.get(workspace_id) do
+      {:ok, workspace} ->
+        assign(conn, :workspace, workspace)
+
+      {:error, _message} ->
+        conn
+        |> put_status(404)
+    end
+  end
+
+  defp load_daily_status_mail(%{params: %{"workspace_id" => workspace_id}} = conn, _params) do
+    {workspace_id, _} = Integer.parse(workspace_id)
+
+    case DailyStatusMailSettingsModel.get(workspace_id) do
+      {:ok, daily_status_mail} ->
+        assign(conn, :daily_status_mail, daily_status_mail)
+
+      {:error, _message} ->
+        conn
+        |> put_status(404)
     end
   end
 end
