@@ -6,6 +6,7 @@ defmodule Dailyploy.Schema.Workspace do
   alias Dailyploy.Schema.UserWorkspace
   alias Dailyploy.Schema.Tag
   alias Dailyploy.Schema.Project
+  alias Dailyploy.Schema.TaskCategory
   alias Dailyploy.Schema.WorkspaceTaskCategory
 
   schema "workspaces" do
@@ -18,7 +19,7 @@ defmodule Dailyploy.Schema.Workspace do
     has_many :users, through: [:user_workspaces, :user]
     has_many :tags, Tag
     has_many :projects, Project
-    many_to_many :task_category, WorkspaceTaskCategory, join_through: "workspace_task_categories"
+    many_to_many :task_categories, TaskCategory, join_through: WorkspaceTaskCategory
     timestamps()
   end
 

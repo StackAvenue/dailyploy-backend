@@ -3,8 +3,11 @@ defmodule DailyployWeb.TaskCategoryController do
   import Plug.Conn
   # alias Dailyploy.Schema.TaskCategory
   alias Dailyploy.Model.TaskCategory, as: TaskCategoryModel
+  alias Dailyploy.Schema.Workspace
 
-  plug :load_category when action in [:show, :update, :delete]
+  alias Dailyploy.Repo
+
+  plug :load_category when action in [:show, :delete]
 
   def show(conn, %{"id" => id}) do
     case conn.status do
@@ -23,7 +26,7 @@ defmodule DailyployWeb.TaskCategoryController do
     end
   end
 
-  def create(conn, %{"name" => name} = attrs) do
+  def create(conn, %{"name" => name, "workspace_id" => workspace_id} = attrs) do
     case TaskCategoryModel.query_already_existing_category(name) do
       nil ->
         case TaskCategoryModel.create(attrs) do
@@ -38,23 +41,8 @@ defmodule DailyployWeb.TaskCategoryController do
             |> render("changeset_error.json", %{errors: errors.errors})
         end
 
-      _ ->
-        conn
-        |> json(%{"category_already_exist" => true})
-    end
-  end
-
-  def index(conn, _attrs) do
-    task_category = TaskCategoryModel.list_all_categories()
-    render(conn, "index.json", task_category: task_category)
-  end
-
-  def update(conn, params) do
-    case conn.status do
-      nil ->
-        %{assigns: %{task_category: task_category}} = conn
-
-        case TaskCategoryModel.update(task_category, params) do
+      task_category ->
+        case TaskCategoryModel.create(attrs) do
           {:ok, task_category} ->
             conn
             |> put_status(200)
@@ -65,12 +53,12 @@ defmodule DailyployWeb.TaskCategoryController do
             |> put_status(400)
             |> render("changeset_error.json", %{errors: errors.errors})
         end
+      end
+  end
 
-      404 ->
-        conn
-        |> put_status(404)
-        |> json(%{"Resource Not Found" => true})
-    end
+  def index(conn, _attrs) do
+    task_category = TaskCategoryModel.list_all_categories()
+    render(conn, "index.json", task_category: task_category)
   end
 
   def delete(conn, _params) do

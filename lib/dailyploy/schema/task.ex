@@ -19,7 +19,6 @@ defmodule Dailyploy.Schema.Task do
     belongs_to :project, Project
     many_to_many :members, User, join_through: "user_tasks", on_replace: :delete
     belongs_to :category, TaskCategory
-    many_to_many :task_category, WorkspaceTaskCategory, join_through: "workspace_task_categories"
     timestamps()
   end
 
