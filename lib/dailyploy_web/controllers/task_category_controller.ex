@@ -27,9 +27,10 @@ defmodule DailyployWeb.TaskCategoryController do
     end
   end
 
-  def create(conn, %{"name" => name, "workspace_id" => workspace_id} = attrs) do
+  def create(conn, attrs) do
     case TaskCategoryModel.query_already_existing_category(name) do
       nil ->
+        %{"name" => name, "workspace_id" => workspace_id} = attrs
         case TaskCategoryModel.create(attrs) do
           {:ok, task_category} ->
             conn
@@ -43,18 +44,10 @@ defmodule DailyployWeb.TaskCategoryController do
         end
 
       task_category ->
-        case WorkspaceTaskCategoryModel.check_for_already_exist_in_workspace_category(task_category.id, workspace_id) do
-          false -> 
-            params = %{task_category_id: task_category.id, workspace_id: workspace_id}
-            ast = WorkspaceTaskCategoryModel.create(params)
-            require IEx
-            IEx.pry  
-            conn
-            |> json(%{"task_added_to_workspace" => true})
-          true -> 
-            conn
-            |> json(%{"category_already_present" => true})  
-        end
+        params = %{task_category_id: task_category.id, workspace_id: workspace_id}
+        ast = WorkspaceTaskCategoryModel.create(params)
+        require IEx
+        IEx.pry
       end
   end
 
