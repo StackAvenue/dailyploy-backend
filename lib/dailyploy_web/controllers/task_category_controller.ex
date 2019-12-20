@@ -46,7 +46,9 @@ defmodule DailyployWeb.TaskCategoryController do
         case WorkspaceTaskCategoryModel.check_for_already_exist_in_workspace_category(task_category.id, workspace_id) do
           false -> 
             params = %{task_category_id: task_category.id, workspace_id: workspace_id}
-            WorkspaceTaskCategoryModel.create(params)
+            ast = WorkspaceTaskCategoryModel.create(params)
+            require IEx
+            IEx.pry  
             conn
             |> json(%{"task_added_to_workspace" => true})
           true -> 
@@ -55,7 +57,7 @@ defmodule DailyployWeb.TaskCategoryController do
         end
       end
   end
-  
+
   def index(conn, _attrs) do
     task_category = TaskCategoryModel.list_all_categories()
     render(conn, "index.json", task_category: task_category)
