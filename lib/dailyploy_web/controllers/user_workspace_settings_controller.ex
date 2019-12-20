@@ -43,7 +43,7 @@ defmodule DailyployWeb.UserWorkspaceSettingsController do
 
     case AdminshipRemovalModel.remove_from_adminship(user_workspace_attributes) do
       :error -> send_resp(conn, 401, "UNAUTHORIZED")
-      {:ok, workspace} -> render(conn, "show.json", workspace: workspace)
+      {:ok, workspace} -> render(conn, "show_something.json", workspace: workspace)
     end
   end
 
@@ -59,7 +59,7 @@ defmodule DailyployWeb.UserWorkspaceSettingsController do
 
     case AdminshipRemovalModel.add_for_adminship(user_workspace_attributes) do
       :error -> send_resp(conn, 401, "UNAUTHORIZED")
-      {:ok, workspace} -> render(conn, "show.json", workspace: workspace)
+      {:ok, workspace} -> render(conn, "show_something.json", workspace: workspace)
     end
   end
 

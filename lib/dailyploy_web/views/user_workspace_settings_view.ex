@@ -6,6 +6,11 @@ defmodule DailyployWeb.UserWorkspaceSettingsView do
   def render("show.json", %{workspace: workspace}) do
     %{workspace_id: workspace.id, workspace_role: workspace.name}
   end
+  
+  
+  def render("show_something.json", %{workspace: workspace}) do
+    %{workspace_id: workspace.id, workspace_role: workspace.name}
+  end
 
   def render("changeset_error.json", %{errors: errors}) do
     %{errors: ErrorHelpers.changeset_error_to_map(errors)}
