@@ -22,6 +22,9 @@ defmodule DailyployWeb.Router do
   scope "/api/v1", DailyployWeb do
     pipe_through :jwt_authenticated
 
+    post "/tasks/:task_id/start-tracking", TimeTrackingController, :start_tracking
+    put "/tasks/:task_id/stop-tracking", TimeTrackingController, :stop_tracking
+
     resources "/task_category", TaskCategoryController,
       only: [:create, :delete, :index, :update, :show]
 
@@ -39,8 +42,7 @@ defmodule DailyployWeb.Router do
 
       post "/workspace_settings/add_admin", UserWorkspaceSettingsController, :add_workspace_admin
 
-      resources "/task_category", TaskCategoryController,
-      only: [:create, :delete, :index, :show]
+      resources "/task_category", TaskCategoryController, only: [:create, :delete, :index, :show]
 
       post "/workspace_settings/daily_status_mail_settings",
            UserWorkspaceSettingsController,

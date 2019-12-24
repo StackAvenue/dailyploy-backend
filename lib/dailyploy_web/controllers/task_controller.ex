@@ -27,8 +27,6 @@ defmodule DailyployWeb.TaskController do
 
     case TaskModel.create_task(task_params) do
       {:ok, %Task{} = task} ->
-        require IEx
-        IEx.pry
         render(conn, "show.json", task: task |> Repo.preload([:owner, :category]))
 
       {:error, task} ->
