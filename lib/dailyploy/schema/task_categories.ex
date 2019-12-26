@@ -26,5 +26,4 @@ defmodule Dailyploy.Schema.TaskCategory do
 
     put_assoc(changeset, :workspaces, Enum.map(workspaces, &change/1))
   end
-
 end

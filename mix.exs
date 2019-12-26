@@ -49,7 +49,8 @@ defmodule Dailyploy.MixProject do
       {:sendgrid, "~> 2.0"},
       {:calendar, "~> 0.17.5"},
       {:quantum, "~> 2.3"},
-      {:timex, "~> 3.5"}
+      {:timex, "~> 3.5"},
+      {:params, "~> 2.0"}
     ]
   end
 
