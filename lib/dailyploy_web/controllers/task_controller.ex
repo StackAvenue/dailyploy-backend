@@ -11,7 +11,9 @@ defmodule DailyployWeb.TaskController do
 
   @spec index(Plug.Conn.t(), any) :: Plug.Conn.t()
   def index(conn, %{"project_id" => project_id}) do
-    tasks = TaskModel.list_tasks(project_id) |> Repo.preload([:members, :owner, :category])
+    tasks =
+      TaskModel.list_tasks(project_id)
+      |> Repo.preload([:members, :owner, :category, :time_tracks])
 
     render(conn, "index.json", tasks: tasks)
   end
