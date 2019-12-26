@@ -6,8 +6,7 @@ defmodule DailyployWeb.UserWorkspaceSettingsView do
   def render("show.json", %{workspace: workspace}) do
     %{workspace_id: workspace.id, workspace_role: workspace.name}
   end
-  
-  
+
   def render("show_something.json", %{workspace: workspace}) do
     %{workspace_id: workspace.id, workspace_role: workspace.name}
   end
@@ -59,7 +58,7 @@ defmodule DailyployWeb.UserWorkspaceSettingsView do
           {:ok, %{bcc_mails: []}}
       end
 
-      {:ok, %{cc_mails: cc_mails}} =
+    {:ok, %{cc_mails: cc_mails}} =
       with false <- is_nil(daily_status_mail.cc_mails) do
         {:ok, Map.put(cc_mails, :cc_mails, daily_status_mail.cc_mails)}
       else

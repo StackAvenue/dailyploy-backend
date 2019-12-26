@@ -44,6 +44,7 @@ defmodule DailyployWeb.TaskCategoryController do
 
       task_category ->
         params = %{task_category_id: task_category.id, workspace_id: workspace_id}
+
         case WorkspaceTaskCategoryModel.create(params) do
           {:ok, _params} ->
             conn
@@ -55,7 +56,7 @@ defmodule DailyployWeb.TaskCategoryController do
             |> put_status(400)
             |> render("changeset_error.json", %{errors: errors.errors})
         end
-      end
+    end
   end
 
   def index(conn, _attrs) do
