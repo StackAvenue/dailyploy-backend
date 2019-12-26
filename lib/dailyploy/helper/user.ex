@@ -149,13 +149,13 @@ defmodule Dailyploy.Helper.User do
 
   defp add_user_workspace(user_attrs) do
     Map.put(user_attrs, "workspaces", [
-      %{"name" => "Workspace for #{user_attrs["name"]}", "type" => "individual"}
+      %{"name" => "#{user_attrs["name"]}", "type" => "individual"}
     ])
   end
 
   defp add_company_workspace(company_attrs) do
     Map.put(company_attrs, "workspace", %{
-      "name" => "Workspace for #{company_attrs["name"]}",
+      "name" => "#{company_attrs["name"]}",
       "type" => "company"
     })
   end
