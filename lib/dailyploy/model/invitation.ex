@@ -164,6 +164,13 @@ defmodule Dailyploy.Model.Invitation do
     |> Repo.all()
   end
 
+  def get_invitation_with_token(token_id) do
+    query = from( invitation in Invitation,
+      where: invitation.token == ^token_id,
+      select: invitation)
+    {:ok, List.first(Repo.all(query))}
+  end
+
   def get_invitation!(id), do: Repo.get!(Invitation, id)
 
   def get_invitation!(id, preloads), do: Repo.get!(Invitation, id) |> Repo.preload(preloads)
@@ -176,7 +183,7 @@ defmodule Dailyploy.Model.Invitation do
 
   def update_invitation(%Invitation{} = invitation, attrs) do
     invitation
-    |> Invitation.changeset(attrs)
+    |> Invitation.update_changeset(attrs)
     |> Repo.update()
   end
 

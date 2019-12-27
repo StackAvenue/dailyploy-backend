@@ -29,7 +29,7 @@ defmodule DailyployWeb.TaskController do
 
     case TaskModel.create_task(task_params) do
       {:ok, %Task{} = task} ->
-        render(conn, "show.json", task: task |> Repo.preload([:owner, :category]))
+        render(conn, "show.json", task: task |> Repo.preload([:owner, :category, :time_tracks]))
 
       {:error, task} ->
         conn
@@ -43,7 +43,7 @@ defmodule DailyployWeb.TaskController do
 
     case TaskModel.update_task(task, task_params) do
       {:ok, %Task{} = task} ->
-        render(conn, "show.json", task: task |> Repo.preload([:owner, :category]))
+        render(conn, "show.json", task: task |> Repo.preload([:owner, :category, :time_tracks]))
 
       {:error, task} ->
         conn
@@ -53,7 +53,7 @@ defmodule DailyployWeb.TaskController do
   end
 
   def show(conn, %{"id" => id}) do
-    task = TaskModel.get_task!(id) |> Repo.preload([:members, :owner, :category])
+    task = TaskModel.get_task!(id) |> Repo.preload([:members, :owner, :category, :time_tracks])
 
     render(conn, "task_with_user.json", task: task)
   end
