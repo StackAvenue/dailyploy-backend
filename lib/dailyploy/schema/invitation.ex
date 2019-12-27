@@ -34,6 +34,12 @@ defmodule Dailyploy.Schema.Invitation do
     |> validate_required([:workspace, :sender, :role])
   end
 
+  def update_changeset(invitation, attrs) do
+    invitation
+    |> cast(attrs, [:status])
+    |> validate_required([:status])
+  end
+
   defp genToken(changeset, attrs) do
     %{
       "email" => email,
