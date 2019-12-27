@@ -50,7 +50,8 @@ defmodule DailyployWeb.TaskView do
       start_datetime: task.start_datetime,
       end_datetime: task.end_datetime,
       comments: task.comments,
-      project: render_one(task.project, ProjectView, "project.json")
+      project: render_one(task.project, ProjectView, "project.json"),
+      time_tracked: render_many(task.time_tracks, TimeTrackingView, "task_with_track_time.json")
     }
   end
 
