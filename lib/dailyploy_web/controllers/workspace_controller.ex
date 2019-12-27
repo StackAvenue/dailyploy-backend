@@ -69,8 +69,9 @@ defmodule DailyployWeb.WorkspaceController do
 
     users =
       UserModel.list_users(workspace_id) |> Repo.preload(tasks: {query, project: [:members]})
-    
-    users = users |> Repo.preload(tasks: :time_tracks)  
+
+    users = users |> Repo.preload(tasks: :time_tracks)
+
     users =
       Enum.map(users, fn user ->
         date_formatted_tasks =

@@ -223,13 +223,15 @@ defmodule Dailyploy.Helper.User do
                    invite_attrs,
                    invitation_details
                  ) do
-              :ok -> 
-                with {:ok, invitation} <- update_invitation_status(user_attrs["invitee_details"]["token_id"]) do
+              :ok ->
+                with {:ok, invitation} <-
+                       update_invitation_status(user_attrs["invitee_details"]["token_id"]) do
                   attrs = %{status: 1}
                   InvitationModel.update_invitation(invitation, attrs)
                   {:ok, user}
                 end
-              {:error, _} -> 
+
+              {:error, _} ->
                 {:error, user}
             end
 
@@ -250,13 +252,16 @@ defmodule Dailyploy.Helper.User do
             invite_attrs = Map.put(invite_attrs, "sender_id", sender_id)
 
             case InvitationHelper.create_confirmation(invite_attrs, invitation_details) do
-              :ok -> 
-                with {:ok, invitation} <- update_invitation_status(user_attrs["invitee_details"]["token_id"]) do
+              :ok ->
+                with {:ok, invitation} <-
+                       update_invitation_status(user_attrs["invitee_details"]["token_id"]) do
                   attrs = %{status: 1}
                   InvitationModel.update_invitation(invitation, attrs)
                   {:ok, user}
                 end
-              {:error, _} -> {:error, user}
+
+              {:error, _} ->
+                {:error, user}
             end
         end
 
@@ -274,7 +279,7 @@ defmodule Dailyploy.Helper.User do
   end
 
   defp update_invitation_status(token_id) do
-    with{:ok, invitation} <- InvitationModel.get_invitation_with_token(token_id) do
+    with {:ok, invitation} <- InvitationModel.get_invitation_with_token(token_id) do
       {:ok, invitation}
     end
   end
