@@ -22,6 +22,7 @@ defmodule DailyployWeb.Router do
   scope "/api/v1", DailyployWeb do
     pipe_through :jwt_authenticated
 
+    get "/tasks/:id", TaskController, :show
     post "/tasks/:task_id/start-tracking", TimeTrackingController, :start_tracking
     put "/tasks/:task_id/stop-tracking", TimeTrackingController, :stop_tracking
 
@@ -59,7 +60,7 @@ defmodule DailyployWeb.Router do
       resources "/reports", ReportController, only: [:index]
 
       resources "/projects", ProjectController do
-        resources "/tasks", TaskController
+        resources "/tasks", TaskController, only: [:index, :create, :update]
       end
     end
 
