@@ -165,9 +165,12 @@ defmodule Dailyploy.Model.Invitation do
   end
 
   def get_invitation_with_token(token_id) do
-    query = from( invitation in Invitation,
-      where: invitation.token == ^token_id,
-      select: invitation)
+    query =
+      from(invitation in Invitation,
+        where: invitation.token == ^token_id,
+        select: invitation
+      )
+
     {:ok, List.first(Repo.all(query))}
   end
 
