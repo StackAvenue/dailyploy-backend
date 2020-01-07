@@ -45,10 +45,10 @@ defmodule Dailyploy.Model.Task do
     query =
       Task
       |> join(:inner, [task], project in Project, on: task.project_id == project.id)
-      |> join(:inner, [task], user_task in UserTask, on: user_task.task_id == task.id)
+      # |> join(:inner, [task], user_task in UserTask, on: user_task.task_id == task.id)
       |> where(^filter_where(params))
 
-    Repo.all query
+    Repo.all(query)
   end
 
   def get_details_of_task(user_workspace_setting_id, project_id) do
@@ -99,19 +99,37 @@ defmodule Dailyploy.Model.Task do
         dynamic([task, project], ^dynamic and project.workspace_id == ^workspace_id)
 
       {"project_ids", project_ids}, dynamic ->
+        project_ids =
+          project_ids
+          |> String.split(",")
+          |> Enum.map(fn project_id -> String.trim(project_id) end)
+
         dynamic([task], ^dynamic and task.project_id in ^project_ids)
 
       {"start_date", start_date}, dynamic ->
         end_date = params["end_date"]
 
-        dynamic([task], ^dynamic and
-          fragment("?::date BETWEEN ? AND ?", task.start_datetime, ^start_date, ^end_date) or
-          fragment("?::date BETWEEN ? AND ?", task.end_datetime, ^start_date, ^end_date) or
-          fragment("?::date <= ? AND ?::date >= ?", task.start_datetime, ^start_date, task.end_datetime, ^end_date)
+        dynamic(
+          [task],
+          (^dynamic and
+             fragment("?::date BETWEEN ? AND ?", task.start_datetime, ^start_date, ^end_date)) or
+            fragment("?::date BETWEEN ? AND ?", task.end_datetime, ^start_date, ^end_date) or
+            fragment(
+              "?::date <= ? AND ?::date >= ?",
+              task.start_datetime,
+              ^start_date,
+              task.end_datetime,
+              ^end_date
+            )
         )
 
       {"user_ids", user_ids}, dynamic ->
-        dynamic([task, project, user_task], ^dynamic and user_task.user_id in ^user_ids)
+        user_ids =
+          user_ids
+          |> String.split(",")
+          |> Enum.map(fn user_id -> String.trim(user_id) end)
+
+        dynamic([task, project], ^dynamic and task.owner_id in ^user_ids)
 
       {_, _}, dynamic ->
         dynamic

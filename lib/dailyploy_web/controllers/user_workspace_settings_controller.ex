@@ -50,6 +50,7 @@ defmodule DailyployWeb.UserWorkspaceSettingsController do
   def add_workspace_admin(conn, user_params) do
     %{"user_id" => user_id, "workspace_id" => workspace_id} = user_params
     %Role{id: role_id} = RoleModel.get_role_by_name!("admin")
+
     user_workspace_attributes = %{
       "user_id" => user_id,
       "workspace_id" => workspace_id,
