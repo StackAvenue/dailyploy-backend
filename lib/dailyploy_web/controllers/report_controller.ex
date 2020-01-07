@@ -6,26 +6,13 @@ defmodule DailyployWeb.ReportController do
 
   plug Auth.Pipeline
 
-  def index(conn, %{
-        "workspace_id" => workspace_id,
-        "user_id" => user_id,
-        "frequency" => frequency,
-        "start_date" => start_date,
-        "project_ids" => project_ids
-      }) do
-    project_ids =
-      project_ids
-      |> String.split(",")
-      |> Enum.map(fn x -> String.trim(x, "[") end)
-      |> Enum.map(fn x -> String.trim(x, "]") end)
-      |> List.delete("")
-
+  def index(conn, %{"start_date" => start_date} = params) do
     {:ok, start_date} =
       start_date
       |> Date.from_iso8601()
 
     end_date =
-      case frequency do
+      case params["frequency"] do
         "daily" ->
           start_date
 
@@ -37,10 +24,27 @@ defmodule DailyployWeb.ReportController do
           Date.add(start_date, days - 1)
       end
 
+    # user params  convert back to list.  
+    # if params["user_ids"] do
+    #     params["user_ids"]
+    #     |> String.split(",")
+    #     |> Enum.map(fn (user_id) -> String.trim user_id end)
+    # end
+
+    # if params["project_ids"] do
+    #   params["project_ids"]
+    #     |> String.split(",")
+    #     |> Enum.map(fn (project_id) -> String.trim project_id end)
+    # end
+
+    params =
+      params
+      |> Map.put("start_date", start_date)
+      |> Map.put("end_date", end_date)
+
     reports =
-      workspace_id
-      |> TaskModel.list_workspace_user_tasks(user_id, start_date, end_date, project_ids)
-      |> Repo.preload([:owner, :category, :members, project: [:owner, :members]])
+      TaskModel.list_workspace_user_tasks(params)
+      |> Repo.preload([:owner, :category, project: [:owner, :members]])
       |> Enum.reduce(%{}, fn task, acc ->
         range_end_date = smaller_date(DateTime.to_date(task.end_datetime), end_date)
         range_start_date = greater_date(DateTime.to_date(task.start_datetime), start_date)
