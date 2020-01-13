@@ -40,7 +40,8 @@ defmodule DailyployWeb.Router do
 
       post "/workspace_settings/add_admin", UserWorkspaceSettingsController, :add_workspace_admin
 
-      resources "/task_category", TaskCategoryController, only: [:create, :delete, :index, :show, :update]
+      resources "/task_category", TaskCategoryController,
+        only: [:create, :delete, :index, :show, :update]
 
       post "/workspace_settings/daily_status_mail_settings",
            UserWorkspaceSettingsController,

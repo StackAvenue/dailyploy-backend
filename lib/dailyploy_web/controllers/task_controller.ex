@@ -41,7 +41,7 @@ defmodule DailyployWeb.TaskController do
   def update(conn, %{"id" => id, "task" => task_params}) do
     task = TaskModel.get_task!(id)
 
-    case TaskModel.update_task(task, task_params) do
+    case TaskModel.update_task_status(task, task_params) do
       {:ok, %Task{} = task} ->
         render(conn, "show.json", task: task |> Repo.preload([:owner, :category, :time_tracks]))
 

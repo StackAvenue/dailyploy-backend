@@ -9,7 +9,7 @@ defmodule DailyployWeb.TaskCategoryController do
 
   alias Dailyploy.Repo
 
-  plug :load_category when action in [:show, :delete]
+  plug :load_category when action in [:show, :delete, :update]
 
   def show(conn, %{"id" => id}) do
     case conn.status do
@@ -67,27 +67,67 @@ defmodule DailyployWeb.TaskCategoryController do
     render(conn, "index.json", task_category: task_category)
   end
 
-  def delete(conn, _params) do
-    case conn.status do
-      nil ->
-        %{assigns: %{task_category: task_category}} = conn
+  def update(conn, %{"workspace_id" => workspace_id, "name" => name, "id" => id} = params) do
+    task_category = conn.assigns.task_category
 
-        case TaskCategoryModel.delete(task_category) do
-          {:ok, task_category} ->
-            conn
-            |> put_status(200)
-            |> render("task_category.json", %{task_category: task_category})
+    workspace_task_category =
+      WorkspaceTaskCategoryModel.get_workspace_task_category_id(workspace_id, id)
 
-          {:error, errors} ->
-            conn
-            |> put_status(400)
-            |> render("changeset_error.json", %{errors: errors.errors})
-        end
+    with false <- is_nil(workspace_task_category) do
+      WorkspaceTaskCategoryModel.delete(workspace_task_category)
 
-      404 ->
+      case TaskCategoryModel.query_already_existing_category(name) do
+        nil ->
+          case TaskCategoryModel.create(params) do
+            {:ok, task_category} ->
+              conn
+              |> put_status(200)
+              |> render("task_category.json", %{task_category: task_category})
+
+            {:error, errors} ->
+              conn
+              |> put_status(400)
+              |> render("changeset_error.json", %{errors: errors.errors})
+          end
+
+        task_category ->
+          params = %{task_category_id: task_category.id, workspace_id: workspace_id}
+
+          case WorkspaceTaskCategoryModel.create(params) do
+            {:ok, _params} ->
+              conn
+              |> put_status(200)
+              |> render("task_category.json", %{task_category: task_category})
+
+            {:error, errors} ->
+              conn
+              |> put_status(400)
+              |> render("changeset_error.json", %{errors: errors.errors})
+          end
+      end
+    else
+      true ->
         conn
         |> put_status(404)
-        |> json(%{"Resource Not Found" => true})
+        |> json(%{"category_not_found" => true})
+    end
+  end
+
+  def delete(conn, %{"workspace_id" => workspace_id, "id" => id}) do
+    workspace_task_category =
+      WorkspaceTaskCategoryModel.get_workspace_task_category_id(workspace_id, id)
+
+    with false <- is_nil(workspace_task_category) do
+      WorkspaceTaskCategoryModel.delete(workspace_task_category)
+
+      conn
+      |> put_status(200)
+      |> json(%{"category_deleted" => true})
+    else
+      true ->
+        conn
+        |> put_status(404)
+        |> json(%{"category_not_found" => true})
     end
   end
 
