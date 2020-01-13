@@ -1,5 +1,6 @@
 defmodule Dailyploy.Helper.TimeTracking do
   alias Dailyploy.Model.TimeTracking, as: TTModel
+  alias Dailyploy.Model.Task, as: TaskModel
   import DailyployWeb.Helpers
 
   def start_running(params) do
@@ -38,13 +39,28 @@ defmodule Dailyploy.Helper.TimeTracking do
   end
 
   defp verify_running({:ok, running_status}) do
-    {:ok,
-     %{
-       id: running_status.id,
-       task_id: running_status.task_id,
-       start_time: running_status.start_time,
-       status: running_status.status
-     }}
+    task = TaskModel.get_task!(running_status.task_id)
+    params = %{"status" => "running"}
+
+    case TaskModel.update_task_status(task, params) do
+      {:ok, _task} ->
+        {:ok,
+         %{
+           id: running_status.id,
+           task_id: running_status.task_id,
+           start_time: running_status.start_time,
+           status: running_status.status
+         }}
+
+      {:error, _task} ->
+        {:ok,
+         %{
+           id: running_status.id,
+           task_id: running_status.task_id,
+           start_time: running_status.start_time,
+           status: running_status.status
+         }}
+    end
   end
 
   defp verify_running({:error, running_status}) do

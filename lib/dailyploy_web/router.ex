@@ -60,8 +60,10 @@ defmodule DailyployWeb.Router do
       resources "/reports", ReportController, only: [:index]
 
       resources "/projects", ProjectController do
-        resources "/tasks", TaskController, only: [:index, :create, :update]
+        resources "/tasks", TaskController, only: [:index, :create, :update, :delete]
       end
+
+      delete "/projects", ProjectController, :delete
     end
 
     # resources "/projects", ProjectController

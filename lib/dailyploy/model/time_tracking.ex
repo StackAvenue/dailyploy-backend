@@ -20,7 +20,7 @@ defmodule Dailyploy.Model.TimeTracking do
 
     with {:ok, duration} <- calculate_duration(changeset, params) do
       changes = Map.put(changeset.changes, :duration, duration)
-      changeset = Map.replace(changeset, :changes, changes)
+      changeset = Map.replace!(changeset, :changes, changes)
       Repo.update(changeset)
     else
       {:error, message} -> {:error, message}

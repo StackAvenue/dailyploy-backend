@@ -31,6 +31,7 @@ defmodule DailyployWeb.ProjectView do
       end_date: project.end_date,
       description: project.description,
       color_code: project.color_code,
+      created_at: project.inserted_at,
       members: render_many(project.members, UserView, "user.json")
     }
   end
