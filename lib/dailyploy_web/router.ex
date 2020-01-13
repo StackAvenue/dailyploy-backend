@@ -26,9 +26,6 @@ defmodule DailyployWeb.Router do
     post "/tasks/:task_id/start-tracking", TimeTrackingController, :start_tracking
     put "/tasks/:task_id/stop-tracking", TimeTrackingController, :stop_tracking
 
-    resources "/task_category", TaskCategoryController,
-      only: [:create, :delete, :index, :update, :show]
-
     get "/logged_in_user", UserController, :show
     resources "/users", UserController
 
@@ -43,7 +40,7 @@ defmodule DailyployWeb.Router do
 
       post "/workspace_settings/add_admin", UserWorkspaceSettingsController, :add_workspace_admin
 
-      resources "/task_category", TaskCategoryController, only: [:create, :delete, :index, :show]
+      resources "/task_category", TaskCategoryController, only: [:create, :delete, :index, :show, :update]
 
       post "/workspace_settings/daily_status_mail_settings",
            UserWorkspaceSettingsController,

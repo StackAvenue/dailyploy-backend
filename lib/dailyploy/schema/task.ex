@@ -18,7 +18,7 @@ defmodule Dailyploy.Schema.Task do
     field :start_datetime, :utc_datetime
     field :end_datetime, :utc_datetime
     field :comments, :string
-    field :status, :string
+    field :status, :string, default: "not_started"
     field :priority, :string
 
     belongs_to :owner, User
