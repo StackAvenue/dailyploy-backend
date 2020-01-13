@@ -4,7 +4,7 @@ defmodule Dailyploy.Repo.Migrations.AddWorkspaceTaskCategories do
   def change do
     create table(:workspace_task_categories) do
       add :workspace_id, references(:workspaces, on_delete: :delete_all)
-      add :task_category_id, references(:task_categories)
+      add :task_category_id, references(:task_categories, on_delete: :delete_all)
 
       timestamps()
     end

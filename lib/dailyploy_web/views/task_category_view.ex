@@ -8,7 +8,7 @@ defmodule DailyployWeb.TaskCategoryView do
   end
 
   def render("index.json", %{task_category: task_category}) do
-    %{task_categories: render_many(task_category, TaskCategoryView, "task_category.json")}
+    %{task_categories: render_many(task_category.task_categories, TaskCategoryView, "task_category.json")}
   end
 
   def render("task_category.json", %{task_category: task_category}) do

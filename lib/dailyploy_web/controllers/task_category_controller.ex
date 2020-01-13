@@ -4,6 +4,7 @@ defmodule DailyployWeb.TaskCategoryController do
   # alias Dailyploy.Schema.TaskCategory
   alias Dailyploy.Model.TaskCategory, as: TaskCategoryModel
   alias Dailyploy.Schema.Workspace
+  alias Dailyploy.Model.Workspace, as: WorkspaceModel
   alias Dailyploy.Model.WorkspaceTaskCategory, as: WorkspaceTaskCategoryModel
 
   alias Dailyploy.Repo
@@ -59,8 +60,10 @@ defmodule DailyployWeb.TaskCategoryController do
     end
   end
 
-  def index(conn, _attrs) do
-    task_category = TaskCategoryModel.list_all_categories()
+  def index(conn, %{"workspace_id" => workspace_id}) do
+    workspace_id = String.to_integer(workspace_id)
+    {:ok, task_category} = WorkspaceModel.get(workspace_id)
+    task_category = task_category |> Repo.preload(:task_categories)
     render(conn, "index.json", task_category: task_category)
   end
 

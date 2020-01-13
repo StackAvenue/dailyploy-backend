@@ -19,7 +19,7 @@ defmodule DailyployWeb.WorkspaceView do
       name: workspace.name,
       type: workspace.type,
       company: CompanyView.render("company.json", %{company: workspace.company}),
-      admin_user: UserView.render("user.json", %{user: workspace.users |> List.first()})
+      owner: UserView.render("user.json", %{user: workspace.users |> List.first()})
     }
   end
 
