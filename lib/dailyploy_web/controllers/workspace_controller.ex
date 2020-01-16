@@ -73,10 +73,9 @@ defmodule DailyployWeb.WorkspaceController do
         project_ids = Enum.map(String.split(query_params.project_ids, ","), fn(x) -> String.to_integer(x) end)
         from task in Task,
         join: project in Project,
-        on: task.project_id == project.id,
+        on: task.project_id == project.id and task.project_id in ^project_ids,
         where:
-          (project.workspace_id == ^workspace_id and 
-            project.id in ^project_ids and 
+          (project.workspace_id == ^workspace_id and
              fragment("?::date BETWEEN ? AND ?", task.start_datetime, ^start_date, ^end_date)) or
             fragment("?::date BETWEEN ? AND ?", task.end_datetime, ^start_date, ^end_date) or
             fragment(
@@ -86,7 +85,7 @@ defmodule DailyployWeb.WorkspaceController do
               task.end_datetime,
               ^end_date
             )      
-      end
+      end 
 
     users =
     case is_nil(String.first(query_params.user_id)) do
