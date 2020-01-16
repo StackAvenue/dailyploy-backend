@@ -12,10 +12,9 @@ defmodule Dailyploy.Model.Project do
 
   def list_projects_in_workspace(params) do
     query = 
-    from(project in Project,
-    join: user_project in UserProject,
-    on: user_project.project_id == project.id,
-    where: ^filter_where(params))
+    Project
+    |> join(:inner, [project], user_project in UserProject, on: user_project.project_id == project.id)
+    |> where(^filter_where(params))
     
     Repo.all(query)
   end
