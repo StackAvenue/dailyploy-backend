@@ -11,13 +11,14 @@ defmodule DailyployWeb.MemberController do
 
   action_fallback DailyployWeb.FallbackController
 
-  def index(conn, %{"workspace_id" => workspace_id}) do
-    members = UserModel.list_users(workspace_id) |> Repo.preload([:projects])
+  def index(conn, params) do
+    query_params = map_to_atom(params)
+    members = UserModel.list_users_index(query_params) |> Repo.preload([:projects])
     # member_settings = UserWorkspaceSettingsModel.list_user_workspace_settings(workspace_id)
 
     member_results =
       Enum.map(members, fn member ->
-        user_workspace_setting = UserModel.list_user_workspace_setting(member.id, workspace_id)
+        user_workspace_setting = UserModel.list_user_workspace_setting(member.id, query_params.workspace_id)
         %{member: member, user_workspace_setting: user_workspace_setting}
       end)
 
@@ -101,5 +102,9 @@ defmodule DailyployWeb.MemberController do
       {:error, _} ->
         send_resp(conn, 404, "Not Found")
     end
+  end
+
+  defp map_to_atom(params) do
+    for{key, value} <- params, into: %{}, do: {String.to_atom(key), value}
   end
 end

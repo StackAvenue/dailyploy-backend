@@ -4,6 +4,7 @@ defmodule Dailyploy.Model.User do
   alias Dailyploy.Schema.Role
   alias Dailyploy.Schema.UserWorkspace
   alias Dailyploy.Schema.Workspace
+  alias Dailyploy.Schema.Project
   alias Dailyploy.Schema.UserWorkspaceSetting
   alias Auth.Guardian
   import Ecto.Query
@@ -26,6 +27,37 @@ defmodule Dailyploy.Model.User do
       )
 
     Repo.all(query)
+  end
+
+  def list_users_index(params) do
+    query =
+      from(user_workspace in UserWorkspace,
+        join: user in User,
+        on: user_workspace.user_id == user.id,
+        join: role in Role,
+        on: user_workspace.role_id == role.id,
+        join: project in Project,
+        on: user_workspace.workspace_id == project.workspace_id,
+        where: ^filter_where(params),
+        select: %{user | role: role.name}
+      )
+
+    Repo.all(query)
+  end
+
+  defp filter_where(params) do
+    Enum.reduce(params, dynamic(true), fn
+      {:workspace_id, workspace_id}, dynamic_query -> 
+        dynamic([user_workspace, user, role, project], ^dynamic_query and user_workspace.workspace_id == ^workspace_id)
+      {:user_ids, user_ids}, dynamic_query -> 
+        user_ids = Enum.map(String.split(user_ids, ","), fn(x) -> String.to_integer(x) end)
+        dynamic([user_workspace, user, role, project], ^dynamic_query and user.id in ^user_ids)
+      {:project_ids, project_ids}, dynamic_query -> 
+        project_ids = Enum.map(String.split(project_ids, ","), fn(x) -> String.to_integer(x) end)
+        dynamic([user_workspace, user, role, project], ^dynamic_query and project.id in ^project_ids)
+      {_, _}, dynamic_query ->
+        dynamic_query       
+    end)
   end
 
   def list_users(workspace_id, user_ids) do

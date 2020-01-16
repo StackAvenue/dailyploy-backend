@@ -13,6 +13,8 @@ defmodule Dailyploy.Model.Project do
   def list_projects_in_workspace(params) do
     query = 
     from(project in Project,
+    join: user_project in UserProject,
+    on: user_project.project_id == project.id,
     where: ^filter_where(params))
     
     Repo.all(query)
@@ -21,13 +23,13 @@ defmodule Dailyploy.Model.Project do
   defp filter_where(params) do
     Enum.reduce(params, dynamic(true), fn 
     {:workspace_id, workspace_id}, dynamic_query -> 
-      dynamic([project], ^dynamic_query and project.workspace_id == ^workspace_id)  
+      dynamic([project, user_project], ^dynamic_query and project.workspace_id == ^workspace_id)  
     {:user_ids, user_ids}, dynamic_query -> 
       user_ids = Enum.map(String.split(user_ids, ","), fn(x) -> String.to_integer(x) end)
-      dynamic([project], ^dynamic_query and project.owner_id in ^user_ids) 
+      dynamic([project, user_project], ^dynamic_query and user_project.user_id in ^user_ids) 
     {:project_ids, project_ids}, dynamic_query ->
       project_ids = Enum.map(String.split(project_ids, ","), fn(x) -> String.to_integer(x) end)
-      dynamic([project], ^dynamic_query and project.id in ^project_ids)
+      dynamic([project, user_project], ^dynamic_query and project.id in ^project_ids)
     {_, _}, dynamic_query ->
       dynamic_query
     end)
