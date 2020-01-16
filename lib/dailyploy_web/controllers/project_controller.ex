@@ -13,9 +13,10 @@ defmodule DailyployWeb.ProjectController do
   plug :check_user_project_in_workspace when action in [:delete]
 
   @spec index(Plug.Conn.t(), any) :: Plug.Conn.t()
-  def index(conn, %{"workspace_id" => workspace_id}) do
+  def index(conn, params) do
+    query_params = map_to_atom(params)
     projects =
-      ProjectModel.list_projects_in_workspace(workspace_id) |> Repo.preload([:members, :owner])
+      ProjectModel.list_projects_in_workspace(query_params) |> Repo.preload([:members, :owner])
 
     render(conn, "index.json", projects: projects)
   end
@@ -127,5 +128,9 @@ defmodule DailyployWeb.ProjectController do
       {:list, {:ok, _params}} ->
         send_resp(conn, 400, "User is not Admin")
     end
+  end
+
+  defp map_to_atom(params) do
+    for{key, value} <- params, into: %{}, do: {String.to_atom(key), value}
   end
 end
