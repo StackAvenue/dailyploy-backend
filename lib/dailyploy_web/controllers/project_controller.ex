@@ -15,6 +15,7 @@ defmodule DailyployWeb.ProjectController do
   @spec index(Plug.Conn.t(), any) :: Plug.Conn.t()
   def index(conn, params) do
     query_params = map_to_atom(params)
+
     projects =
       ProjectModel.list_projects_in_workspace(query_params) |> Repo.preload([:members, :owner])
 
@@ -131,6 +132,6 @@ defmodule DailyployWeb.ProjectController do
   end
 
   defp map_to_atom(params) do
-    for{key, value} <- params, into: %{}, do: {String.to_atom(key), value}
+    for {key, value} <- params, into: %{}, do: {String.to_atom(key), value}
   end
 end

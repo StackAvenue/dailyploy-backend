@@ -13,12 +13,14 @@ defmodule DailyployWeb.MemberController do
 
   def index(conn, params) do
     query_params = map_to_atom(params)
-    members = UserModel.list_users_index(query_params) |> Repo.preload([:projects])
+    members = UserModel.filter_users(query_params) |> Repo.preload([:projects])
     # member_settings = UserWorkspaceSettingsModel.list_user_workspace_settings(workspace_id)
 
     member_results =
       Enum.map(members, fn member ->
-        user_workspace_setting = UserModel.list_user_workspace_setting(member.id, query_params.workspace_id)
+        user_workspace_setting =
+          UserModel.list_user_workspace_setting(member.id, query_params.workspace_id)
+
         %{member: member, user_workspace_setting: user_workspace_setting}
       end)
 
@@ -105,6 +107,6 @@ defmodule DailyployWeb.MemberController do
   end
 
   defp map_to_atom(params) do
-    for{key, value} <- params, into: %{}, do: {String.to_atom(key), value}
+    for {key, value} <- params, into: %{}, do: {String.to_atom(key), value}
   end
 end
