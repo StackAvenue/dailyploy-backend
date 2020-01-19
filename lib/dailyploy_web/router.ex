@@ -56,6 +56,7 @@ defmodule DailyployWeb.Router do
           :show_daily_status_mail
 
       resources "/reports", ReportController, only: [:index]
+      get "/project-data", ReportController, :project_chart_data
 
       resources "/projects", ProjectController do
         resources "/tasks", TaskController, only: [:index, :create, :update, :delete]

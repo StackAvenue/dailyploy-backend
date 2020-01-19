@@ -39,4 +39,11 @@ defmodule Dailyploy.Model.TaskCategory do
         {:ok, task_category}
     end
   end
+
+  def task_summary_report_data(params) do
+    task_ids = TaskModel.task_ids_for_criteria(params)
+    total_estimated_time = TaskModel.total_estimated_time(task_ids)
+    report_data = TaskModel.category_summary_report_data(task_ids)
+    %{total_estimated_time: total_estimated_time, report_data: report_data}
+  end
 end

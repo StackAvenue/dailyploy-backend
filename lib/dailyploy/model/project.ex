@@ -4,10 +4,20 @@ defmodule Dailyploy.Model.Project do
   alias Dailyploy.Schema.User
   alias Dailyploy.Schema.UserProject
   alias Dailyploy.Schema.UserWorkspaceSetting
+  alias Dailyploy.Schema.UserTask
+  alias Dailyploy.Schema.Task
+  alias Dailyploy.Model.TaskModel
   import Ecto.Query
 
   def list_projects() do
     Repo.all(Project)
+  end
+
+  def task_summary_report_data(params) do
+    task_ids = TaskModel.task_ids_for_criteria(params)
+    total_estimated_time = TaskModel.total_estimated_time(task_ids)
+    report_data = TaskModel.project_summary_report_data(task_ids)
+    %{total_estimated_time: total_estimated_time, report_data: report_data}
   end
 
   def list_projects_in_workspace(params) do
