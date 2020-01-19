@@ -34,6 +34,8 @@ defmodule DailyployWeb.WorkspaceController do
         "frequency" => frequency,
         "start_date" => start_date
       }) do
+    query_params = map_to_atom(conn.query_params)
+
     {:ok, start_date} =
       start_date
       |> Date.from_iso8601()
@@ -52,23 +54,55 @@ defmodule DailyployWeb.WorkspaceController do
       end
 
     query =
-      from task in Task,
-        join: project in Project,
-        on: task.project_id == project.id,
-        where:
-          (project.workspace_id == ^workspace_id and
-             fragment("?::date BETWEEN ? AND ?", task.start_datetime, ^start_date, ^end_date)) or
-            fragment("?::date BETWEEN ? AND ?", task.end_datetime, ^start_date, ^end_date) or
-            fragment(
-              "?::date <= ? AND ?::date >= ?",
-              task.start_datetime,
-              ^start_date,
-              task.end_datetime,
-              ^end_date
-            )
+      case is_nil(String.first(query_params.project_ids)) do
+        true ->
+          from task in Task,
+            join: project in Project,
+            on: task.project_id == project.id,
+            where:
+              (project.workspace_id == ^workspace_id and
+                 fragment("?::date BETWEEN ? AND ?", task.start_datetime, ^start_date, ^end_date)) or
+                fragment("?::date BETWEEN ? AND ?", task.end_datetime, ^start_date, ^end_date) or
+                fragment(
+                  "?::date <= ? AND ?::date >= ?",
+                  task.start_datetime,
+                  ^start_date,
+                  task.end_datetime,
+                  ^end_date
+                )
+
+        false ->
+          project_ids =
+            Enum.map(String.split(query_params.project_ids, ","), fn x -> String.to_integer(x) end)
+
+          from task in Task,
+            join: project in Project,
+            on: task.project_id == project.id and task.project_id in ^project_ids,
+            where:
+              (project.workspace_id == ^workspace_id and
+                 fragment("?::date BETWEEN ? AND ?", task.start_datetime, ^start_date, ^end_date)) or
+                fragment("?::date BETWEEN ? AND ?", task.end_datetime, ^start_date, ^end_date) or
+                fragment(
+                  "?::date <= ? AND ?::date >= ?",
+                  task.start_datetime,
+                  ^start_date,
+                  task.end_datetime,
+                  ^end_date
+                )
+      end
 
     users =
-      UserModel.list_users(workspace_id) |> Repo.preload(tasks: {query, project: [:members]})
+      case is_nil(String.first(query_params.user_id)) do
+        true ->
+          UserModel.list_users(workspace_id) |> Repo.preload(tasks: {query, project: [:members]})
+
+        false ->
+          user_ids =
+            Enum.map(String.split(query_params.user_id, ","), fn x -> String.to_integer(x) end)
+
+          UserModel.list_users(workspace_id, user_ids)
+          |> Repo.preload(tasks: {query, project: [:members]})
+      end
 
     users = users |> Repo.preload(tasks: :time_tracks)
 
@@ -112,5 +146,9 @@ defmodule DailyployWeb.WorkspaceController do
       :lt -> date1
       _ -> date2
     end
+  end
+
+  defp map_to_atom(params) do
+    for {key, value} <- params, into: %{}, do: {String.to_atom(key), value}
   end
 end

@@ -3,8 +3,8 @@ defmodule Dailyploy.Repo.Migrations.CreateUserProjects do
 
   def change do
     create table(:user_projects) do
-      add :user_id, :integer
-      add :project_id, :integer
+      add :user_id, references(:users, on_delete: :delete_all)
+      add :project_id, references(:projects, on_delete: :delete_all)
 
       timestamps()
     end

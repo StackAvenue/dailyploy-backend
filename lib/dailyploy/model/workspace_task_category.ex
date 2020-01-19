@@ -52,4 +52,22 @@ defmodule Dailyploy.Model.WorkspaceTaskCategory do
         {:ok, workspace_task_category}
     end
   end
+
+  def list_workspace_specific_categories(workspace_id) when is_integer(workspace_id) do
+    query =
+      from workspace_category in WorkspaceTaskCategory,
+        where: workspace_category.workspace_id == ^workspace_id
+
+    Repo.all(query)
+  end
+
+  def get_workspace_task_category_id(workspace_id, task_category_id) do
+    query =
+      from workspace_category in WorkspaceTaskCategory,
+        where:
+          workspace_category.workspace_id == ^workspace_id and
+            workspace_category.task_category_id == ^task_category_id
+
+    List.first(Repo.all(query))
+  end
 end

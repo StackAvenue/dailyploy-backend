@@ -79,6 +79,12 @@ defmodule Dailyploy.Model.Task do
     |> Repo.update()
   end
 
+  def update_task_status(task, attrs) do
+    task
+    |> Task.update_status_changeset(attrs)
+    |> Repo.update()
+  end
+
   def delete_task(task) do
     Repo.delete(task)
   end

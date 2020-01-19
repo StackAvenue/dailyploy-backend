@@ -5,15 +5,19 @@ defmodule DailyployWeb.ProjectController do
   alias Dailyploy.Schema.Project
   alias Dailyploy.Model.Workspace, as: WorkspaceModel
   alias Dailyploy.Schema.Workspace
+  alias Dailyploy.Model.UserWorkspace, as: UserWorkspaceModel
 
   plug Auth.Pipeline
   plug :load_workspace_by_user
-  plug :load_user_project_in_workspace when action in [:show, :delete]
+  plug :load_user_project_in_workspace when action in [:show]
+  plug :check_user_project_in_workspace when action in [:delete]
 
   @spec index(Plug.Conn.t(), any) :: Plug.Conn.t()
-  def index(conn, %{"workspace_id" => workspace_id}) do
+  def index(conn, params) do
+    query_params = map_to_atom(params)
+
     projects =
-      ProjectModel.list_projects_in_workspace(workspace_id) |> Repo.preload([:members, :owner])
+      ProjectModel.list_projects_in_workspace(query_params) |> Repo.preload([:members, :owner])
 
     render(conn, "index.json", projects: projects)
   end
@@ -59,10 +63,10 @@ defmodule DailyployWeb.ProjectController do
     end
   end
 
-  def delete(conn, _) do
-    project = conn.assigns.project
+  def delete(conn, %{"workspace_id" => workspace_id}) do
+    project_ids = conn.query_params
 
-    case ProjectModel.delete_project(project) do
+    case ProjectModel.delete_project(project_ids, String.to_integer(workspace_id)) do
       {:ok, _project} ->
         send_resp(conn, 202, "Project Deleted successfully")
 
@@ -101,5 +105,33 @@ defmodule DailyployWeb.ProjectController do
       _ ->
         send_resp(conn, 404, "Resource Not Found")
     end
+  end
+
+  defp check_user_project_in_workspace(
+         %{params: %{"ids" => ids, "workspace_id" => workspace_id}} = conn,
+         _params
+       ) do
+    user = Guardian.Plug.current_resource(conn)
+
+    with {:list, {:ok, 1}} <- {:list, UserWorkspaceModel.return_role_id(user.id, workspace_id)} do
+      ids =
+        ids
+        |> String.split(",")
+        |> Enum.map(fn x -> String.to_integer(x) end)
+
+      # projects = ProjectModel.list_projects()
+      # project_id_list = []
+      # project_ids = Enum.map(projects, fn project -> project.workspace_id == workspace_id 
+      #   Enum.concat(project_id_list, [project.id])
+      # end)
+      Map.replace!(conn, :query_params, ids)
+    else
+      {:list, {:ok, _params}} ->
+        send_resp(conn, 400, "User is not Admin")
+    end
+  end
+
+  defp map_to_atom(params) do
+    for {key, value} <- params, into: %{}, do: {String.to_atom(key), value}
   end
 end
