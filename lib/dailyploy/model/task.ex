@@ -8,6 +8,7 @@ defmodule Dailyploy.Model.Task do
   alias Dailyploy.Schema.User
   alias Dailyploy.Schema.UserTask
   alias Dailyploy.Schema.TimeTracking
+  alias Dailyploy.Model.TimeTracking, as: TTModel
 
   def list_tasks(project_id) do
     query =
@@ -84,6 +85,27 @@ defmodule Dailyploy.Model.Task do
     task
     |> Task.update_status_changeset(attrs)
     |> Repo.update()
+  end
+
+  def mark_task_complete(task, attrs) do
+    time_tracks = TTModel.find_with_task_id(task.id)
+
+    case is_nil(time_tracks) do
+      true ->
+        task =
+          task
+          |> Task.update_status_changeset(attrs)
+          |> Repo.update()
+
+        with {:ok, _time_tracks} <- TTModel.create_logged_task(task) do
+          {:ok, task}
+        end
+
+      false ->
+        task
+        |> Task.update_status_changeset(attrs)
+        |> Repo.update()
+    end
   end
 
   def delete_task(task) do

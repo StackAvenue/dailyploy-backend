@@ -10,10 +10,33 @@ defmodule Dailyploy.Model.TimeTracking do
     Repo.insert(changeset)
   end
 
-  # Have to calculate duration here itself 
+  # Have to calculate duration here itself
   # and then have to append it with the changeset so that duration can go correctly
-  # And have to put check wheather the given end time is not less then the start time 
+  # And have to put check wheather the given end time is not less then the start time
   # Can throw the error
+
+  def create_logged_task({:ok, params}) do
+    duration = DateTime.diff(params.end_datetime, params.start_datetime)
+
+    params = %{
+      task_id: params.id,
+      start_time: params.start_datetime,
+      end_time: params.end_datetime,
+      time_log: true,
+      duration: duration
+    }
+
+    changeset = TimeTracking.changeset(%TimeTracking{}, params)
+    asd = Repo.insert(changeset)
+  end
+
+  def find_with_task_id(task_id) do
+    query =
+      from time_tracks in TimeTracking,
+        where: time_tracks.task_id == ^task_id
+
+    List.first(Repo.all(query))
+  end
 
   def stop_running(running_task, params) do
     changeset = TimeTracking.stop_changeset(running_task, params)

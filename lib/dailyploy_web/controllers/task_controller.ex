@@ -41,7 +41,21 @@ defmodule DailyployWeb.TaskController do
   def update(conn, %{"id" => id, "task" => task_params}) do
     task = TaskModel.get_task!(id)
 
-    case TaskModel.update_task_status(task, task_params) do
+    case TaskModel.mark_task_complete(task, task_params) do
+      {:ok, %Task{} = task} ->
+        render(conn, "show.json", task: task |> Repo.preload([:owner, :category, :time_tracks]))
+
+      {:error, task} ->
+        conn
+        |> put_status(422)
+        |> render("changeset_error.json", %{errors: task.errors})
+    end
+  end
+
+  def task_completion(conn, %{"id" => id, "task" => task_params}) do
+    task = TaskModel.get_task!(id)
+
+    case TaskModel.mark_task_complete(task, task_params) do
       {:ok, %Task{} = task} ->
         render(conn, "show.json", task: task |> Repo.preload([:owner, :category, :time_tracks]))
 
