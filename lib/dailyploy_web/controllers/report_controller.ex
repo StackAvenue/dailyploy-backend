@@ -44,7 +44,7 @@ defmodule DailyployWeb.ReportController do
 
     reports =
       TaskModel.list_workspace_user_tasks(params)
-      |> Repo.preload([:owner, :category, project: [:owner, :members]])
+      |> Repo.preload([:owner, :time_tracks, :category, project: [:owner, :members]])
       |> Enum.reduce(%{}, fn task, acc ->
         range_end_date = smaller_date(DateTime.to_date(task.end_datetime), end_date)
         range_start_date = greater_date(DateTime.to_date(task.start_datetime), start_date)

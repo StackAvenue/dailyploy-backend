@@ -17,6 +17,7 @@ defmodule Dailyploy.Model.Project do
         on: user_project.project_id == project.id
       )
       |> where(^filter_where(params))
+      |> distinct(true)
 
     Repo.all(query)
   end
