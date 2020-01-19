@@ -105,13 +105,14 @@ defmodule DailyployWeb.ReportController do
   defp normalize_start_and_end_date(params) do
     {:ok, start_date} = convert_into_iso8601(params["start_date"])
     {:ok, end_date} = convert_into_iso8601(params["end_date"])
+
     params
-      |> Map.put("start_date", start_date)
-      |> Map.put("end_date", end_date)
+    |> Map.put("start_date", start_date)
+    |> Map.put("end_date", end_date)
   end
 
   defp convert_into_iso8601(date) do
     date
-      |> Date.from_iso8601()
+    |> Date.from_iso8601()
   end
 end
