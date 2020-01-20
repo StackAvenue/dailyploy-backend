@@ -6,7 +6,7 @@ defmodule Dailyploy.Model.Project do
   alias Dailyploy.Schema.UserWorkspaceSetting
   alias Dailyploy.Schema.UserTask
   alias Dailyploy.Schema.Task
-  alias Dailyploy.Model.TaskModel
+  alias Dailyploy.Model.Task, as: TaskModel
   import Ecto.Query
 
   def list_projects() do

@@ -56,10 +56,12 @@ defmodule DailyployWeb.Router do
           :show_daily_status_mail
 
       resources "/reports", ReportController, only: [:index]
+      get "/project_summary_report", ReportController, :project_summary_report
       get "/project-data", ReportController, :project_chart_data
 
       resources "/projects", ProjectController do
         resources "/tasks", TaskController, only: [:index, :create, :update, :delete]
+        put "/make_as_complete/:id", TaskController, :task_completion
       end
 
       delete "/projects", ProjectController, :delete
