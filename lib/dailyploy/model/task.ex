@@ -45,8 +45,6 @@ defmodule Dailyploy.Model.Task do
   end
 
   def list_workspace_user_tasks(params) do
-    require IEx
-    IEx.pry
     query =
       Task
       |> join(:left, [task], user_task in UserTask, on: task.id == user_task.task_id)
