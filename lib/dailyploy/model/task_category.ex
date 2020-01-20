@@ -2,6 +2,7 @@ defmodule Dailyploy.Model.TaskCategory do
   import Ecto.Query
   alias Dailyploy.Repo
   alias Dailyploy.Schema.TaskCategory
+  alias Dailyploy.Model.Task, as: TaskModel
 
   def create(attrs \\ %{}) do
     %TaskCategory{}

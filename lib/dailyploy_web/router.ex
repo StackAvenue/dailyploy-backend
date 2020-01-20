@@ -57,7 +57,9 @@ defmodule DailyployWeb.Router do
 
       resources "/reports", ReportController, only: [:index]
       get "/project_summary_report", ReportController, :project_summary_report
-      get "/project-data", ReportController, :project_chart_data
+      get "/user_summary_report", ReportController, :user_summary_report
+      get "/category_summary_report", ReportController, :categories_summary_report
+      get "/priority_summary_report", ReportController, :priorities_summary_report
 
       resources "/projects", ProjectController do
         resources "/tasks", TaskController, only: [:index, :create, :update, :delete]

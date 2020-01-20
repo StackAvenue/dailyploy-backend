@@ -7,6 +7,7 @@ defmodule Dailyploy.Model.User do
   alias Dailyploy.Schema.Project
   alias Dailyploy.Schema.UserProject
   alias Dailyploy.Schema.UserWorkspaceSetting
+  alias Dailyploy.Model.Task, as: TaskModel
   alias Auth.Guardian
   import Ecto.Query
   import Comeonin.Bcrypt

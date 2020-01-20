@@ -132,6 +132,15 @@ defmodule Dailyploy.Model.Task do
     Repo.all(query) |> Repo.preload(preloads)
   end
 
+  def get_tasks(ids) do
+    query =
+      from(task in Task,
+        where: task.id in ^ids
+      )
+
+    Repo.all(query)
+  end
+
   def tracked_time(task_id) do
     case TaskModel.get(task_id) do
       {:error, _message} ->
@@ -177,13 +186,11 @@ defmodule Dailyploy.Model.Task do
           category_acc = category_acc -- [category_data]
           category_acc = category_acc ++ [updated_category_data]
       end
-
-      category_acc
     end)
   end
 
   def user_summary_report_data(task_ids) do
-    tasks = get(task_ids)
+    tasks = get(task_ids, [:members])
 
     Enum.reduce(tasks, 0, fn task, total_tracked_time ->
       total_tracked_time + tracked_time(task.id)
@@ -191,7 +198,7 @@ defmodule Dailyploy.Model.Task do
   end
 
   def category_summary_report_data(task_ids) do
-    tasks = get(task_ids, [:task_category])
+    tasks = get(task_ids, [:category])
 
     Enum.reduce(tasks, [], fn task, category_acc ->
       category_data = Enum.find(category_acc, fn map -> map["id"] == task.category_id end)
@@ -219,15 +226,13 @@ defmodule Dailyploy.Model.Task do
           category_acc = category_acc -- [category_data]
           category_acc = category_acc ++ [updated_category_data]
       end
-
-      category_acc
     end)
   end
 
   def priority_summary_report_data(params) do
     task_ids = TaskModel.task_ids_for_criteria(params)
     total_estimated_time = TaskModel.total_estimated_time(task_ids)
-    tasks = get(task_ids)
+    tasks = get_tasks(task_ids)
 
     report_data =
       Enum.reduce(tasks, [], fn task, priority_acc ->
@@ -250,8 +255,6 @@ defmodule Dailyploy.Model.Task do
             priority_acc = priority_acc -- [priority_data]
             priority_acc = priority_acc ++ [updated_priority_data]
         end
-
-        priority_acc
       end)
 
     %{total_estimated_time: total_estimated_time, report_data: report_data}
@@ -320,9 +323,9 @@ defmodule Dailyploy.Model.Task do
               ^end_date
             )
         )
-        {_, _}, dynamic_query ->
-          dynamic_query
 
+      {_, _}, dynamic_query ->
+        dynamic_query
     end)
   end
 
