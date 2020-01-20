@@ -45,11 +45,13 @@ defmodule Dailyploy.Model.Task do
   end
 
   def list_workspace_user_tasks(params) do
+    require IEx
+    IEx.pry
     query =
       Task
-      |> join(:inner, [task], project in Project, on: task.project_id == project.id)
-      # |> join(:inner, [task], user_task in UserTask, on: user_task.task_id == task.id)
-      |> where(^filter_where(params))
+      |> join(:left, [task], user_task in UserTask, on: task.id == user_task.task_id)
+      |> join(:inner, [task], project in Project, on: project.id == task.project_id)
+      |> where(^filter_for_tasks_for_criteria(params))
 
     Repo.all(query)
   end
