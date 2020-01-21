@@ -40,8 +40,11 @@ defmodule Dailyploy.Model.User do
             user_workspace.workspace_id == ^params.workspace_id,
         join: user_project in UserProject,
         on: user_project.user_id == user.id,
+        join: role in Role,
+        on: role.id == user_workspace.role_id,
         where: ^filter_where(params),
-        distinct: true
+        distinct: true,
+        select: %{user | role: role.name}
       )
 
     Repo.all(query)
@@ -51,7 +54,7 @@ defmodule Dailyploy.Model.User do
     Enum.reduce(params, dynamic(true), fn
       {:workspace_id, workspace_id}, dynamic_query ->
         dynamic(
-          [user, user_workspace, user_project],
+          [user, user_workspace, user_project, role],
           ^dynamic_query and user_workspace.workspace_id == ^workspace_id
         )
 
@@ -59,7 +62,7 @@ defmodule Dailyploy.Model.User do
         user_ids = Enum.map(String.split(user_ids, ","), fn x -> String.to_integer(x) end)
 
         dynamic(
-          [user, user_workspace, user_project],
+          [user, user_workspace, user_project, role],
           ^dynamic_query and user.id in ^user_ids and user_project.user_id in ^user_ids
         )
 
@@ -67,7 +70,7 @@ defmodule Dailyploy.Model.User do
         project_ids = Enum.map(String.split(project_ids, ","), fn x -> String.to_integer(x) end)
 
         dynamic(
-          [user, user_workspace, user_project],
+          [user, user_workspace, user_project, role],
           ^dynamic_query and user_project.project_id in ^project_ids
         )
 
