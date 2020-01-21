@@ -288,11 +288,11 @@ defmodule Dailyploy.Model.Task do
 
   defp filter_for_tasks_for_criteria(params) do
     Enum.reduce(params, dynamic(true), fn
-      # {"workspace_id", workspace_id}, dynamic_query ->
-      #   dynamic(
-      #     [task, project, user_task],
-      #     ^dynamic_query and project.workspace_id == ^workspace_id
-      #   )
+      {"workspace_id", workspace_id}, dynamic_query ->
+        dynamic(
+          [task, project, user_task],
+          ^dynamic_query and project.workspace_id == ^workspace_id
+        )
 
       {"user_ids", user_ids}, dynamic_query ->
         user_ids = Enum.map(String.split(user_ids, ","), fn x -> String.to_integer(x) end)
@@ -302,13 +302,13 @@ defmodule Dailyploy.Model.Task do
         project_ids = Enum.map(String.split(project_ids, ","), fn x -> String.to_integer(x) end)
         dynamic([task, project, user_task], ^dynamic_query and task.project_id in ^project_ids)
 
-      # {"category_ids", category_ids}, dynamic_query ->
-      #   category_ids = Enum.map(String.split(category_ids, ","), fn x -> String.to_integer(x) end)
-      #   dynamic([task, project, user_task], ^dynamic_query and task.category_id in ^category_ids)
+      {"category_ids", category_ids}, dynamic_query ->
+        category_ids = Enum.map(String.split(category_ids, ","), fn x -> String.to_integer(x) end)
+        dynamic([task, project, user_task], ^dynamic_query and task.category_id in ^category_ids)
 
-      # {"priorities", priorities}, dynamic_query ->
-      #   priorities = Enum.map(String.split(priorities, ","), fn x -> x end)
-      #   dynamic([task, project, user_task], ^dynamic_query and task.priority in ^priorities)
+      {"priorities", priorities}, dynamic_query ->
+        priorities = Enum.map(String.split(priorities, ","), fn x -> x end)
+        dynamic([task, project, user_task], ^dynamic_query and task.priority in ^priorities)
 
       {"start_date", start_date}, dynamic_query ->
         end_date = params["end_date"]
