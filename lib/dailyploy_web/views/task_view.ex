@@ -76,6 +76,8 @@ defmodule DailyployWeb.TaskView do
       start_datetime: task.start_datetime,
       end_datetime: task.end_datetime,
       comments: task.comments,
+      status: task.status,
+      priority: task.priority,
       owner: render_one(task.owner, UserView, "user.json"),
       category: render_one(task.category, TaskCategoryView, "task_category.json"),
       project: render_one(task.project, ProjectView, "project_for_listing.json")
