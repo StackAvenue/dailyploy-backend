@@ -49,7 +49,7 @@ defmodule Dailyploy.Model.Task do
       Task
       |> join(:left, [task], user_task in UserTask, on: task.id == user_task.task_id)
       |> join(:inner, [task], project in Project, on: project.id == task.project_id)
-      |> where(^filter_for_tasks_for_criteria(params))
+      |> where(^filter_where(params))
 
     Repo.all(query)
   end
