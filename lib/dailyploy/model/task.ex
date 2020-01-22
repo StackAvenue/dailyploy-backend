@@ -47,9 +47,9 @@ defmodule Dailyploy.Model.Task do
   def list_workspace_user_tasks(params) do
     query =
       Task
-      |> join(:left, [task], user_task in UserTask, on: task.id == user_task.task_id)
       |> join(:inner, [task], project in Project, on: project.id == task.project_id)
-      |> where(^filter_where(params))
+      |> join(:inner, [task], user_task in UserTask, on: task.id == user_task.task_id)
+      |> where(^filter_for_tasks_for_criteria(params))
 
     Repo.all(query)
   end
