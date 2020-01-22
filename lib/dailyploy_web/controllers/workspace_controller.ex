@@ -69,7 +69,7 @@ defmodule DailyployWeb.WorkspaceController do
                   ^start_date,
                   task.end_datetime,
                   ^end_date
-                ))
+                )))
 
         false ->
           project_ids =
@@ -88,7 +88,7 @@ defmodule DailyployWeb.WorkspaceController do
                   ^start_date,
                   task.end_datetime,
                   ^end_date
-                ))
+                )))
       end
 
     users =
