@@ -2,6 +2,7 @@ defmodule Dailyploy.Model.TaskCategory do
   import Ecto.Query
   alias Dailyploy.Repo
   alias Dailyploy.Schema.TaskCategory
+  alias Dailyploy.Model.Task, as: TaskModel
 
   def create(attrs \\ %{}) do
     %TaskCategory{}
@@ -38,5 +39,12 @@ defmodule Dailyploy.Model.TaskCategory do
       task_category ->
         {:ok, task_category}
     end
+  end
+
+  def task_summary_report_data(params) do
+    task_ids = TaskModel.task_ids_for_criteria(params)
+    total_estimated_time = TaskModel.total_estimated_time(task_ids)
+    report_data = TaskModel.category_summary_report_data(task_ids)
+    %{total_estimated_time: total_estimated_time, report_data: report_data}
   end
 end

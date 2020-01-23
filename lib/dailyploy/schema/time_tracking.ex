@@ -10,6 +10,7 @@ defmodule Dailyploy.Schema.TimeTracking do
     field(:end_time, :utc_datetime)
     field(:status, :string, default: "stopped")
     field(:duration, :integer)
+    field(:time_log, :boolean, default: false)
     belongs_to(:task, Task)
 
     timestamps()
@@ -18,8 +19,10 @@ defmodule Dailyploy.Schema.TimeTracking do
   @required ~w(task_id status)a
   @running_params ~w(task_id start_time status)a
   @stopped_params ~w(task_id end_time status)a
-  @running_optional ~w(end_time duration)a
-  @stopped_optional ~w(start_time duration)a
+  @running_optional ~w(end_time duration time_log)a
+  @stopped_optional ~w(start_time duration time_log)a
+
+  @changeset @running_params ++ @running_optional ++ @stopped_params ++ @stopped_optional
 
   @running_permitted @running_params ++ @running_optional
   @stopped_permitted @stopped_params ++ @stopped_optional
@@ -34,6 +37,11 @@ defmodule Dailyploy.Schema.TimeTracking do
     time_tracking
     |> cast(params, @stopped_permitted)
     |> common_changeset()
+  end
+
+  def changeset(time_tracking, params) do
+    time_tracking
+    |> cast(params, @changeset)
   end
 
   def tracking_status() do

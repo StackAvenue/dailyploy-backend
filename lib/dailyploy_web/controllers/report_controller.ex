@@ -3,8 +3,35 @@ defmodule DailyployWeb.ReportController do
 
   alias Dailyploy.Repo
   alias Dailyploy.Model.Task, as: TaskModel
+  alias Dailyploy.Model.Project, as: ProjectModel
+  alias Dailyploy.Model.TaskCategory, as: TaskCategoryModel
+  alias Dailyploy.Model.User, as: UserModel
 
   plug Auth.Pipeline
+
+  def project_summary_report(conn, %{"start_date" => start_date, "end_date" => end_date} = params) do
+    params = normalize_start_and_end_date(params)
+    report_data = ProjectModel.task_summary_report_data(params)
+    render(conn, "project_summary_report.json", report_data: report_data)
+  end
+
+  def user_summary_report(conn, %{"start_date" => start_date} = params) do
+    params = normalize_start_and_end_date(params)
+    report_data = UserModel.task_summary_report_data(params)
+    render(conn, "user_summary_report.json", report_data: report_data)
+  end
+
+  def categories_summary_report(conn, %{"start_date" => start_date} = params) do
+    params = normalize_start_and_end_date(params)
+    report_data = TaskCategoryModel.task_summary_report_data(params)
+    render(conn, "category_summary_report.json", report_data: report_data)
+  end
+
+  def priorities_summary_report(conn, %{"start_date" => start_date} = params) do
+    params = normalize_start_and_end_date(params)
+    report_data = TaskModel.priority_summary_report_data(params)
+    render(conn, "task_summary_report.json", report_data: report_data)
+  end
 
   def index(conn, %{"start_date" => start_date} = params) do
     {:ok, start_date} =
@@ -73,5 +100,19 @@ defmodule DailyployWeb.ReportController do
       :lt -> date1
       _ -> date2
     end
+  end
+
+  defp normalize_start_and_end_date(params) do
+    {:ok, start_date} = convert_into_iso8601(params["start_date"])
+    {:ok, end_date} = convert_into_iso8601(params["end_date"])
+
+    params
+    |> Map.put("start_date", start_date)
+    |> Map.put("end_date", end_date)
+  end
+
+  defp convert_into_iso8601(date) do
+    date
+    |> Date.from_iso8601()
   end
 end

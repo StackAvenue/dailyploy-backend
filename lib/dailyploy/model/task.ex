@@ -7,6 +7,9 @@ defmodule Dailyploy.Model.Task do
   alias Dailyploy.Schema.UserWorkspaceSetting
   alias Dailyploy.Schema.User
   alias Dailyploy.Schema.UserTask
+  alias Dailyploy.Schema.TimeTracking
+  alias Dailyploy.Model.TimeTracking, as: TTModel
+  alias Dailyploy.Model.Task, as: TaskModel
 
   def list_tasks(project_id) do
     query =
@@ -44,9 +47,9 @@ defmodule Dailyploy.Model.Task do
   def list_workspace_user_tasks(params) do
     query =
       Task
-      |> join(:inner, [task], project in Project, on: task.project_id == project.id)
-      # |> join(:inner, [task], user_task in UserTask, on: user_task.task_id == task.id)
-      |> where(^filter_where(params))
+      |> join(:inner, [task], project in Project, on: project.id == task.project_id)
+      |> join(:inner, [task], user_task in UserTask, on: task.id == user_task.task_id)
+      |> where(^filter_for_tasks_for_criteria(params))
 
     Repo.all(query)
   end
@@ -85,6 +88,27 @@ defmodule Dailyploy.Model.Task do
     |> Repo.update()
   end
 
+  def mark_task_complete(task, attrs) do
+    time_tracks = TTModel.find_with_task_id(task.id)
+
+    case is_nil(time_tracks) do
+      true ->
+        task =
+          task
+          |> Task.update_status_changeset(attrs)
+          |> Repo.update()
+
+        with {:ok, _time_tracks} <- TTModel.create_logged_task(task) do
+          task
+        end
+
+      false ->
+        task
+        |> Task.update_status_changeset(attrs)
+        |> Repo.update()
+    end
+  end
+
   def delete_task(task) do
     Repo.delete(task)
   end
@@ -97,6 +121,217 @@ defmodule Dailyploy.Model.Task do
       task ->
         {:ok, task}
     end
+  end
+
+  def get(ids, preloads) do
+    query =
+      from(task in Task,
+        where: task.id in ^ids
+      )
+
+    Repo.all(query) |> Repo.preload(preloads)
+  end
+
+  def get_tasks(ids) do
+    query =
+      from(task in Task,
+        where: task.id in ^ids
+      )
+
+    Repo.all(query)
+  end
+
+  def tracked_time(task_id) do
+    case TaskModel.get(task_id) do
+      {:error, _message} ->
+        0
+
+      {:ok, task} ->
+        query =
+          from(tracked_time in TimeTracking,
+            where: tracked_time.task_id == ^task.id,
+            select: sum(tracked_time.duration)
+          )
+
+        result = Repo.one(query)
+
+        case is_nil(result) do
+          true -> 0
+          false -> result
+        end
+    end
+  end
+
+  def project_summary_report_data(task_ids) do
+    tasks = get(task_ids, [:project, :time_tracks])
+
+    Enum.reduce(tasks, [], fn task, category_acc ->
+      category_data = Enum.find(category_acc, fn map -> map["id"] == task.project_id end)
+
+      case category_data do
+        nil ->
+          category_acc =
+            category_acc ++
+              [
+                %{
+                  "id" => task.project_id,
+                  "name" => task.project.name,
+                  "tracked_time" => tracked_time(task.id)
+                }
+              ]
+
+        _ ->
+          updated_category_data =
+            Map.put(
+              category_data,
+              "tracked_time",
+              category_data["tracked_time"] + tracked_time(task.id)
+            )
+
+          category_acc = category_acc -- [category_data]
+          category_acc = category_acc ++ [updated_category_data]
+      end
+    end)
+  end
+
+  def user_summary_report_data(task_ids) do
+    tasks = get(task_ids, [:members])
+
+    Enum.reduce(tasks, 0, fn task, total_tracked_time ->
+      total_tracked_time + tracked_time(task.id)
+    end)
+  end
+
+  def category_summary_report_data(task_ids) do
+    tasks = get(task_ids, [:category])
+
+    Enum.reduce(tasks, [], fn task, category_acc ->
+      category_data = Enum.find(category_acc, fn map -> map["id"] == task.category_id end)
+
+      case category_data do
+        nil ->
+          category_acc =
+            category_acc ++
+              [
+                %{
+                  "id" => task.category_id,
+                  "name" => task.category.name,
+                  "tracked_time" => tracked_time(task.id)
+                }
+              ]
+
+        _ ->
+          updated_category_data =
+            Map.put(
+              category_data,
+              "tracked_time",
+              category_data["tracked_time"] + tracked_time(task.id)
+            )
+
+          category_acc = category_acc -- [category_data]
+          category_acc = category_acc ++ [updated_category_data]
+      end
+    end)
+  end
+
+  def priority_summary_report_data(params) do
+    task_ids = TaskModel.task_ids_for_criteria(params)
+    total_estimated_time = TaskModel.total_estimated_time(task_ids)
+    tasks = get_tasks(task_ids)
+
+    report_data =
+      Enum.reduce(tasks, [], fn task, priority_acc ->
+        priority_data = Enum.find(priority_acc, fn map -> map["priority"] == task.priority end)
+
+        case priority_data do
+          nil ->
+            priority_acc =
+              priority_acc ++
+                [%{"priority" => task.priority, "tracked_time" => tracked_time(task.id)}]
+
+          _ ->
+            updated_priority_data =
+              Map.put(
+                priority_data,
+                "tracked_time",
+                priority_data["tracked_time"] + tracked_time(task.id)
+              )
+
+            priority_acc = priority_acc -- [priority_data]
+            priority_acc = priority_acc ++ [updated_priority_data]
+        end
+      end)
+
+    %{total_estimated_time: total_estimated_time, report_data: report_data}
+  end
+
+  def total_estimated_time(task_ids) do
+    query =
+      from(task in Task,
+        where:
+          task.id in ^task_ids and
+            (is_nil(task.start_datetime) == false and is_nil(task.end_datetime) == false),
+        select:
+          fragment("SUM(EXTRACT(EPOCH FROM ((?) - (?))))", task.end_datetime, task.start_datetime)
+      )
+
+    Repo.one(query)
+  end
+
+  def task_ids_for_criteria(params) do
+    query =
+      Task
+      |> join(:inner, [task], project in Project, on: project.id == task.project_id)
+      |> join(:inner, [task], user_task in UserTask, on: task.id == user_task.task_id)
+      |> where(^filter_for_tasks_for_criteria(params))
+
+    Enum.map(Repo.all(query), fn task -> task.id end)
+  end
+
+  defp filter_for_tasks_for_criteria(params) do
+    Enum.reduce(params, dynamic(true), fn
+      {"workspace_id", workspace_id}, dynamic_query ->
+        dynamic(
+          [task, project, user_task],
+          ^dynamic_query and project.workspace_id == ^workspace_id
+        )
+
+      {"user_ids", user_ids}, dynamic_query ->
+        user_ids = Enum.map(String.split(user_ids, ","), fn x -> String.to_integer(x) end)
+        dynamic([task, project, user_task], ^dynamic_query and user_task.user_id in ^user_ids)
+
+      {"project_ids", project_ids}, dynamic_query ->
+        project_ids = Enum.map(String.split(project_ids, ","), fn x -> String.to_integer(x) end)
+        dynamic([task, project, user_task], ^dynamic_query and task.project_id in ^project_ids)
+
+      {"category_ids", category_ids}, dynamic_query ->
+        category_ids = Enum.map(String.split(category_ids, ","), fn x -> String.to_integer(x) end)
+        dynamic([task, project, user_task], ^dynamic_query and task.category_id in ^category_ids)
+
+      {"priorities", priorities}, dynamic_query ->
+        priorities = Enum.map(String.split(priorities, ","), fn x -> x end)
+        dynamic([task, project, user_task], ^dynamic_query and task.priority in ^priorities)
+
+      {"start_date", start_date}, dynamic_query ->
+        end_date = params["end_date"]
+
+        dynamic(
+          [task, project, user_task],
+          ^dynamic_query and
+            (fragment("?::date BETWEEN ? AND ?", task.start_datetime, ^start_date, ^end_date) or
+               fragment("?::date BETWEEN ? AND ?", task.end_datetime, ^start_date, ^end_date) or
+               fragment(
+                 "?::date <= ? AND ?::date >= ?",
+                 task.start_datetime,
+                 ^start_date,
+                 task.end_datetime,
+                 ^end_date
+               ))
+        )
+
+      {_, _}, dynamic_query ->
+        dynamic_query
+    end)
   end
 
   defp filter_where(params) do
@@ -112,21 +347,32 @@ defmodule Dailyploy.Model.Task do
 
         dynamic([task], ^dynamic and task.project_id in ^project_ids)
 
+      {"category_ids", category_ids}, dynamic ->
+        category_ids =
+          category_ids
+          |> String.split(",")
+          |> Enum.map(fn category_id -> String.trim(category_id) end)
+
+        dynamic([task, project], ^dynamic and task.category_id in ^category_ids)
+
+      {"priority", priority}, dynamic ->
+        dynamic([task, priority], ^dynamic and task.priority == ^priority)
+
       {"start_date", start_date}, dynamic ->
         end_date = params["end_date"]
 
         dynamic(
           [task],
-          (^dynamic and
-             fragment("?::date BETWEEN ? AND ?", task.start_datetime, ^start_date, ^end_date)) or
-            fragment("?::date BETWEEN ? AND ?", task.end_datetime, ^start_date, ^end_date) or
-            fragment(
-              "?::date <= ? AND ?::date >= ?",
-              task.start_datetime,
-              ^start_date,
-              task.end_datetime,
-              ^end_date
-            )
+          ^dynamic and
+            (fragment("?::date BETWEEN ? AND ?", task.start_datetime, ^start_date, ^end_date) or
+               fragment("?::date BETWEEN ? AND ?", task.end_datetime, ^start_date, ^end_date) or
+               fragment(
+                 "?::date <= ? AND ?::date >= ?",
+                 task.start_datetime,
+                 ^start_date,
+                 task.end_datetime,
+                 ^end_date
+               ))
         )
 
       {"user_ids", user_ids}, dynamic ->
