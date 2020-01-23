@@ -152,17 +152,19 @@ defmodule Dailyploy.Model.Task do
             where: tracked_time.task_id == ^task.id,
             select: sum(tracked_time.duration)
           )
+
         result = Repo.one(query)
-       case is_nil(result) do
-         true -> 0
-         false -> result
-       end
-       
+
+        case is_nil(result) do
+          true -> 0
+          false -> result
+        end
     end
   end
 
   def project_summary_report_data(task_ids) do
     tasks = get(task_ids, [:project, :time_tracks])
+
     Enum.reduce(tasks, [], fn task, category_acc ->
       category_data = Enum.find(category_acc, fn map -> map["id"] == task.project_id end)
 
@@ -185,6 +187,7 @@ defmodule Dailyploy.Model.Task do
               "tracked_time",
               category_data["tracked_time"] + tracked_time(task.id)
             )
+
           category_acc = category_acc -- [category_data]
           category_acc = category_acc ++ [updated_category_data]
       end
@@ -281,9 +284,8 @@ defmodule Dailyploy.Model.Task do
       |> join(:inner, [task], project in Project, on: project.id == task.project_id)
       |> join(:inner, [task], user_task in UserTask, on: task.id == user_task.task_id)
       |> where(^filter_for_tasks_for_criteria(params))
-      
+
     Enum.map(Repo.all(query), fn task -> task.id end)
-    
   end
 
   defp filter_for_tasks_for_criteria(params) do
@@ -315,17 +317,16 @@ defmodule Dailyploy.Model.Task do
 
         dynamic(
           [task, project, user_task],
-          (^dynamic_query and
+          ^dynamic_query and
             (fragment("?::date BETWEEN ? AND ?", task.start_datetime, ^start_date, ^end_date) or
-            fragment("?::date BETWEEN ? AND ?", task.end_datetime, ^start_date, ^end_date) or
-            fragment(
-              "?::date <= ? AND ?::date >= ?",
-              task.start_datetime,
-              ^start_date,
-              task.end_datetime,
-              ^end_date
-            ))
-          )
+               fragment("?::date BETWEEN ? AND ?", task.end_datetime, ^start_date, ^end_date) or
+               fragment(
+                 "?::date <= ? AND ?::date >= ?",
+                 task.start_datetime,
+                 ^start_date,
+                 task.end_datetime,
+                 ^end_date
+               ))
         )
 
       {_, _}, dynamic_query ->
@@ -362,17 +363,17 @@ defmodule Dailyploy.Model.Task do
 
         dynamic(
           [task],
-          (^dynamic and
-             (fragment("?::date BETWEEN ? AND ?", task.start_datetime, ^start_date, ^end_date) or
-            fragment("?::date BETWEEN ? AND ?", task.end_datetime, ^start_date, ^end_date) or
-            fragment(
-              "?::date <= ? AND ?::date >= ?",
-              task.start_datetime,
-              ^start_date,
-              task.end_datetime,
-              ^end_date
-            ))
-        ))
+          ^dynamic and
+            (fragment("?::date BETWEEN ? AND ?", task.start_datetime, ^start_date, ^end_date) or
+               fragment("?::date BETWEEN ? AND ?", task.end_datetime, ^start_date, ^end_date) or
+               fragment(
+                 "?::date <= ? AND ?::date >= ?",
+                 task.start_datetime,
+                 ^start_date,
+                 task.end_datetime,
+                 ^end_date
+               ))
+        )
 
       {"user_ids", user_ids}, dynamic ->
         user_ids =

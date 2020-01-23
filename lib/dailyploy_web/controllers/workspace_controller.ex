@@ -60,16 +60,16 @@ defmodule DailyployWeb.WorkspaceController do
             join: project in Project,
             on: task.project_id == project.id,
             where:
-              (project.workspace_id == ^workspace_id and (
-                 fragment("?::date BETWEEN ? AND ?", task.start_datetime, ^start_date, ^end_date) or
-                fragment("?::date BETWEEN ? AND ?", task.end_datetime, ^start_date, ^end_date) or
-                fragment(
-                  "?::date <= ? AND ?::date >= ?",
-                  task.start_datetime,
-                  ^start_date,
-                  task.end_datetime,
-                  ^end_date
-                )))
+              project.workspace_id == ^workspace_id and
+                (fragment("?::date BETWEEN ? AND ?", task.start_datetime, ^start_date, ^end_date) or
+                   fragment("?::date BETWEEN ? AND ?", task.end_datetime, ^start_date, ^end_date) or
+                   fragment(
+                     "?::date <= ? AND ?::date >= ?",
+                     task.start_datetime,
+                     ^start_date,
+                     task.end_datetime,
+                     ^end_date
+                   ))
 
         false ->
           project_ids =
@@ -79,16 +79,16 @@ defmodule DailyployWeb.WorkspaceController do
             join: project in Project,
             on: task.project_id == project.id and task.project_id in ^project_ids,
             where:
-              (project.workspace_id == ^workspace_id and (
-                 fragment("?::date BETWEEN ? AND ?", task.start_datetime, ^start_date, ^end_date) or
-                fragment("?::date BETWEEN ? AND ?", task.end_datetime, ^start_date, ^end_date) or
-                fragment(
-                  "?::date <= ? AND ?::date >= ?",
-                  task.start_datetime,
-                  ^start_date,
-                  task.end_datetime,
-                  ^end_date
-                )))
+              project.workspace_id == ^workspace_id and
+                (fragment("?::date BETWEEN ? AND ?", task.start_datetime, ^start_date, ^end_date) or
+                   fragment("?::date BETWEEN ? AND ?", task.end_datetime, ^start_date, ^end_date) or
+                   fragment(
+                     "?::date <= ? AND ?::date >= ?",
+                     task.start_datetime,
+                     ^start_date,
+                     task.end_datetime,
+                     ^end_date
+                   ))
       end
 
     users =
