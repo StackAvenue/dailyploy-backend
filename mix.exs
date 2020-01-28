@@ -20,7 +20,7 @@ defmodule Dailyploy.MixProject do
   def application do
     [
       mod: {Dailyploy.Application, []},
-      extra_applications: [:logger, :runtime_tools, :calendar, :timex]
+      extra_applications: [:logger, :runtime_tools, :calendar, :timex, :arc_ecto]
     ]
   end
 
@@ -50,7 +50,18 @@ defmodule Dailyploy.MixProject do
       {:calendar, "~> 0.17.5"},
       {:quantum, "~> 2.3"},
       {:timex, "~> 3.5"},
-      {:params, "~> 2.0"}
+      {:params, "~> 2.0"},
+      {:nimble_csv, "~> 0.6"},
+      {:csv, "~> 2.3"},
+
+      #csv upload
+      {:arc, "~> 0.11.0"},
+      {:arc_ecto, "~> 0.11.0"},
+      {:ex_aws, "~> 2.1"},
+      {:ex_aws_s3, "~> 2.0"},
+      {:hackney, "~> 1.9"},
+      {:sweet_xml, "~> 0.6"},
+      {:poison, "~> 3.1"}
     ]
   end
 
