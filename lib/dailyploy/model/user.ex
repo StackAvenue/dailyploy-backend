@@ -38,7 +38,7 @@ defmodule Dailyploy.Model.User do
         on:
           user_workspace.user_id == user.id and
             user_workspace.workspace_id == ^params.workspace_id,
-        join: user_project in UserProject,
+        left_join: user_project in UserProject,
         on: user_project.user_id == user.id,
         join: role in Role,
         on: role.id == user_workspace.role_id,
@@ -63,7 +63,7 @@ defmodule Dailyploy.Model.User do
 
         dynamic(
           [user, user_workspace, user_project, role],
-          ^dynamic_query and user.id in ^user_ids and user_project.user_id in ^user_ids
+          ^dynamic_query and user.id in ^user_ids or user_project.user_id in ^user_ids
         )
 
       {:project_ids, project_ids}, dynamic_query ->

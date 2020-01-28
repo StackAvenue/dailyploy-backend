@@ -38,3 +38,16 @@ config :guardian, Auth.Guardian,
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"
+
+config :arc,
+  asset_host: "https://dailyploy-csv.s3.ap-south-1.amazonaws.com",
+  storage: Arc.Storage.S3,
+  bucket: System.get_env("AWS_S3_BUCKET"),
+  virtual_host: true
+
+# virtual_host: true 
+
+config :ex_aws,
+  access_key_id: [System.get_env("AWS_ACCESS_KEY_ID"), :instance_role],
+  secret_access_key: [System.get_env("AWS_SECRET_ACCESS_KEY"), :instance_role],
+  region: "ap-south-1"

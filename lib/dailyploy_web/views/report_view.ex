@@ -7,6 +7,10 @@ defmodule DailyployWeb.ReportView do
     %{reports: render_many(reports, ReportView, "report.json")}
   end
 
+  def render("csv_download.json", %{csv_url: csv_url}) do
+    %{csv_url: csv_url}
+  end
+
   def render("report.json", %{report: {date, tasks}}) do
     %{
       date: date,

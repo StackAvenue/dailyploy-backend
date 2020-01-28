@@ -56,6 +56,7 @@ defmodule DailyployWeb.Router do
           :show_daily_status_mail
 
       resources "/reports", ReportController, only: [:index]
+      get "/csv_download", ReportController, :csv_download
       get "/project_summary_report", ReportController, :project_summary_report
       get "/user_summary_report", ReportController, :user_summary_report
       get "/category_summary_report", ReportController, :categories_summary_report
