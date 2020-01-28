@@ -29,7 +29,7 @@ defmodule Dailyploy.Avatar do
   #   version
   # end
 
-  #Override the storage directory:
+  # Override the storage directory:
   def storage_dir(_version, {_file, scope}) do
     "uploads/#{scope}"
   end

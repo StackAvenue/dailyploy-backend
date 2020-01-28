@@ -8,7 +8,6 @@ defmodule DailyployWeb.ReportController do
   alias Dailyploy.Model.User, as: UserModel
   alias Dailyploy.Avatar
 
-  
   plug Auth.Pipeline
 
   def project_summary_report(conn, %{"start_date" => start_date, "end_date" => end_date} = params) do
@@ -86,6 +85,7 @@ defmodule DailyployWeb.ReportController do
           Map.put(date_acc, Date.to_iso8601(date), tasks)
         end)
       end)
+
     render(conn, "index.json", reports: reports)
   end
 
@@ -127,21 +127,38 @@ defmodule DailyployWeb.ReportController do
           Map.put(date_acc, Date.to_iso8601(date), tasks)
         end)
       end)
-      NimbleCSV.define(MyParser, separator: "\t", escape: "\"")
-      data = [["Date", "Task Name", "Project Name", "Category", "Status", "Priority"]]
-      csv_data = Enum.reduce(reports, [], fn {date, tasks}, acc -> 
-          task_acc = Enum.reduce(tasks, [], fn task, task_acc -> 
-          task_acc = task_acc ++ [[date, task.name, task.project.name, task.category.name, task.status, task.priority]]  
-        end)
+
+    NimbleCSV.define(MyParser, separator: "\t", escape: "\"")
+    data = [["Date", "Task Name", "Project Name", "Category", "Status", "Priority"]]
+
+    csv_data =
+      Enum.reduce(reports, [], fn {date, tasks}, acc ->
+        task_acc =
+          Enum.reduce(tasks, [], fn task, task_acc ->
+            task_acc =
+              task_acc ++
+                [
+                  [
+                    date,
+                    task.name,
+                    task.project.name,
+                    task.category.name,
+                    task.status,
+                    task.priority
+                  ]
+                ]
+          end)
+
         acc = acc ++ task_acc
-        end)
-      data = data ++ csv_data  
-      date = DateTime.utc_now
-      File.write!("#{date}.csv", MyParser.dump_to_iodata(data))
-      {:ok, path} = File.cwd
-      path  = path <> "/#{date}.csv"
-      csv_url = add_csv_url(path)
-      render(conn, "csv_download.json", csv_url: csv_url)
+      end)
+
+    data = data ++ csv_data
+    date = DateTime.utc_now()
+    File.write!("#{date}.csv", MyParser.dump_to_iodata(data))
+    {:ok, path} = File.cwd()
+    path = path <> "/#{date}.csv"
+    csv_url = add_csv_url(path)
+    render(conn, "csv_download.json", csv_url: csv_url)
   end
 
   defp greater_date(date1, date2) do

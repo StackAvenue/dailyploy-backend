@@ -63,7 +63,7 @@ defmodule Dailyploy.Model.User do
 
         dynamic(
           [user, user_workspace, user_project, role],
-          ^dynamic_query and user.id in ^user_ids or user_project.user_id in ^user_ids
+          (^dynamic_query and user.id in ^user_ids) or user_project.user_id in ^user_ids
         )
 
       {:project_ids, project_ids}, dynamic_query ->
