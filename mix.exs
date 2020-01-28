@@ -54,7 +54,7 @@ defmodule Dailyploy.MixProject do
       {:nimble_csv, "~> 0.6"},
       {:csv, "~> 2.3"},
 
-      #csv upload
+      # csv upload
       {:arc, "~> 0.11.0"},
       {:arc_ecto, "~> 0.11.0"},
       {:ex_aws, "~> 2.1"},
