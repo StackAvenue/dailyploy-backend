@@ -73,4 +73,45 @@ defmodule Dailyploy.Model.TimeTracking do
       true -> {:error, "task not running"}
     end
   end
+
+  defp change_duration(start_time, end_time) do
+    case DateTime.diff(end_time, start_time) >= 0 do
+      true -> {:ok, DateTime.diff(end_time, start_time)}
+      false -> {:error, "end time is wrong"}
+    end
+  end
+
+  def update_tracked_time(time_tracked, params) do
+    params = map_to_atom(params)
+    params = Map.replace!(params, :task_id, String.to_integer(params.task_id))
+    changeset = TimeTracking.update_changeset(time_tracked, params)
+    with {:ok, time_tracked} <- Repo.update(changeset) do
+      with {:ok, duration} <- change_duration(time_tracked.start_time, time_tracked.end_time) do
+        changes = Map.put(changeset.changes, :duration, duration)
+        changeset = Map.replace!(changeset, :changes, changes)
+        Repo.update(changeset)
+      else
+        {:error, message} -> {:error, message}
+      end
+    else
+      {:error, message} -> {:error, message}
+    end
+  end
+
+  def get_time_tracked(id, task_id) when is_integer(id) do
+    query =
+      from(task_running in TimeTracking,
+        where: task_running.task_id == ^task_id and task_running.id == ^id,
+        select: task_running
+      )
+    task_tracked = List.first(Repo.all(query))
+    case is_nil(task_tracked) do
+      false -> {:ok, task_tracked}
+      true -> {:error, "not found"}
+    end
+  end
+
+  defp map_to_atom(params) do
+    for {key, value} <- params, into: %{}, do: {String.to_atom(key), value}
+  end
 end

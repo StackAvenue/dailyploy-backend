@@ -39,6 +39,12 @@ defmodule Dailyploy.Schema.TimeTracking do
     |> common_changeset()
   end
 
+  def update_changeset(time_tracking, params) do
+    time_tracking
+    |> cast(params, @changeset)
+    |> common_changeset()
+  end
+
   def changeset(time_tracking, params) do
     time_tracking
     |> cast(params, @changeset)

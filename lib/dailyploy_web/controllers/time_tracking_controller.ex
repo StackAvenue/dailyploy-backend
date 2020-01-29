@@ -8,6 +8,7 @@ defmodule DailyployWeb.TimeTrackingController do
 
   plug :load_task when action in [:start_tracking]
   plug :load_tracked_task when action in [:stop_tracking]
+  plug :load_time_tracked when action in [:edit_tracked_time]
 
   def start_tracking(conn, params) do
     case conn.status do
@@ -64,6 +65,28 @@ defmodule DailyployWeb.TimeTrackingController do
     end
   end
 
+  def edit_tracked_time(conn, params) do
+    case conn.status do
+      404 -> 
+        conn
+        |> put_status(404)
+        |> json(%{"Time Tracked Found" => false})
+      
+      nil ->
+        %{assigns: %{time_tracked: time_tracked}} = conn
+        with {:ok, task_stopped} <- TTModel.update_tracked_time(time_tracked, params) do
+          conn
+          |> put_status(200)
+          |> render("task_stopped.json", %{task_stopped: task_stopped})
+        else
+          {:error, message} -> 
+            conn
+            |> put_status(400)
+            |> json(%{errors: message})
+        end
+    end
+  end
+
   defp load_task(%{params: %{"task_id" => task_id}} = conn, _params) do
     {task_id, _} = Integer.parse(task_id)
 
@@ -88,5 +111,17 @@ defmodule DailyployWeb.TimeTrackingController do
         conn
         |> put_status(404)
     end
+  end
+
+  defp load_time_tracked(%{params: %{"id" => id, "task_id" => task_id}} = conn, _params) do
+    {id, _} = Integer.parse(id)
+    {task_id, _} = Integer.parse(task_id)
+    case TTModel.get_time_tracked(id, task_id) do
+      {:ok, time_tracked} ->
+        assign(conn, :time_tracked, time_tracked) 
+      {:error, _message} ->
+        conn
+        |> put_status(404)
+    end 
   end
 end
