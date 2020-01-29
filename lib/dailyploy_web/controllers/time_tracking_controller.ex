@@ -67,19 +67,20 @@ defmodule DailyployWeb.TimeTrackingController do
 
   def edit_tracked_time(conn, params) do
     case conn.status do
-      404 -> 
+      404 ->
         conn
         |> put_status(404)
         |> json(%{"Time Tracked Found" => false})
-      
+
       nil ->
         %{assigns: %{time_tracked: time_tracked}} = conn
+
         with {:ok, task_stopped} <- TTModel.update_tracked_time(time_tracked, params) do
           conn
           |> put_status(200)
           |> render("task_stopped.json", %{task_stopped: task_stopped})
         else
-          {:error, message} -> 
+          {:error, message} ->
             conn
             |> put_status(400)
             |> json(%{errors: message})
@@ -116,12 +117,14 @@ defmodule DailyployWeb.TimeTrackingController do
   defp load_time_tracked(%{params: %{"id" => id, "task_id" => task_id}} = conn, _params) do
     {id, _} = Integer.parse(id)
     {task_id, _} = Integer.parse(task_id)
+
     case TTModel.get_time_tracked(id, task_id) do
       {:ok, time_tracked} ->
-        assign(conn, :time_tracked, time_tracked) 
+        assign(conn, :time_tracked, time_tracked)
+
       {:error, _message} ->
         conn
         |> put_status(404)
-    end 
+    end
   end
 end

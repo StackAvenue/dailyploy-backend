@@ -85,6 +85,7 @@ defmodule Dailyploy.Model.TimeTracking do
     params = map_to_atom(params)
     params = Map.replace!(params, :task_id, String.to_integer(params.task_id))
     changeset = TimeTracking.update_changeset(time_tracked, params)
+
     with {:ok, time_tracked} <- Repo.update(changeset) do
       with {:ok, duration} <- change_duration(time_tracked.start_time, time_tracked.end_time) do
         changes = Map.put(changeset.changes, :duration, duration)
@@ -104,7 +105,9 @@ defmodule Dailyploy.Model.TimeTracking do
         where: task_running.task_id == ^task_id and task_running.id == ^id,
         select: task_running
       )
+
     task_tracked = List.first(Repo.all(query))
+
     case is_nil(task_tracked) do
       false -> {:ok, task_tracked}
       true -> {:error, "not found"}
