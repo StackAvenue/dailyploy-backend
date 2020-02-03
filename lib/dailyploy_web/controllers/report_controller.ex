@@ -7,8 +7,15 @@ defmodule DailyployWeb.ReportController do
   alias Dailyploy.Model.TaskCategory, as: TaskCategoryModel
   alias Dailyploy.Model.User, as: UserModel
   alias Dailyploy.Avatar
+  alias Dailyploy.Model.TimeTracking, as: TTModel
 
   plug Auth.Pipeline
+
+  @minute 60
+  @hour @minute * 60
+  @day @hour * 24
+  @week @day * 7
+  @divisor [@week, @day, @hour, @minute, 1]
 
   def project_summary_report(conn, %{"start_date" => start_date, "end_date" => end_date} = params) do
     params = normalize_start_and_end_date(params)
@@ -77,6 +84,16 @@ defmodule DailyployWeb.ReportController do
         range_end_date = smaller_date(DateTime.to_date(task.end_datetime), end_date)
         range_start_date = greater_date(DateTime.to_date(task.start_datetime), start_date)
 
+        duration =
+          with false <- is_nil(TTModel.calculate_task_duration(task.id)) do
+            TTModel.calculate_task_duration(task.id)
+          else
+            true -> 0
+          end
+
+        duration = sec_to_str(duration)
+        task = Map.put_new(task, :duration, duration)
+
         range_start_date
         |> Date.range(range_end_date)
         |> Enum.reduce(acc, fn date, date_acc ->
@@ -119,6 +136,16 @@ defmodule DailyployWeb.ReportController do
         range_end_date = smaller_date(DateTime.to_date(task.end_datetime), end_date)
         range_start_date = greater_date(DateTime.to_date(task.start_datetime), start_date)
 
+        duration =
+          with false <- is_nil(TTModel.calculate_task_duration(task.id)) do
+            TTModel.calculate_task_duration(task.id)
+          else
+            true -> 0
+          end
+
+        duration = sec_to_str(duration)
+        task = Map.put_new(task, :duration, duration)
+
         range_start_date
         |> Date.range(range_end_date)
         |> Enum.reduce(acc, fn date, date_acc ->
@@ -129,7 +156,7 @@ defmodule DailyployWeb.ReportController do
       end)
 
     NimbleCSV.define(MyParser, separator: "\t", escape: "\"")
-    data = [["Date", "Task Name", "Project Name", "Category", "Status", "Priority"]]
+    data = [["Date", "Task Name", "Project Name", "Category", "Status", "Priority", "Duration"]]
 
     csv_data =
       Enum.reduce(reports, [], fn {date, tasks}, acc ->
@@ -144,7 +171,8 @@ defmodule DailyployWeb.ReportController do
                     task.project.name,
                     task.category.name,
                     task.status,
-                    task.priority
+                    task.priority,
+                    task.duration
                   ]
                 ]
           end)
@@ -158,6 +186,7 @@ defmodule DailyployWeb.ReportController do
     {:ok, path} = File.cwd()
     path = path <> "/#{date}.csv"
     csv_url = add_csv_url(path)
+    File.rm!("#{date}.csv")
     render(conn, "csv_download.json", csv_url: csv_url)
   end
 
@@ -194,4 +223,29 @@ defmodule DailyployWeb.ReportController do
     date
     |> Date.from_iso8601()
   end
+
+  def to_str(time) do
+    to_str(time, :ms)
+  end
+
+  def to_str(time, :ms) do
+    ms_to_str(time)
+  end
+
+  def to_str(time, :seconds) do
+    sec_to_str(time)
+  end
+
+  def sec_to_str(sec) do
+    {_, [s, m, h, d, w]} =
+      Enum.reduce(@divisor, {sec, []}, fn divisor, {n, acc} ->
+        {rem(n, divisor), [div(n, divisor) | acc]}
+      end)
+
+    ["#{w} wk", "#{d} d", "#{h} hr", "#{m} min", "#{s} sec"]
+    |> Enum.reject(fn str -> String.starts_with?(str, "0") end)
+    |> Enum.join(", ")
+  end
+
+  defp ms_to_str(ms), do: (ms / 1_000) |> sec_to_str()
 end
