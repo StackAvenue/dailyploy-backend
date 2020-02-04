@@ -45,15 +45,8 @@ defmodule Dailyploy.Helper.Invitation do
     |> Email.add_to(toEmail)
     |> Email.put_from("contact@stack-avenue.com")
     |> Email.put_subject("DailyPloy Confirmation")
-    |> Email.put_text(
-      "Hi #{invitation_details["user_name"]},you have been invited by #{
-        invitation_details["sender_name"]
-      } and been successfully added to a #{invitation_details["workspace_name"]}'s workspace inside #{
-        invitation_details["project_name"]
-      } project.Kindly proceed to login to proceed http://dailyploy.com/login/#{
-        invitation_details["token_id"]
-      }/"
-    )
+    |> Email.put_phoenix_view(DailyployWeb.EmailView)
+    |> Email.put_phoenix_template("confirmation_with_project.html", invitation_details: invitation_details)
     |> Mail.send()
   end
 
@@ -64,13 +57,8 @@ defmodule Dailyploy.Helper.Invitation do
     |> Email.add_to(toEmail)
     |> Email.put_from("contact@stack-avenue.com")
     |> Email.put_subject("DailyPloy Confirmation")
-    |> Email.put_text(
-      "Hi #{invitation_details["user_name"]},you have been invited by #{
-        invitation_details["sender_name"]
-      } and been successfully added to a #{invitation_details["workspace_name"]}'s workspace.Kindly proceed to login to proceed http://dailyploy.com/login/#{
-        invitation_details["token_id"]
-      }/"
-    )
+    |> Email.put_phoenix_view(DailyployWeb.EmailView)
+    |> Email.put_phoenix_template("index_without_project.html", invitation_details: invitation_details)
     |> Mail.send()
   end
 
@@ -82,17 +70,8 @@ defmodule Dailyploy.Helper.Invitation do
     |> Email.add_to(toEmail)
     |> Email.put_from("contact@stack-avenue.com")
     |> Email.put_subject("DailyPloy Invitation")
-    |> Email.put_text(
-      "Hi #{user}, DailyPloy is the world's fastest growing Planning Platform and #{
-        invitation_details["sender_name"]
-      } would like you to also join the DailyPloy's StackAvenue #{
-        invitation_details["workspace_name"]
-      }'s workspace and invited you to contribute to #{invitation_details["project_name"]} project.
-                           So #{user}, whether you are trying to manage your tasks or you want to have a clear visibility of your team's task, check us out and experience the revolution.
-                           Click on the following link to proceed http://dailyploy.com/signup/#{
-        invitation_details["token_id"]
-      }/"
-    )
+    |> Email.put_phoenix_view(DailyployWeb.EmailView)
+    |> Email.put_phoenix_template("index.html", invitation_details: invitation_details, user: user)
     |> Mail.send()
   end
 
@@ -104,15 +83,8 @@ defmodule Dailyploy.Helper.Invitation do
     |> Email.add_to(toEmail)
     |> Email.put_from("contact@stack-avenue.com")
     |> Email.put_subject("DailyPloy Invitation")
-    |> Email.put_text(
-      "Hi #{user}, DailyPloy is the world's fastest growing Planning Platform and #{
-        invitation_details["sender_name"]
-      } would like you to oin the DailyPloy's StackAvenue #{invitation_details["workspace_name"]}'s workspace.
-                           So #{user}, whether you are trying to manage your tasks or you want to have a clear visibility of your team's task, check us out and experience the revolution.
-                           Click on the following link to proceed http://dailyploy.com/signup/#{
-        invitation_details["token_id"]
-      }/"
-    )
+    |> Email.put_phoenix_view(DailyployWeb.EmailView)
+    |> Email.put_phoenix_template("invitation_email_without_project.html", invitation_details: invitation_details, user: user)
     |> Mail.send()
   end
 
