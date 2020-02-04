@@ -1,0 +1,16 @@
+<section class="phx-hero"> 
+  <div>
+    Hey,
+      <br>
+      <br>
+      <span><%= gettext "%{name}", name: @invitation_details["sender_name"] %></span>
+      has invited you to his workspace on Dailyploy. Click 
+      <a style= "color: hotpink" href= <%= gettext "http://dailyploy.com/signup/%{name}/", name: @invitation_details["token_id"] %>> here</a> 
+      to join the team and experience a new and easy way to manage your tasks, team and projects.
+      <br>
+      <br>
+    Thank You!
+    <br>
+    Dailyploy
+  </div>
+</section>
