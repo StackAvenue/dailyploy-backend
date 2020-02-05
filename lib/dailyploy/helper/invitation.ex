@@ -46,7 +46,9 @@ defmodule Dailyploy.Helper.Invitation do
     |> Email.put_from("contact@stack-avenue.com")
     |> Email.put_subject("DailyPloy Confirmation")
     |> Email.put_phoenix_view(DailyployWeb.EmailView)
-    |> Email.put_phoenix_template("confirmation_with_project.html", invitation_details: invitation_details)
+    |> Email.put_phoenix_template("confirmation_with_project.html",
+      invitation_details: invitation_details
+    )
     |> Mail.send()
   end
 
@@ -58,7 +60,9 @@ defmodule Dailyploy.Helper.Invitation do
     |> Email.put_from("contact@stack-avenue.com")
     |> Email.put_subject("DailyPloy Confirmation")
     |> Email.put_phoenix_view(DailyployWeb.EmailView)
-    |> Email.put_phoenix_template("index_without_project.html", invitation_details: invitation_details)
+    |> Email.put_phoenix_template("index_without_project.html",
+      invitation_details: invitation_details
+    )
     |> Mail.send()
   end
 
@@ -84,7 +88,10 @@ defmodule Dailyploy.Helper.Invitation do
     |> Email.put_from("contact@stack-avenue.com")
     |> Email.put_subject("DailyPloy Invitation")
     |> Email.put_phoenix_view(DailyployWeb.EmailView)
-    |> Email.put_phoenix_template("invitation_email_without_project.html", invitation_details: invitation_details, user: user)
+    |> Email.put_phoenix_template("invitation_email_without_project.html",
+      invitation_details: invitation_details,
+      user: user
+    )
     |> Mail.send()
   end
 
