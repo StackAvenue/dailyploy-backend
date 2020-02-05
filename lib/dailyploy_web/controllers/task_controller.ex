@@ -89,7 +89,7 @@ defmodule DailyployWeb.TaskController do
         end
       else
         conn
-        |> put_status(401)
+        |> put_status(403)
         |> json(%{"task_owner" => false})
       end
     else
