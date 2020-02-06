@@ -83,10 +83,10 @@ defmodule DailyployWeb.UserController do
                     |> render("changeset_error.json", %{errors: errors.errors})
                 end
 
-                {:error, status_code} ->
-                  conn
-                  |> put_status(403)
-                  |> json(%{"old_password_wrong" => true})
+              {:error, status_code} ->
+                conn
+                |> put_status(403)
+                |> json(%{"old_password_wrong" => true})
             end
         end
     end
