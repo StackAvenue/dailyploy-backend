@@ -16,6 +16,16 @@ defmodule DailyployWeb.TimeTrackingView do
     }
   end
 
+  def render("date_formatted_time_tracks.json", %{time_tracking: time_tracks}) do
+    [date] = Map.keys(time_tracks)
+    time_tracks = Map.get(time_tracks, "#{date}")
+
+    %{
+      date: date,
+      time_tracks: render_many(time_tracks, TimeTrackingView, "time_tracks.json")
+    }
+  end
+
   def render("task_stopped.json", %{task_stopped: task_stopped}) do
     %{
       id: task_stopped.id,
@@ -24,6 +34,17 @@ defmodule DailyployWeb.TimeTrackingView do
       start_time: task_stopped.start_time,
       task_id: task_stopped.task_id,
       duration: task_stopped.duration
+    }
+  end
+
+  def render("time_tracks.json", %{time_tracking: time_track}) do
+    %{
+      id: time_track.id,
+      end_time: time_track.end_time,
+      status: time_track.status,
+      start_time: time_track.start_time,
+      task_id: time_track.task_id,
+      duration: time_track.duration
     }
   end
 

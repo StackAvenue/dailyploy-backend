@@ -114,6 +114,25 @@ defmodule DailyployWeb.WorkspaceController do
             range_end_date = smaller_date(DateTime.to_date(task.end_datetime), end_date)
             range_start_date = greater_date(DateTime.to_date(task.start_datetime), start_date)
 
+            date_formatted_time_tracks =
+              Enum.map(task.time_tracks, fn time_tracks ->
+                time_track_range_start_date =
+                  greater_date(DateTime.to_date(time_tracks.start_time), start_date)
+
+                time_track_range_end_date =
+                  smaller_date(DateTime.to_date(time_tracks.end_time), end_date)
+
+                time_track_range_start_date
+                |> Date.range(time_track_range_end_date)
+                |> Enum.reduce(%{}, fn date, date_acc ->
+                  date_acc = Map.put_new(date_acc, Date.to_iso8601(date), [])
+                  time_tracks = Map.get(date_acc, Date.to_iso8601(date)) ++ [time_tracks]
+                  Map.put(date_acc, Date.to_iso8601(date), time_tracks)
+                end)
+              end)
+
+            task = Map.put(task, :time_tracks, date_formatted_time_tracks)
+
             range_start_date
             |> Date.range(range_end_date)
             |> Enum.reduce(acc, fn date, date_acc ->
