@@ -16,10 +16,7 @@ defmodule DailyployWeb.TimeTrackingView do
     }
   end
 
-  def render("date_formatted_time_tracks.json", %{time_tracking: time_tracks}) do
-    [date] = Map.keys(time_tracks)
-    time_tracks = Map.get(time_tracks, "#{date}")
-
+  def render("date_formatted_time_tracks.json", %{time_tracking: {date, time_tracks}}) do
     %{
       date: date,
       time_tracks: render_many(time_tracks, TimeTrackingView, "time_tracks.json")
