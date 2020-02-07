@@ -72,7 +72,7 @@ defmodule DailyployWeb.UserController do
             |> json(%{"old_password_missing" => true})
 
           _ ->
-            case UserModel.token_sign_in(user.email, user_params["old_password"]) do
+            case UserModel.token_sign_in_check(user.email, user_params["old_password"]) do
               {:ok, _token, _claims} ->
                 with {:ok, %User{} = user} <- UserModel.update_user(user, user_params) do
                   render(conn, "show.json", user: user)
@@ -83,8 +83,10 @@ defmodule DailyployWeb.UserController do
                     |> render("changeset_error.json", %{errors: errors.errors})
                 end
 
-              _ ->
-                {:error, :unauthorized}
+              {:error, status_code} ->
+                conn
+                |> put_status(403)
+                |> json(%{"old_password_wrong" => true})
             end
         end
     end

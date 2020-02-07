@@ -41,6 +41,12 @@ config :ex_aws,
   secret_access_key: [System.get_env("AWS_SECRET_ACCESS_KEY"), :instance_role],
   region: "ap-south-1"
 
+# config quantum
+config :dailyploy, Dailyploy.Helper.Scheduler,
+  jobs: [
+    {"* 23 * * *", {Dailyploy.Helper.DailyStatus, :schedule_daily_status_mails, []}}
+  ]
+
 # ## SSL Support
 #
 # To get SSL working, you will need to add the `https` key

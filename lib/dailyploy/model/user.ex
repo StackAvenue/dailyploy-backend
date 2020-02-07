@@ -140,6 +140,16 @@ defmodule Dailyploy.Model.User do
     end
   end
 
+  def token_sign_in_check(email, password) do
+    case email_password_auth(email, password) do
+      {:ok, user} ->
+        Guardian.encode_and_sign(user)
+
+      _ ->
+        {:error, 403}
+    end
+  end
+
   defp email_password_auth(email, password) when is_binary(email) and is_binary(password) do
     with {:ok, user} <- get_by_email(email),
          do: verify_password(password, user)
