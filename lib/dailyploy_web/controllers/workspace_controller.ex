@@ -10,6 +10,7 @@ defmodule DailyployWeb.WorkspaceController do
 
   alias Dailyploy.Schema.Task
   alias Dailyploy.Schema.Project
+  alias Dailyploy.Schema.TimeTracking
 
   plug Auth.Pipeline
   plug :put_view, DailyployWeb.UserView when action in [:user_tasks]
@@ -59,6 +60,8 @@ defmodule DailyployWeb.WorkspaceController do
           from task in Task,
             join: project in Project,
             on: task.project_id == project.id,
+            join: time_track in TimeTracking,
+            on: time_track.task_id == task.id,
             where:
               project.workspace_id == ^workspace_id and
                 (fragment("?::date BETWEEN ? AND ?", task.start_datetime, ^start_date, ^end_date) or
@@ -68,6 +71,12 @@ defmodule DailyployWeb.WorkspaceController do
                      task.start_datetime,
                      ^start_date,
                      task.end_datetime,
+                     ^end_date
+                   ) or
+                   fragment(
+                     "?::date BETWEEN ? AND ?",
+                     time_track.start_time,
+                     ^start_date,
                      ^end_date
                    ))
 
@@ -78,6 +87,8 @@ defmodule DailyployWeb.WorkspaceController do
           from task in Task,
             join: project in Project,
             on: task.project_id == project.id and task.project_id in ^project_ids,
+            join: time_track in TimeTracking,
+            on: time_track.task_id == task.id,
             where:
               project.workspace_id == ^workspace_id and
                 (fragment("?::date BETWEEN ? AND ?", task.start_datetime, ^start_date, ^end_date) or
@@ -88,8 +99,38 @@ defmodule DailyployWeb.WorkspaceController do
                      ^start_date,
                      task.end_datetime,
                      ^end_date
+                   ) or
+                   fragment(
+                     "?::date BETWEEN ? AND ?",
+                     time_track.start_time,
+                     ^start_date,
+                     ^end_date
                    ))
       end
+
+    current_time = Date.utc_today()
+
+    query =
+      from [task, project, time_track] in query,
+        where:
+          (is_nil(time_track.end_time) == false and
+             (fragment("?::date BETWEEN ? AND ?", task.end_datetime, ^start_date, ^end_date) or
+                fragment(
+                  "?::date <= ? AND ?::date >= ?",
+                  task.start_datetime,
+                  ^start_date,
+                  task.end_datetime,
+                  ^end_date
+                ))) or
+            (is_nil(time_track.end_time) == true and
+               (fragment("?::date BETWEEN ? AND ?", ^current_time, ^start_date, ^end_date) or
+                  fragment(
+                    "?::date <= ? AND ?::date >= ?",
+                    task.start_datetime,
+                    ^start_date,
+                    ^current_time,
+                    ^end_date
+                  )))
 
     users =
       case is_nil(String.first(query_params.user_id)) do
@@ -120,7 +161,10 @@ defmodule DailyployWeb.WorkspaceController do
                   greater_date(DateTime.to_date(time_track.start_time), start_date)
 
                 time_track_range_end_date =
-                  smaller_date(DateTime.to_date(time_track.end_time), end_date)
+                  case is_nil(time_track.end_time) do
+                    true -> time_track_range_start_date
+                    false -> smaller_date(DateTime.to_date(time_track.end_time), end_date)
+                  end
 
                 time_track_range_start_date
                 |> Date.range(time_track_range_end_date)
@@ -139,7 +183,7 @@ defmodule DailyployWeb.WorkspaceController do
                 end)
               end)
 
-            task = Map.put(task, :time_tracks, date_formatted_time_tracks)
+            task = Map.put(task, :date_formatted_time_tracks, date_formatted_time_tracks)
 
             range_start_date
             |> Date.range(range_end_date)
@@ -167,6 +211,30 @@ defmodule DailyployWeb.WorkspaceController do
       _ -> date1
     end
   end
+
+  # def filter_where(time_track_start_time, time_track_end_time, start_date, end_date) do
+  #   case is_nil(time_track_end_time) do
+  #     true ->
+  #       (fragment("?::date BETWEEN ? AND ?", DateTime.utc_now, start_date, end_date) or
+  #       fragment(
+  #         "?::date <= ? AND ?::date >= ?",
+  #         time_track_start_time,
+  #         start_date,
+  #         DateTime.utc_now,
+  #         end_date
+  #       ) )
+
+  #     false ->
+  #       (fragment("?::date BETWEEN ? AND ?", time_track_end_time, start_date, end_date) or
+  #       fragment(
+  #         "?::date <= ? AND ?::date >= ?",
+  #         time_track_start_time,
+  #         start_date,
+  #         time_track_end_time,
+  #         end_date
+  #       ))    
+  #   end    
+  # end
 
   defp smaller_date(date1, date2) do
     case Date.compare(date1, date2) do
