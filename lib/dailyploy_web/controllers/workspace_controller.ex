@@ -53,7 +53,7 @@ defmodule DailyployWeb.WorkspaceController do
           days = Date.days_in_month(start_date)
           Date.add(start_date, days - 1)
       end
-
+    current_time = Date.utc_today()  
     query =
       case is_nil(String.first(query_params.project_ids)) do
         true ->
@@ -78,7 +78,32 @@ defmodule DailyployWeb.WorkspaceController do
                      time_track.start_time,
                      ^start_date,
                      ^end_date
-                   ))
+                   )
+                 ) or 
+                (
+                  is_nil(time_track.end_time) == false and
+                   (fragment("?::date BETWEEN ? AND ?", task.end_datetime, ^start_date, ^end_date) or
+                      fragment(
+                        "?::date <= ? AND ?::date >= ?",
+                        task.start_datetime,
+                        ^start_date,
+                        task.end_datetime,
+                        ^end_date
+                      ))
+                ) or
+                (
+                  is_nil(time_track.end_time) == true and
+                  (
+                    fragment("?::date BETWEEN ? AND ?", ^current_time, ^start_date, ^end_date) or
+                        fragment(
+                          "?::date <= ? AND ?::date >= ?",
+                          task.start_datetime,
+                          ^start_date,
+                          ^current_time,
+                          ^end_date
+                    )
+                  )
+                )      
 
         false ->
           project_ids =
@@ -105,33 +130,31 @@ defmodule DailyployWeb.WorkspaceController do
                      time_track.start_time,
                      ^start_date,
                      ^end_date
-                   ))
+                   )) or (
+                    is_nil(time_track.end_time) == false and
+                     (fragment("?::date BETWEEN ? AND ?", task.end_datetime, ^start_date, ^end_date) or
+                        fragment(
+                          "?::date <= ? AND ?::date >= ?",
+                          task.start_datetime,
+                          ^start_date,
+                          task.end_datetime,
+                          ^end_date
+                        ))
+                  ) or
+                  (
+                    is_nil(time_track.end_time) == true and
+                    (
+                      fragment("?::date BETWEEN ? AND ?", ^current_time, ^start_date, ^end_date) or
+                          fragment(
+                            "?::date <= ? AND ?::date >= ?",
+                            task.start_datetime,
+                            ^start_date,
+                            ^current_time,
+                            ^end_date
+                      )
+                    )
+                  )
       end
-
-    current_time = Date.utc_today()
-
-    query =
-      from [task, project, time_track] in query,
-        where:
-          (is_nil(time_track.end_time) == false and
-             (fragment("?::date BETWEEN ? AND ?", task.end_datetime, ^start_date, ^end_date) or
-                fragment(
-                  "?::date <= ? AND ?::date >= ?",
-                  task.start_datetime,
-                  ^start_date,
-                  task.end_datetime,
-                  ^end_date
-                ))) or
-            (is_nil(time_track.end_time) == true and
-               (fragment("?::date BETWEEN ? AND ?", ^current_time, ^start_date, ^end_date) or
-                  fragment(
-                    "?::date <= ? AND ?::date >= ?",
-                    task.start_datetime,
-                    ^start_date,
-                    ^current_time,
-                    ^end_date
-                  )))
-
     users =
       case is_nil(String.first(query_params.user_id)) do
         true ->
