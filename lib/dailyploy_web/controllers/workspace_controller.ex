@@ -65,45 +65,78 @@ defmodule DailyployWeb.WorkspaceController do
             join: time_track in TimeTracking,
             on: time_track.task_id == task.id,
             where:
-              (project.workspace_id == ^workspace_id and
-                 (fragment("?::date BETWEEN ? AND ?", task.start_datetime, ^start_date, ^end_date) or
-                    fragment("?::date BETWEEN ? AND ?", task.end_datetime, ^start_date, ^end_date) or
-                    fragment(
-                      "?::date <= ? AND ?::date >= ?",
-                      task.start_datetime,
-                      ^start_date,
-                      task.end_datetime,
-                      ^end_date
-                    ) or
-                    fragment(
-                      "?::date BETWEEN ? AND ?",
-                      time_track.start_time,
-                      ^start_date,
-                      ^end_date
-                    ))) or
-                (is_nil(time_track.end_time) == false and
-                   (fragment(
-                      "?::date BETWEEN ? AND ?",
-                      time_track.end_time,
-                      ^start_date,
-                      ^end_date
-                    ) or
-                      fragment(
-                        "?::date <= ? AND ?::date >= ?",
-                        time_track.start_time,
-                        ^start_date,
-                        time_track.end_time,
-                        ^end_date
-                      ))) or
-                (is_nil(time_track.end_time) == true and
-                   (fragment("?::date BETWEEN ? AND ?", ^current_time, ^start_date, ^end_date) or
-                      fragment(
-                        "?::date <= ? AND ?::date >= ?",
-                        time_track.start_time,
-                        ^start_date,
-                        ^current_time,
-                        ^end_date
-                      )))
+              project.workspace_id == ^workspace_id and
+                (fragment(
+                   "?::date BETWEEN ? AND ?",
+                   time_track.start_time,
+                   ^start_date,
+                   ^end_date
+                 ) or
+                   fragment(
+                     "?::date BETWEEN ? AND ?",
+                     time_track.end_time,
+                     ^start_date,
+                     ^end_date
+                   ) or
+                   fragment(
+                     "?::date <= ? AND ?::date >= ?",
+                     time_track.start_time,
+                     ^start_date,
+                     time_track.end_time,
+                     ^end_date
+                   )) and
+                (fragment(
+                   "?::date BETWEEN ? AND ?",
+                   task.start_datetime,
+                   ^start_date,
+                   ^end_date
+                 ) or
+                   fragment(
+                     "?::date BETWEEN ? AND ?",
+                     task.end_datetime,
+                     ^start_date,
+                     ^end_date
+                   ) or
+                   fragment(
+                     "?::date <= ? AND ?::date >= ?",
+                     task.start_datetime,
+                     ^start_date,
+                     task.end_datetime,
+                     ^end_date
+                   ))
+
+        #    ) or
+        #    fragment(
+        #      "?::date BETWEEN ? AND ?",
+        #      time_track.start_time,
+        #      ^start_date,
+        #      ^end_date
+        #    )
+        #  ) or 
+        # (
+        #   is_nil(time_track.end_time) == false and
+        #    (fragment("?::date BETWEEN ? AND ?", task.end_datetime, ^start_date, ^end_date) or
+        #       fragment(
+        #         "?::date <= ? AND ?::date >= ?",
+        #         task.start_datetime,
+        #         ^start_date,
+        #         task.end_datetime,
+        #         ^end_date
+        #       ))
+        # ) or
+        # (
+        #   is_nil(time_track.end_time) == true and
+        #   (
+        #     fragment("?::date BETWEEN ? AND ?", ^current_time, ^start_date, ^end_date) or
+        #         fragment(
+        #           "?::date <= ? AND ?::date >= ?",
+        #           task.start_datetime,
+        #           ^start_date,
+        #           ^current_time,
+        #           ^end_date
+        #     )
+        #   )
+        # )      
 
         false ->
           project_ids =
@@ -115,45 +148,76 @@ defmodule DailyployWeb.WorkspaceController do
             join: time_track in TimeTracking,
             on: time_track.task_id == task.id,
             where:
-              (project.workspace_id == ^workspace_id and
-                 (fragment("?::date BETWEEN ? AND ?", task.start_datetime, ^start_date, ^end_date) or
-                    fragment("?::date BETWEEN ? AND ?", task.end_datetime, ^start_date, ^end_date) or
-                    fragment(
-                      "?::date <= ? AND ?::date >= ?",
-                      task.start_datetime,
-                      ^start_date,
-                      task.end_datetime,
-                      ^end_date
-                    ) or
-                    fragment(
-                      "?::date BETWEEN ? AND ?",
-                      time_track.start_time,
-                      ^start_date,
-                      ^end_date
-                    ))) or
-                (is_nil(time_track.end_time) == false and
-                   (fragment(
-                      "?::date BETWEEN ? AND ?",
-                      time_track.end_time,
-                      ^start_date,
-                      ^end_date
-                    ) or
-                      fragment(
-                        "?::date <= ? AND ?::date >= ?",
-                        time_track.start_time,
-                        ^start_date,
-                        time_track.end_time,
-                        ^end_date
-                      ))) or
-                (is_nil(time_track.end_time) == true and
-                   (fragment("?::date BETWEEN ? AND ?", ^current_time, ^start_date, ^end_date) or
-                      fragment(
-                        "?::date <= ? AND ?::date >= ?",
-                        time_track.start_time,
-                        ^start_date,
-                        ^current_time,
-                        ^end_date
-                      )))
+              project.workspace_id == ^workspace_id and
+                (fragment(
+                   "?::date BETWEEN ? AND ?",
+                   time_track.start_time,
+                   ^start_date,
+                   ^end_date
+                 ) or
+                   fragment(
+                     "?::date BETWEEN ? AND ?",
+                     time_track.end_time,
+                     ^start_date,
+                     ^end_date
+                   ) or
+                   fragment(
+                     "?::date <= ? AND ?::date >= ?",
+                     time_track.start_time,
+                     ^start_date,
+                     time_track.end_time,
+                     ^end_date
+                   )) and
+                (fragment(
+                   "?::date BETWEEN ? AND ?",
+                   task.start_datetime,
+                   ^start_date,
+                   ^end_date
+                 ) or
+                   fragment(
+                     "?::date BETWEEN ? AND ?",
+                     task.end_datetime,
+                     ^start_date,
+                     ^end_date
+                   ) or
+                   fragment(
+                     "?::date <= ? AND ?::date >= ?",
+                     task.start_datetime,
+                     ^start_date,
+                     task.end_datetime,
+                     ^end_date
+                   ))
+
+          #  or
+          #  fragment(
+          #    "?::date BETWEEN ? AND ?",
+          #    time_track.start_time,
+          #    ^start_date,
+          #    ^end_date
+          #  )) or (
+          #   is_nil(time_track.end_time) == false and
+          #    (fragment("?::date BETWEEN ? AND ?", task.end_datetime, ^start_date, ^end_date) or
+          #       fragment(
+          #         "?::date <= ? AND ?::date >= ?",
+          #         task.start_datetime,
+          #         ^start_date,
+          #         task.end_datetime,
+          #         ^end_date
+          #       ))
+          # ) or
+          # (
+          #   is_nil(time_track.end_time) == true and
+          #   (
+          #     fragment("?::date BETWEEN ? AND ?", ^current_time, ^start_date, ^end_date) or
+          #         fragment(
+          #           "?::date <= ? AND ?::date >= ?",
+          #           task.start_datetime,
+          #           ^start_date,
+          #           ^current_time,
+          #           ^end_date
+          #     )
+          #   )
+          # )
       end
 
     users =
