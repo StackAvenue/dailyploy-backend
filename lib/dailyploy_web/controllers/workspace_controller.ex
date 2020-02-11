@@ -168,19 +168,17 @@ defmodule DailyployWeb.WorkspaceController do
                 range_start_date = greater_date(DateTime.to_date(task.start_datetime), start_date)
                 [range_end_date, range_start_date]
               else
-                if(
-                !Enum.empty?(task.time_tracks)
-              ) do
-                fist_time_track = task.time_tracks |> List.first()
-                last_time_track = task.time_tracks |> List.last()
+                if(!Enum.empty?(task.time_tracks)) do
+                  fist_time_track = task.time_tracks |> List.first()
+                  last_time_track = task.time_tracks |> List.last()
 
-                task_start_date = smaller_date(task.start_datetime, fist_time_track.start_time)
-                task_end_date = greater_date(task.end_datetime, last_time_track.start_time)
+                  task_start_date = smaller_date(task.start_datetime, fist_time_track.start_time)
+                  task_end_date = greater_date(task.end_datetime, last_time_track.start_time)
 
-                range_end_date = smaller_date(task_start_date, end_date) |> DateTime.to_date()
-                range_start_date = greater_date(task_end_date, start_date) |> DateTime.to_date()
-                [range_end_date, range_start_date]
-              end
+                  range_end_date = smaller_date(task_start_date, end_date) |> DateTime.to_date()
+                  range_start_date = greater_date(task_end_date, start_date) |> DateTime.to_date()
+                  [range_end_date, range_start_date]
+                end
               end
 
             date_formatted_time_tracks =

@@ -64,7 +64,7 @@ defmodule Dailyploy.MixProject do
       {:sweet_xml, "~> 0.6"},
       {:poison, "~> 3.1"},
 
-      #firebase
+      # firebase
       {:fcmex, "~> 0.3.2"}
     ]
   end
