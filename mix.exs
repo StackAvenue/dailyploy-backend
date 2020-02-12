@@ -20,7 +20,7 @@ defmodule Dailyploy.MixProject do
   def application do
     [
       mod: {Dailyploy.Application, []},
-      extra_applications: [:logger, :runtime_tools, :calendar, :timex, :arc_ecto]
+      extra_applications: [:logger, :runtime_tools, :calendar, :timex, :arc_ecto, :httpotion]
     ]
   end
 
@@ -63,9 +63,9 @@ defmodule Dailyploy.MixProject do
       {:hackney, "~> 1.9"},
       {:sweet_xml, "~> 0.6"},
       {:poison, "~> 3.1"},
-
-      # firebase
-      {:fcmex, "~> 0.3.2"}
+      {:tesla, "~> 1.3.0"},
+      {:google_api_firestore, "~> 0.14"},
+      {:httpotion, "~> 3.1.0"}
     ]
   end
 
