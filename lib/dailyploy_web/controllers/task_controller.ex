@@ -4,7 +4,8 @@ defmodule DailyployWeb.TaskController do
   alias Dailyploy.Repo
   alias Dailyploy.Model.Task, as: TaskModel
   alias Dailyploy.Schema.Task
-
+  alias Dailyploy.Helper.Firebase
+  
   plug Auth.Pipeline
 
   action_fallback DailyployWeb.FallbackController
@@ -29,6 +30,7 @@ defmodule DailyployWeb.TaskController do
 
     case TaskModel.create_task(task_params) do
       {:ok, %Task{} = task} ->
+        Firebase.insert_operation(Poison.encode(task |> Repo.preload([:project, :owner, :category, :time_tracks])), "task_created")
         render(conn, "show.json", task: task |> Repo.preload([:owner, :category, :time_tracks]))
 
       {:error, task} ->
@@ -43,6 +45,7 @@ defmodule DailyployWeb.TaskController do
 
     case TaskModel.update_task_status(task, task_params) do
       {:ok, %Task{} = task} ->
+        Firebase.insert_operation(Poison.encode(task |> Repo.preload([:project, :owner, :category, :time_tracks])), "task_update")
         render(conn, "show.json", task: task |> Repo.preload([:owner, :category, :time_tracks]))
 
       {:error, task} ->
@@ -57,6 +60,7 @@ defmodule DailyployWeb.TaskController do
 
     case TaskModel.mark_task_complete(task, task_params) do
       {:ok, %Task{} = task} ->
+        Firebase.insert_operation(Poison.encode(task |> Repo.preload([:project, :owner, :category, :time_tracks])), "task_completed")
         render(conn, "show.json", task: task |> Repo.preload([:owner, :category, :time_tracks]))
 
       {:error, task} ->
@@ -80,6 +84,7 @@ defmodule DailyployWeb.TaskController do
       if user.id == task.owner_id do
         case TaskModel.delete_task(task) do
           {:ok, %Task{} = task} ->
+            Firebase.insert_operation(Poison.encode(task |> Repo.preload([:project, :owner, :category, :time_tracks])), "task_deleted")
             render(conn, "deleted_task.json", task: task |> Repo.preload([:owner]))
 
           {:error, task} ->

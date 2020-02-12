@@ -160,10 +160,9 @@ defmodule DailyployWeb.WorkspaceController do
           |> Enum.reduce(%{}, fn task, acc ->
             [range_end_date, range_start_date] =
               if(
-                # or
-                Enum.empty?(task.time_tracks)
-                # (Date.diff(task.start_datetime, start_date) >= 0 and
-                #    Date.diff(task.end_datetime, end_date) <= 0)
+                Enum.empty?(task.time_tracks) and
+                (Date.diff(task.start_datetime, start_date) >= 0 and
+                   Date.diff(task.end_datetime, end_date) <= 0)
               ) do
                 range_end_date = smaller_date(DateTime.to_date(task.end_datetime), end_date)
                 range_start_date = greater_date(DateTime.to_date(task.start_datetime), start_date)
