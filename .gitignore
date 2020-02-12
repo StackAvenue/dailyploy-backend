@@ -30,3 +30,4 @@ dailyploy-*.tar
 
 # Ignore Environment Variables
 .env
+.DS_Store
