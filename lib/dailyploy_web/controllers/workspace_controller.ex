@@ -158,7 +158,6 @@ defmodule DailyployWeb.WorkspaceController do
         date_formatted_tasks =
           user.tasks
           |> Enum.reduce(%{}, fn task, acc ->
-            # [range_end_date, range_start_date] =
             #   if(
             #     # or
             #     Enum.empty?(task.time_tracks)
