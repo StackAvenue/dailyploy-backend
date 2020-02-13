@@ -1,5 +1,6 @@
 defmodule DailyployWeb.TimeTrackingController do
   use DailyployWeb, :controller
+  alias Dailyploy.Repo
   alias Dailyploy.Helper.TimeTracking
   alias Dailyploy.Model.Task, as: TaskModel
   alias Dailyploy.Helper.Firebase
@@ -18,9 +19,10 @@ defmodule DailyployWeb.TimeTrackingController do
 
         with {:extract, {:ok, data}} <- {:extract, extract_changeset_data(changeset)},
              {:create, {:ok, task_running}} <- {:create, TimeTracking.start_running(data)} do
+              
           Firebase.insert_operation(
             Jason.encode(task_running),
-            "task_running/#{task_running.task_id}"
+            "task_running/#{(conn.assigns.task |> Repo.preload(:project)).project.workspace_id}/#{task_running.task_id}"
           )
 
           conn
@@ -49,9 +51,10 @@ defmodule DailyployWeb.TimeTrackingController do
         with {:extract, {:ok, data}} <- {:extract, extract_changeset_data(changeset)},
              {:create, {:ok, task_stopped}} <-
                {:create, TimeTracking.stop_running(task_tracked, data)} do
+            {:ok, task} = TaskModel.get(task_tracked.task_id)    
           Firebase.insert_operation(
             Jason.encode(task_stopped),
-            "task_stopped/#{task_stopped.task_id}"
+            "task_stopped/#{(task |> Repo.preload(:project)).project.workspace_id}/#{task_stopped.task_id}"
           )
 
           conn
