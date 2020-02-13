@@ -5,7 +5,6 @@ defmodule DailyployWeb.TaskController do
   alias Dailyploy.Model.Task, as: TaskModel
   alias Dailyploy.Schema.Task
   alias Dailyploy.Helper.Firebase
-
   plug Auth.Pipeline
 
   action_fallback DailyployWeb.FallbackController
