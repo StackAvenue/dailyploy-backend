@@ -19,8 +19,8 @@ defmodule DailyployWeb.TimeTrackingController do
 
         with {:extract, {:ok, data}} <- {:extract, extract_changeset_data(changeset)},
              {:create, {:ok, task_running}} <- {:create, TimeTracking.start_running(data)} do
-          
           Firebase.insert_operation(Jason.encode(task_running), "task_running")
+
           conn
           |> put_status(200)
           |> render("task_running.json", %{task_running: task_running})
@@ -47,7 +47,8 @@ defmodule DailyployWeb.TimeTrackingController do
         with {:extract, {:ok, data}} <- {:extract, extract_changeset_data(changeset)},
              {:create, {:ok, task_stopped}} <-
                {:create, TimeTracking.stop_running(task_tracked, data)} do
-          Firebase.insert_operation(Jason.encode(task_stopped), "task_stopped")      
+          Firebase.insert_operation(Jason.encode(task_stopped), "task_stopped")
+
           conn
           |> put_status(200)
           |> render("task_stopped.json", %{task_stopped: task_stopped})
