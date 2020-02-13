@@ -6,7 +6,6 @@ defmodule DailyployWeb.TimeTrackingController do
   alias Dailyploy.Model.TimeTracking, as: TTModel
   import DailyployWeb.Validators.TimeTracking
   import DailyployWeb.Helpers
-  
 
   plug :load_task when action in [:start_tracking]
   plug :load_tracked_task when action in [:stop_tracking]
@@ -19,8 +18,11 @@ defmodule DailyployWeb.TimeTrackingController do
 
         with {:extract, {:ok, data}} <- {:extract, extract_changeset_data(changeset)},
              {:create, {:ok, task_running}} <- {:create, TimeTracking.start_running(data)} do
-          
-          Firebase.insert_operation(Jason.encode(task_running), "task_running")
+          Firebase.insert_operation(
+            Jason.encode(task_running),
+            "task_running/#{task_running.task_id}"
+          )
+
           conn
           |> put_status(200)
           |> render("task_running.json", %{task_running: task_running})
@@ -47,7 +49,11 @@ defmodule DailyployWeb.TimeTrackingController do
         with {:extract, {:ok, data}} <- {:extract, extract_changeset_data(changeset)},
              {:create, {:ok, task_stopped}} <-
                {:create, TimeTracking.stop_running(task_tracked, data)} do
-          Firebase.insert_operation(Jason.encode(task_stopped), "task_stopped")      
+          Firebase.insert_operation(
+            Jason.encode(task_stopped),
+            "task_stopped/#{task_stopped.task_id}"
+          )
+
           conn
           |> put_status(200)
           |> render("task_stopped.json", %{task_stopped: task_stopped})
