@@ -31,7 +31,7 @@ defmodule DailyployWeb.TaskController do
       {:ok, %Task{} = task} ->
         Firebase.insert_operation(
           Poison.encode(task |> Repo.preload([:project, :owner, :category, :time_tracks])),
-          "task_created"
+          "task_created/#{conn.params["workspace_id"]}"
         )
 
         render(conn, "show.json", task: task |> Repo.preload([:owner, :category, :time_tracks]))
@@ -50,7 +50,7 @@ defmodule DailyployWeb.TaskController do
       {:ok, %Task{} = task} ->
         Firebase.insert_operation(
           Poison.encode(task |> Repo.preload([:project, :owner, :category, :time_tracks])),
-          "task_update"
+          "task_update/#{conn.params["workspace_id"]}"
         )
 
         render(conn, "show.json", task: task |> Repo.preload([:owner, :category, :time_tracks]))
@@ -69,7 +69,7 @@ defmodule DailyployWeb.TaskController do
       {:ok, %Task{} = task} ->
         Firebase.insert_operation(
           Poison.encode(task |> Repo.preload([:project, :owner, :category, :time_tracks])),
-          "task_completed"
+          "task_completed/#{conn.params["workspace_id"]}"
         )
 
         render(conn, "show.json", task: task |> Repo.preload([:owner, :category, :time_tracks]))
@@ -97,7 +97,7 @@ defmodule DailyployWeb.TaskController do
           {:ok, %Task{} = task} ->
             Firebase.insert_operation(
               Poison.encode(task |> Repo.preload([:project, :owner, :category, :time_tracks])),
-              "task_deleted"
+              "task_deleted/#{conn.params["workspace_id"]}"
             )
 
             render(conn, "deleted_task.json", task: task |> Repo.preload([:owner]))
