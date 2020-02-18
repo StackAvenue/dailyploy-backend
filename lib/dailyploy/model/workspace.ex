@@ -14,8 +14,11 @@ defmodule Dailyploy.Model.Workspace do
     case UserWorkspaceModel.get_user_workspace!(%{user_id: user_id, workspace_id: workspace_id}, [
            :workspace
          ]) do
-      %UserWorkspace{} = user_workspace -> user_workspace.workspace
-      _ -> nil
+      %UserWorkspace{} = user_workspace ->
+        user_workspace.workspace |> Repo.preload([:users, :projects])
+
+      _ ->
+        nil
     end
   end
 

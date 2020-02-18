@@ -65,6 +65,7 @@ defmodule DailyployWeb.TaskView do
       status: task.status,
       priority: task.priority,
       project: render_one(task.project, ProjectView, "project.json"),
+      created_at: task.inserted_at,
       date_formatted_time_tracks:
         render_many(
           task.date_formatted_time_tracks,
