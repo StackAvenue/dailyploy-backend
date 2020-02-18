@@ -7,6 +7,7 @@ defmodule Dailyploy.Schema.User do
   alias Dailyploy.Schema.Project
   alias Dailyploy.Schema.UserProject
   alias Dailyploy.Schema.UserWorkspaceSetting
+  alias Dailyploy.Schema.DailyStatusMailSetting
 
   alias Bcrypt
 
@@ -19,6 +20,10 @@ defmodule Dailyploy.Schema.User do
     field :role, :string, virtual: true
     # is_invited, :boolean, default: false
     has_many :user_workspace_settings, UserWorkspaceSetting
+
+    has_many :daily_status_mail_settings, DailyStatusMailSetting,
+      on_delete: :delete_all,
+      on_replace: :delete
 
     many_to_many :workspaces, Workspace, join_through: UserWorkspace
     many_to_many :projects, Project, join_through: UserProject

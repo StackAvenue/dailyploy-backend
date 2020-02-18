@@ -77,7 +77,8 @@ defmodule DailyployWeb.UserWorkspaceSettingsView do
       is_active: daily_status_mail.is_active,
       bcc_mails: bcc_mails,
       cc_mails: cc_mails,
-      email_text: daily_status_mail.email_text
+      email_text: daily_status_mail.email_text,
+      user_id: daily_status_mail.user_id
     }
   end
 

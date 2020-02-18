@@ -93,8 +93,10 @@ defmodule DailyployWeb.WorkspaceController do
                      ^start_date,
                      time_track.end_time,
                      ^end_date
-                   )),
-            distinct: task.id
+                   ))
+
+        #        ,
+        # distinct: task.id
 
         false ->
           project_ids =
@@ -134,8 +136,10 @@ defmodule DailyployWeb.WorkspaceController do
                      ^start_date,
                      time_track.end_time,
                      ^end_date
-                   )),
-            distinct: task.id
+                   ))
+
+          #        ,
+          # distinct: task.id
       end
 
     users =
@@ -153,8 +157,58 @@ defmodule DailyployWeb.WorkspaceController do
 
     users = users |> Repo.preload(tasks: :time_tracks)
 
+    # task_id_list = 
+    #   Enum.reduce(users, %{}, fn user, acc ->
+    #     id_list = 
+    #     Enum.reduce(user.tasks, [], fn task, task_acc ->
+    #         case Enum.member?(task_acc, task.id) do
+    #           true -> task_acc 
+    #           false -> task_acc ++ [task.id]
+    #         end
+    #     end)
+    #     Map.put_new(acc, user.id, id_list)
+    #   end)  
+
+    # users = 
+    #   Enum.map(users, fn user -> 
+    #     user_task_ids = Map.fetch!(task_id_list, user.id)
+    #     tasks = []
+    #     alternate_task_ids = []
+
+    #     Enum.map(user.tasks, fn task -> 
+    #       tasks = 
+    #         case Enum.member?(user_task_ids, task.id) and !Enum.member?(alternate_task_ids, task.id) do
+    #           true ->
+    #             alternate_task_ids = alternate_task_ids ++ task.id
+    #             IO.inspect(task)
+    #             tasks = tasks ++ [task]
+    #           false -> 
+    #             alternate_task_ids = alternate_task_ids ++ task.id
+    #             tasks
+    #         end
+    #     end)
+    #     user = Map.replace!(user, :tasks, tasks)
+    #   end) 
+
+    users =
+      Enum.reduce(users, [], fn user, acc ->
+        tasks =
+          Enum.reduce(user.tasks, [], fn task, task_acc ->
+            temp_variable = Enum.map(task_acc, fn entered_task -> entered_task.id == task.id end)
+
+            case Enum.member?(temp_variable, true) do
+              true -> task_acc
+              false -> task_acc ++ [task]
+            end
+          end)
+
+        user = Map.replace!(user, :tasks, tasks)
+        acc = acc ++ [user]
+      end)
+
     users =
       Enum.map(users, fn user ->
+        # user_id_list = Map.fetch!(task_id_list, user.id)
         date_formatted_tasks =
           user.tasks
           |> Enum.reduce(%{}, fn task, acc ->

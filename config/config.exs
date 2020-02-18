@@ -28,7 +28,8 @@ config :phoenix, :json_library, Jason
 # config quantum
 config :dailyploy, Dailyploy.Helper.Scheduler,
   jobs: [
-    {"* 23 * * *", {Dailyploy.Helper.DailyStatus, :schedule_daily_status_mails, []}}
+    # {"* 23 * * *", {Dailyploy.Helper.DailyStatus, :schedule_daily_status_mails, []}}
+    {"@daily", {Dailyploy.Helper.DailyStatus, :schedule_daily_status_mails, []}}
   ]
 
 config :guardian, Auth.Guardian,

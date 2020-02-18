@@ -3,6 +3,7 @@ defmodule Dailyploy.Schema.DailyStatusMailSetting do
   import Ecto.Changeset
 
   alias Dailyploy.Schema.Workspace
+  alias Dailyploy.Schema.User
 
   schema "daily_status_mail_settings" do
     field :is_active, :boolean, default: true
@@ -10,8 +11,8 @@ defmodule Dailyploy.Schema.DailyStatusMailSetting do
     field :cc_mails, {:array, :string}
     field :bcc_mails, {:array, :string}
     field :email_text, :string
-    belongs_to :workspace, Workspace
-
+    belongs_to :workspace, Workspace, on_replace: :delete
+    belongs_to :user, User, on_replace: :delete
     timestamps()
   end
 
@@ -23,16 +24,19 @@ defmodule Dailyploy.Schema.DailyStatusMailSetting do
       :cc_mails,
       :bcc_mails,
       :email_text,
-      :workspace_id
+      :workspace_id,
+      :user_id
     ])
     |> validate_required([
       :is_active,
       :to_mails,
       :email_text,
-      :workspace_id
+      :workspace_id,
+      :user_id
     ])
     |> assoc_constraint(:workspace)
-    |> unique_constraint(:workspace_id)
+    |> assoc_constraint(:user)
+    |> unique_constraint(:user_workspace_status_uniqueness, name: :user_workspace_unique_status)
   end
 
   def update_changeset(daily_status_mail_setting, attrs) do
