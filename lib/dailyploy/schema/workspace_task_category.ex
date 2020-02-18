@@ -5,7 +5,7 @@ defmodule Dailyploy.Schema.WorkspaceTaskCategory do
   alias Dailyploy.Repo
   alias Dailyploy.Schema.Workspace
   alias Dailyploy.Schema.Task
-  alias Dailyploy.Schama.TaskCategory
+  alias Dailyploy.Schema.TaskCategory
 
   @already_exist "Category already exist in the workspace"
 

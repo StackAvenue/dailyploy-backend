@@ -67,11 +67,13 @@ defmodule DailyployWeb.UserWorkspaceSettingsController do
     case conn.status do
       nil ->
         %{"workspace_id" => workspace_id} = user_params
+        user = Guardian.Plug.current_resource(conn)
 
         params =
           user_params
           |> Map.new(fn {key, value} -> {String.to_atom(key), value} end)
           |> Map.put_new(:workspace_id, user_params["workspace_id"])
+          |> Map.put_new(:user_id, user.id)
 
         case DailyStatusMailSettingsModel.create_daily_status_mail_settings(params) do
           {:error, status} ->
@@ -95,9 +97,16 @@ defmodule DailyployWeb.UserWorkspaceSettingsController do
       nil ->
         %{assigns: %{daily_status_mail: daily_status_mail}} = conn
 
-        conn
-        |> put_status(200)
-        |> render("index_for_show.json", daily_status_mail: daily_status_mail)
+        with false <- is_nil(daily_status_mail) do
+          conn
+          |> put_status(200)
+          |> render("index_for_show.json", daily_status_mail: daily_status_mail)
+        else
+          true ->
+            conn
+            |> put_status(200)
+            |> json(%{"Resource Not Found" => true})
+        end
 
       404 ->
         conn
@@ -135,12 +144,13 @@ defmodule DailyployWeb.UserWorkspaceSettingsController do
 
   defp load_workspace(%{params: %{"workspace_id" => workspace_id}} = conn, _params) do
     {workspace_id, _} = Integer.parse(workspace_id)
+    user = Guardian.Plug.current_resource(conn)
 
-    case WorkspaceModel.get(workspace_id) do
-      {:ok, workspace} ->
+    case WorkspaceModel.get_workspace_by_user(%{user_id: user.id, workspace_id: workspace_id}) do
+      workspace ->
         assign(conn, :workspace, workspace)
 
-      {:error, _message} ->
+      nil ->
         conn
         |> put_status(404)
     end
@@ -148,12 +158,13 @@ defmodule DailyployWeb.UserWorkspaceSettingsController do
 
   defp load_daily_status_mail(%{params: %{"workspace_id" => workspace_id}} = conn, _params) do
     {workspace_id, _} = Integer.parse(workspace_id)
+    user = Guardian.Plug.current_resource(conn)
 
-    case DailyStatusMailSettingsModel.get(workspace_id) do
-      {:ok, daily_status_mail} ->
+    case DailyStatusMailSettingsModel.load_user_specific_status_setting(workspace_id, user.id) do
+      daily_status_mail ->
         assign(conn, :daily_status_mail, daily_status_mail)
 
-      {:error, _message} ->
+      nil ->
         conn
         |> put_status(404)
     end

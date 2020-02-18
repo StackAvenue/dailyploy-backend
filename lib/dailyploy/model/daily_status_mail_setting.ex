@@ -72,4 +72,14 @@ defmodule Dailyploy.Model.DailyStatusMailSetting do
         {:error, "not found"}
     end
   end
+
+  def load_user_specific_status_setting(workspace_id, user_id) do
+    query =
+      from daily_status_mail in DailyStatusMailSetting,
+        where:
+          daily_status_mail.workspace_id == ^workspace_id and
+            daily_status_mail.user_id == ^user_id
+
+    List.first(Repo.all(query))
+  end
 end
