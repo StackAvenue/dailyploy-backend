@@ -81,9 +81,58 @@ defmodule DailyployWeb.ReportController do
       TaskModel.list_workspace_user_tasks(params)
       |> Repo.preload([:owner, :time_tracks, :category, project: [:owner, :members]])
       |> Enum.reduce(%{}, fn task, acc ->
-        range_end_date = smaller_date(DateTime.to_date(task.end_datetime), end_date)
-        range_start_date = greater_date(DateTime.to_date(task.start_datetime), start_date)
+        [range_end_date, range_start_date] =
+              if(Enum.empty?(task.time_tracks)) do
+                range_end_date = smaller_date(DateTime.to_date(task.end_datetime), end_date)
+                range_start_date = greater_date(DateTime.to_date(task.start_datetime), start_date)
+                [range_end_date, range_start_date]
+              else
+                first_time_track = task.time_tracks |> List.first()
+                last_time_track = task.time_tracks |> List.last()
 
+                task_start_date =
+                  smaller_date(task.start_datetime, first_time_track.start_time)
+                  |> DateTime.to_date()
+
+                task_end_date =
+                  greater_date(task.end_datetime, last_time_track.start_time)
+                  |> DateTime.to_date()
+
+                range_start_date = smaller_date(task_start_date, end_date)
+                range_end_date = greater_date(task_end_date, start_date)
+                [range_end_date, range_start_date]
+              end
+
+              date_formatted_time_tracks =
+              Enum.reduce(task.time_tracks, %{}, fn time_track, time_acc ->
+                time_track_range_start_date =
+                  greater_date(DateTime.to_date(time_track.start_time), start_date)
+
+                time_track_range_end_date =
+                  case is_nil(time_track.end_time) do
+                    true -> time_track_range_start_date
+                    false -> smaller_date(DateTime.to_date(time_track.end_time), end_date)
+                  end
+
+                time_track_range_start_date
+                |> Date.range(time_track_range_end_date)
+                |> Enum.reduce(time_acc, fn date, date_acc ->
+                  time_track =
+                    case Map.has_key?(date_acc, Date.to_iso8601(date)) do
+                      true ->
+                        Map.get(date_acc, Date.to_iso8601(date)) ++ [time_track]
+
+                      false ->
+                        date_acc = Map.put_new(date_acc, Date.to_iso8601(date), [])
+                        Map.get(date_acc, Date.to_iso8601(date)) ++ [time_track]
+                    end
+
+                  Map.put(date_acc, Date.to_iso8601(date), time_track)
+                end)
+              end)
+
+            task = Map.put(task, :date_formatted_time_tracks, date_formatted_time_tracks)
+                  
         duration =
           with false <- is_nil(TTModel.calculate_task_duration(task.id)) do
             TTModel.calculate_task_duration(task.id)
@@ -98,8 +147,36 @@ defmodule DailyployWeb.ReportController do
         |> Date.range(range_end_date)
         |> Enum.reduce(acc, fn date, date_acc ->
           date_acc = Map.put_new(date_acc, Date.to_iso8601(date), [])
-          tasks = Map.get(date_acc, Date.to_iso8601(date)) ++ [task]
-          Map.put(date_acc, Date.to_iso8601(date), tasks)
+
+          is_time_track_present =
+            task.time_tracks
+            |> Enum.map(fn x ->
+              time_track_date = DateTime.to_date(x.start_time)
+
+              if(Date.diff(time_track_date, date) === 0) do
+                true
+              end
+            end)
+
+          if(
+            Enum.member?(is_time_track_present, true) or
+              Date.diff(task.start_datetime, date) === 0 or
+              Enum.empty?(task.time_tracks) or
+              (Date.diff(range_end_date, task.end_datetime) >= 0 and
+                 Date.diff(range_start_date, task.start_datetime) <= 0 and
+                 Enum.member?(
+                   Date.range(
+                     DateTime.to_date(task.start_datetime),
+                     DateTime.to_date(task.end_datetime)
+                   ),
+                   date
+                 ))
+          ) do
+            tasks = Map.get(date_acc, Date.to_iso8601(date)) ++ [task]
+            Map.put(date_acc, Date.to_iso8601(date), tasks)
+          else
+            date_acc
+          end
         end)
       end)
 
