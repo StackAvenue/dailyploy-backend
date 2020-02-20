@@ -87,9 +87,12 @@ defmodule Dailyploy.Model.TimeTracking do
   def calculate_task_duration(task_id, date) when is_integer(task_id) do
     query =
       from(time_tracks in TimeTracking,
-        where: time_tracks.task_id == ^task_id and time_tracks.status == "stopped" and time_tracks.start_time == ^date,
+        where:
+          time_tracks.task_id == ^task_id and time_tracks.status == "stopped" and
+            time_tracks.start_time == ^date,
         select: fragment("SUM(?)", time_tracks.duration)
       )
+
     asd = Repo.one(query)
   end
 

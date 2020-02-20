@@ -302,19 +302,35 @@ defmodule Dailyploy.Model.Task do
 
       {"user_ids", user_ids}, dynamic_query ->
         user_ids = Enum.map(String.split(user_ids, ","), fn x -> String.to_integer(x) end)
-        dynamic([task, project, user_task, time_track], ^dynamic_query and user_task.user_id in ^user_ids)
+
+        dynamic(
+          [task, project, user_task, time_track],
+          ^dynamic_query and user_task.user_id in ^user_ids
+        )
 
       {"project_ids", project_ids}, dynamic_query ->
         project_ids = Enum.map(String.split(project_ids, ","), fn x -> String.to_integer(x) end)
-        dynamic([task, project, user_task, time_track], ^dynamic_query and task.project_id in ^project_ids)
+
+        dynamic(
+          [task, project, user_task, time_track],
+          ^dynamic_query and task.project_id in ^project_ids
+        )
 
       {"category_ids", category_ids}, dynamic_query ->
         category_ids = Enum.map(String.split(category_ids, ","), fn x -> String.to_integer(x) end)
-        dynamic([task, project, user_task, time_track], ^dynamic_query and task.category_id in ^category_ids)
+
+        dynamic(
+          [task, project, user_task, time_track],
+          ^dynamic_query and task.category_id in ^category_ids
+        )
 
       {"priorities", priorities}, dynamic_query ->
         priorities = Enum.map(String.split(priorities, ","), fn x -> x end)
-        dynamic([task, project, user_task, time_track], ^dynamic_query and task.priority in ^priorities)
+
+        dynamic(
+          [task, project, user_task, time_track],
+          ^dynamic_query and task.priority in ^priorities
+        )
 
       {"start_date", start_date}, dynamic_query ->
         end_date = params["end_date"]
@@ -330,7 +346,7 @@ defmodule Dailyploy.Model.Task do
                  ^start_date,
                  task.end_datetime,
                  ^end_date
-               )or
+               ) or
                fragment(
                  "?::date BETWEEN ? AND ?",
                  time_track.start_time,

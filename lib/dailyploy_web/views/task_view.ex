@@ -64,6 +64,7 @@ defmodule DailyployWeb.TaskView do
       comments: task.comments,
       status: task.status,
       priority: task.priority,
+      duration: task.duration,
       project: render_one(task.project, ProjectView, "project.json"),
       created_at: task.inserted_at,
       date_formatted_time_tracks:
