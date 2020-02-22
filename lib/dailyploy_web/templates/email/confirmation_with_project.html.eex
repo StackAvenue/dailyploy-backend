@@ -5,7 +5,7 @@
       <br>
       <span><%= gettext "%{name}", name: @invitation_details["sender_name"] %></span>
       has invited you to his workspace on Dailyploy. Click 
-      Click <a href= <%= gettext "http://dailyploy.com/login/%{name}/", name: @invitation_details["token_id"] %>> here </a>
+      Click <a href= <%= gettext "https://app.dailyploy.com/login/%{name}/", name: @invitation_details["token_id"] %>> here </a>
       to join the team and experience a new and easy way to manage your tasks, team and projects.
       <br>
       <br>

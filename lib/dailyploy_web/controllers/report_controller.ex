@@ -221,30 +221,85 @@ defmodule DailyployWeb.ReportController do
       TaskModel.list_workspace_user_tasks(params)
       |> Repo.preload([:owner, :time_tracks, :category, project: [:owner, :members]])
       |> Enum.reduce(%{}, fn task, acc ->
-        range_end_date = smaller_date(DateTime.to_date(task.end_datetime), end_date)
-        range_start_date = greater_date(DateTime.to_date(task.start_datetime), start_date)
-
-        duration =
-          with false <- is_nil(TTModel.calculate_task_duration(task.id)) do
-            TTModel.calculate_task_duration(task.id)
+        [range_end_date, range_start_date] =
+          if(Enum.empty?(task.time_tracks)) do
+            range_end_date = smaller_date(DateTime.to_date(task.end_datetime), end_date)
+            range_start_date = greater_date(DateTime.to_date(task.start_datetime), start_date)
+            [range_end_date, range_start_date]
           else
-            true -> 0
+            first_time_track = task.time_tracks |> List.first()
+            last_time_track = task.time_tracks |> List.last()
+
+            task_start_date =
+              smaller_date(task.start_datetime, first_time_track.start_time)
+              |> DateTime.to_date()
+
+            task_end_date =
+              greater_date(task.end_datetime, last_time_track.start_time)
+              |> DateTime.to_date()
+
+            range_start_date = smaller_date(task_start_date, end_date)
+            range_end_date = greater_date(task_end_date, start_date)
+            [range_end_date, range_start_date]
           end
 
-        duration = sec_to_str(duration)
-        task = Map.put_new(task, :duration, duration)
+        date_formatted_time_tracks = date_wise_orientation(task.time_tracks)
+        task = Map.put(task, :date_formatted_time_tracks, date_formatted_time_tracks)
 
         range_start_date
         |> Date.range(range_end_date)
         |> Enum.reduce(acc, fn date, date_acc ->
           date_acc = Map.put_new(date_acc, Date.to_iso8601(date), [])
-          tasks = Map.get(date_acc, Date.to_iso8601(date)) ++ [task]
-          Map.put(date_acc, Date.to_iso8601(date), tasks)
+
+          is_time_track_present =
+            task.time_tracks
+            |> Enum.map(fn x ->
+              time_track_date = DateTime.to_date(x.start_time)
+
+              if(Date.diff(time_track_date, date) === 0) do
+                true
+              end
+            end)
+
+          if(
+            Enum.member?(is_time_track_present, true) or
+              Date.diff(task.start_datetime, date) === 0 or
+              Enum.empty?(task.time_tracks) or
+              (Date.diff(range_end_date, task.end_datetime) >= 0 and
+                 Date.diff(range_start_date, task.start_datetime) <= 0 and
+                 Enum.member?(
+                   Date.range(
+                     DateTime.to_date(task.start_datetime),
+                     DateTime.to_date(task.end_datetime)
+                   ),
+                   date
+                 ))
+          ) do
+            duration =
+              case is_nil(Map.get(task.date_formatted_time_tracks, Date.to_iso8601(date))) do
+                true ->
+                  0
+
+                false ->
+                  calculate_durations(
+                    Map.get(task.date_formatted_time_tracks, Date.to_iso8601(date))
+                  )
+              end
+
+            duration = sec_to_str(duration)
+            task = Map.put_new(task, :duration, duration)
+            tasks = Map.get(date_acc, Date.to_iso8601(date)) ++ [task]
+            Map.put(date_acc, Date.to_iso8601(date), tasks)
+          else
+            date_acc
+          end
         end)
       end)
 
     NimbleCSV.define(MyParser, separator: "\t", escape: "\"")
     data = [["Date", "Task Name", "Project Name", "Category", "Status", "Priority", "Duration"]]
+
+    reports
 
     csv_data =
       Enum.reduce(reports, [], fn {date, tasks}, acc ->

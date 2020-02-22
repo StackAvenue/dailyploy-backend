@@ -15,8 +15,8 @@ defmodule Dailyploy.Model.Project do
 
   def task_summary_report_data(params) do
     task_ids = TaskModel.task_ids_for_criteria(params)
-    total_estimated_time = TaskModel.total_estimated_time(task_ids)
-    report_data = TaskModel.project_summary_report_data(task_ids)
+    total_estimated_time = TaskModel.total_estimated_time(task_ids, params)
+    report_data = TaskModel.project_summary_report_data(task_ids, params)
     %{total_estimated_time: total_estimated_time, report_data: report_data}
   end
 
