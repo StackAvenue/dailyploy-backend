@@ -105,8 +105,8 @@ defmodule Dailyploy.Model.User do
 
   def task_summary_report_data(params) do
     task_ids = TaskModel.task_ids_for_criteria(params)
-    total_estimated_time = TaskModel.total_estimated_time(task_ids)
-    total_tracked_time = TaskModel.user_summary_report_data(task_ids)
+    total_estimated_time = TaskModel.total_estimated_time(task_ids, params)
+    total_tracked_time = TaskModel.user_summary_report_data(task_ids, params)
     %{total_estimated_time: total_estimated_time, total_tracked_time: total_tracked_time}
   end
 
