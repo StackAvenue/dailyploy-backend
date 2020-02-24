@@ -8,6 +8,7 @@ defmodule Dailyploy.Model.User do
   alias Dailyploy.Schema.UserProject
   alias Dailyploy.Schema.UserWorkspaceSetting
   alias Dailyploy.Model.Task, as: TaskModel
+  alias Dailyploy.Model.UserWorkspaceSetting, as: UWSModel
   alias Auth.Guardian
   import Ecto.Query
   import Comeonin.Bcrypt
@@ -105,9 +106,10 @@ defmodule Dailyploy.Model.User do
 
   def task_summary_report_data(params) do
     task_ids = TaskModel.task_ids_for_criteria(params)
-    total_estimated_time = TaskModel.total_estimated_time(task_ids, params)
+    # total_estimated_time = TaskModel.total_estimated_time(task_ids, params)
+    total_capacity_time = UWSModel.capacity(params)
     total_tracked_time = TaskModel.user_summary_report_data(task_ids, params)
-    %{total_estimated_time: total_estimated_time, total_tracked_time: total_tracked_time}
+    %{total_estimated_time: total_capacity_time, total_tracked_time: total_tracked_time}
   end
 
   def get_user!(id), do: Repo.get!(User, id)
