@@ -10,6 +10,7 @@ defmodule Dailyploy.Model.Task do
   alias Dailyploy.Schema.TimeTracking
   alias Dailyploy.Model.TimeTracking, as: TTModel
   alias Dailyploy.Model.Task, as: TaskModel
+  alias Dailyploy.Model.UserWorkspaceSetting, as: UWSModel
 
   def list_tasks(project_id) do
     query =
@@ -320,7 +321,8 @@ defmodule Dailyploy.Model.Task do
 
   def priority_summary_report_data(%{"end_date" => end_date, "start_date" => start_date} = params) do
     task_ids = TaskModel.task_ids_for_criteria(params)
-    total_estimated_time = TaskModel.total_estimated_time(task_ids, params)
+    # total_estimated_time = TaskModel.total_estimated_time(task_ids, params)
+    total_capacity_time = UWSModel.capacity(params)
     tasks = get_tasks(task_ids)
 
     report_data =
@@ -351,7 +353,7 @@ defmodule Dailyploy.Model.Task do
         end
       end)
 
-    %{total_estimated_time: total_estimated_time, report_data: report_data}
+    %{total_estimated_time: total_capacity_time, report_data: report_data}
   end
 
   def total_estimated_time(task_ids) do
