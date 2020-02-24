@@ -181,8 +181,9 @@ defmodule DailyployWeb.ReportController do
                   )
               end
 
-            #duration = sec_to_str(duration)
+            duration_in_string = sec_to_str(duration)
             task = Map.put_new(task, :duration, duration)
+            task = Map.put_new(task, :duration_in_string, duration_in_string)
             tasks = Map.get(date_acc, Date.to_iso8601(date)) ++ [task]
             Map.put(date_acc, Date.to_iso8601(date), tasks)
           else
