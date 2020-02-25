@@ -280,49 +280,55 @@ defmodule DailyployWeb.WorkspaceController do
             range_start_date
             |> Date.range(range_end_date)
             |> Enum.reduce(acc, fn date, date_acc ->
-              date_acc = Map.put_new(date_acc, Date.to_iso8601(date), [])
+              case Enum.member?(Date.range(start_date, end_date), date) do
+                true ->
+                  date_acc = Map.put_new(date_acc, Date.to_iso8601(date), [])
 
-              is_time_track_present =
-                task.time_tracks
-                |> Enum.map(fn x ->
-                  time_track_date = DateTime.to_date(x.start_time)
+                  is_time_track_present =
+                    task.time_tracks
+                    |> Enum.map(fn x ->
+                      time_track_date = DateTime.to_date(x.start_time)
 
-                  if(Date.diff(time_track_date, date) === 0) do
-                    true
+                      if(Date.diff(time_track_date, date) === 0) do
+                        true
+                      end
+                    end)
+
+                  if(
+                    Enum.member?(is_time_track_present, true) or
+                      Date.diff(task.start_datetime, date) === 0 or
+                      Enum.empty?(task.time_tracks) or
+                      (Date.diff(range_end_date, task.end_datetime) >= 0 and
+                         Date.diff(range_start_date, task.start_datetime) <= 0 and
+                         Enum.member?(
+                           Date.range(
+                             DateTime.to_date(task.start_datetime),
+                             DateTime.to_date(task.end_datetime)
+                           ),
+                           date
+                         ))
+                  ) do
+                    duration =
+                      case is_nil(Map.get(task.date_formatted_time_tracks, Date.to_iso8601(date))) do
+                        true ->
+                          0
+
+                        false ->
+                          calculate_durations(
+                            Map.get(task.date_formatted_time_tracks, Date.to_iso8601(date))
+                          )
+                      end
+
+                    duration = sec_to_str(duration)
+                    task = Map.put_new(task, :duration, duration)
+                    tasks = Map.get(date_acc, Date.to_iso8601(date)) ++ [task]
+                    Map.put(date_acc, Date.to_iso8601(date), tasks)
+                  else
+                    date_acc
                   end
-                end)
 
-              if(
-                Enum.member?(is_time_track_present, true) or
-                  Date.diff(task.start_datetime, date) === 0 or
-                  Enum.empty?(task.time_tracks) or
-                  (Date.diff(range_end_date, task.end_datetime) >= 0 and
-                     Date.diff(range_start_date, task.start_datetime) <= 0 and
-                     Enum.member?(
-                       Date.range(
-                         DateTime.to_date(task.start_datetime),
-                         DateTime.to_date(task.end_datetime)
-                       ),
-                       date
-                     ))
-              ) do
-                duration =
-                  case is_nil(Map.get(task.date_formatted_time_tracks, Date.to_iso8601(date))) do
-                    true ->
-                      0
-
-                    false ->
-                      calculate_durations(
-                        Map.get(task.date_formatted_time_tracks, Date.to_iso8601(date))
-                      )
-                  end
-
-                duration = sec_to_str(duration)
-                task = Map.put_new(task, :duration, duration)
-                tasks = Map.get(date_acc, Date.to_iso8601(date)) ++ [task]
-                Map.put(date_acc, Date.to_iso8601(date), tasks)
-              else
-                date_acc
+                false ->
+                  date_acc
               end
             end)
           end)

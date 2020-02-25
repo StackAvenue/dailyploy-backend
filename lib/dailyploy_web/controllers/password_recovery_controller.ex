@@ -11,7 +11,7 @@ defmodule DailyployWeb.PasswordRecoveryController do
 
       message ->
         conn
-        |> put_status(401)
+        |> put_status(400)
         |> json(%{"message" => message})
     end
   end
