@@ -11,13 +11,13 @@ defmodule Dailyploy.Helper.ForgotPassword do
   end
 
   defp generate_newpassword(user) do
-    # asd = Bcrypt.add_hash(user.name)
+    password = :crypto.strong_rand_bytes(8) |> Base.url_encode64() |> binary_part(0, 8)
     attrs = %{}
 
     attrs =
       attrs
-      |> Map.put_new(:password, user.name)
-      |> Map.put_new(:password_confirmation, user.name)
+      |> Map.put_new(:password, password)
+      |> Map.put_new(:password_confirmation, password)
       |> Map.put_new(:email, user.email)
       |> Map.put_new(:name, user.name)
 
