@@ -12,6 +12,7 @@ defmodule DailyployWeb.Router do
   scope "/api/v1", DailyployWeb do
     post "/sign_up", SessionController, :sign_up
     post "/sign_in", SessionController, :sign_in
+    get "/forgot_password", PasswordRecoveryController, :generate_email
   end
 
   scope "/api/v1", DailyployWeb do
