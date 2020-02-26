@@ -121,6 +121,8 @@ defmodule Dailyploy.Model.User do
 
   def get_user!(id), do: Repo.get!(User, id)
 
+  def get_user(id), do: Repo.get(User, id)
+
   def get_user!(id, preloads), do: Repo.get!(User, id) |> Repo.preload(preloads)
 
   def create_user(attrs \\ %{}) do
