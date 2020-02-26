@@ -32,6 +32,13 @@ defmodule Dailyploy.Model.User do
     Repo.all(query)
   end
 
+  def generate_query(params) do
+    query =
+      from(project in Project,
+        where: project.workspace_id == ^params.workspace_id
+      )
+  end
+
   def filter_users(params) do
     query =
       from(user in User,
