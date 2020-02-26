@@ -5,6 +5,7 @@ defmodule DailyployWeb.MemberController do
   # alias Dailyploy.Model.Invitation, as: InvitationModel
 
   alias Dailyploy.Model.User, as: UserModel
+  alias Dailyploy.Schema.Project
   alias Dailyploy.Repo
 
   plug Auth.Pipeline
@@ -13,7 +14,11 @@ defmodule DailyployWeb.MemberController do
 
   def index(conn, params) do
     query_params = map_to_atom(params)
-    members = UserModel.filter_users(query_params) |> Repo.preload([:projects])
+    query = UserModel.generate_query(query_params)
+    # asd = UserModel.filter_users(query_params)
+    # require IEx
+    # IEx.pry
+    members = UserModel.filter_users(query_params) |> Repo.preload(projects: query)
     # member_settings = UserWorkspaceSettingsModel.list_user_workspace_settings(workspace_id)
 
     member_results =
