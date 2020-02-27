@@ -8,6 +8,7 @@ defmodule Dailyploy.Model.User do
   alias Dailyploy.Schema.UserProject
   alias Dailyploy.Schema.UserWorkspaceSetting
   alias Dailyploy.Model.Task, as: TaskModel
+  alias Dailyploy.Model.UserWorkspaceSetting, as: UWSModel
   alias Auth.Guardian
   import Ecto.Query
   import Comeonin.Bcrypt
@@ -29,6 +30,13 @@ defmodule Dailyploy.Model.User do
       )
 
     Repo.all(query)
+  end
+
+  def generate_query(params) do
+    query =
+      from(project in Project,
+        where: project.workspace_id == ^params.workspace_id
+      )
   end
 
   def filter_users(params) do
@@ -105,12 +113,15 @@ defmodule Dailyploy.Model.User do
 
   def task_summary_report_data(params) do
     task_ids = TaskModel.task_ids_for_criteria(params)
-    total_estimated_time = TaskModel.total_estimated_time(task_ids)
-    total_tracked_time = TaskModel.user_summary_report_data(task_ids)
-    %{total_estimated_time: total_estimated_time, total_tracked_time: total_tracked_time}
+    # total_estimated_time = TaskModel.total_estimated_time(task_ids, params)
+    total_capacity_time = UWSModel.capacity(params)
+    total_tracked_time = TaskModel.user_summary_report_data(task_ids, params)
+    %{total_estimated_time: total_capacity_time, total_tracked_time: total_tracked_time}
   end
 
   def get_user!(id), do: Repo.get!(User, id)
+
+  def get_user(id), do: Repo.get(User, id)
 
   def get_user!(id, preloads), do: Repo.get!(User, id) |> Repo.preload(preloads)
 

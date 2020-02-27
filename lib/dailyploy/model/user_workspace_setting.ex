@@ -78,4 +78,37 @@ defmodule Dailyploy.Model.UserWorkspaceSetting do
   def delete_user_workspace_settings(%UserWorkspaceSetting{} = user_workspace_settings) do
     Repo.delete(user_workspace_settings)
   end
+
+  def capacity(
+        %{
+          "start_date" => start_date,
+          "end_date" => end_date,
+          "user_ids" => user_ids,
+          "workspace_id" => workspace_id
+        } = params
+      ) do
+    user_ids = map_to_list(user_ids)
+
+    query =
+      from uwsetting in UserWorkspaceSetting,
+        where: uwsetting.workspace_id == ^workspace_id and uwsetting.user_id in ^user_ids,
+        select: sum(uwsetting.working_hours)
+
+    result = Repo.one(query)
+
+    no_of_days =
+      case Date.diff(end_date, start_date) do
+        0 -> 1
+        6 -> 5
+        _ -> 20
+      end
+
+    result * no_of_days * 3600
+  end
+
+  defp map_to_list(user_ids) do
+    user_ids
+    |> String.split(",")
+    |> Enum.map(fn x -> String.to_integer(String.trim(x, " ")) end)
+  end
 end

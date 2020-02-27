@@ -7,6 +7,7 @@ defmodule Dailyploy.Model.Project do
   alias Dailyploy.Schema.UserTask
   alias Dailyploy.Schema.Task
   alias Dailyploy.Model.Task, as: TaskModel
+  alias Dailyploy.Model.UserWorkspaceSetting, as: UWSModel
   import Ecto.Query
 
   def list_projects() do
@@ -15,9 +16,11 @@ defmodule Dailyploy.Model.Project do
 
   def task_summary_report_data(params) do
     task_ids = TaskModel.task_ids_for_criteria(params)
-    total_estimated_time = TaskModel.total_estimated_time(task_ids)
-    report_data = TaskModel.project_summary_report_data(task_ids)
-    %{total_estimated_time: total_estimated_time, report_data: report_data}
+    # total_estimated_time = TaskModel.total_estimated_time(task_ids, params)
+    total_capacity_time = UWSModel.capacity(params)
+    capacity = capacity(params)
+    report_data = TaskModel.project_summary_report_data(task_ids, params)
+    %{total_estimated_time: total_capacity_time, report_data: report_data, capacity: capacity}
   end
 
   def list_projects_in_workspace(params) do
@@ -128,5 +131,29 @@ defmodule Dailyploy.Model.Project do
         where: project.workspace_id == ^workspace_id and project.id == ^project_id
 
     List.first(Repo.all(query))
+  end
+
+  def capacity(
+        %{
+          "start_date" => start_date,
+          "end_date" => end_date,
+          "user_ids" => user_ids,
+          "workspace_id" => workspace_id
+        } = params
+      ) do
+    user_ids = map_to_list(user_ids)
+
+    query =
+      from uwsetting in UserWorkspaceSetting,
+        where: uwsetting.workspace_id == ^workspace_id and uwsetting.user_id in ^user_ids,
+        select: sum(uwsetting.working_hours)
+
+    result = Repo.one(query)
+  end
+
+  defp map_to_list(user_ids) do
+    user_ids
+    |> String.split(",")
+    |> Enum.map(fn x -> String.to_integer(String.trim(x, " ")) end)
   end
 end

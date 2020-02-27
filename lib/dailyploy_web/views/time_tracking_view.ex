@@ -51,7 +51,7 @@ defmodule DailyployWeb.TimeTrackingView do
         {:ok, %{end_time: time_tracking.end_time, duration: time_tracking.duration}}
       else
         true ->
-          {:ok, %{end_time: [], duration: []}}
+          {:ok, %{end_time: 0, duration: 0}}
       end
 
     %{

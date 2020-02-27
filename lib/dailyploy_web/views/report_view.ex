@@ -21,7 +21,8 @@ defmodule DailyployWeb.ReportView do
   def render("project_summary_report.json", %{report_data: report_data}) do
     %{
       total_estimated_time: report_data.total_estimated_time,
-      report_data: report_data.report_data
+      report_data: report_data.report_data,
+      capacity: report_data.capacity
     }
   end
 
