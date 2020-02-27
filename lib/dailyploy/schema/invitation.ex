@@ -24,7 +24,7 @@ defmodule Dailyploy.Schema.Invitation do
     invitation
     |> cast(attrs, [:email, :status, :token, :name, :working_hours])
     |> validate_required([:email, :status])
-    |> validate_format(:email, ~r/^[A-Za-z0-9._%+-+']+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/)
+    |> validate_format(:email, ~r/^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,})$/)
     |> genToken(attrs)
     |> unique_constraint(:email)
     |> put_assoc(:workspace, attrs["workspace"])

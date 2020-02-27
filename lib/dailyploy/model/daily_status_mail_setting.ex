@@ -3,6 +3,7 @@ defmodule Dailyploy.Model.DailyStatusMailSetting do
   alias Dailyploy.Schema.DailyStatusMailSetting
   alias Dailyploy.Schema.UserWorkspace
   alias Dailyploy.Schema.UserWorkspaceSetting
+  alias Dailyploy.Schema.Project
   alias Dailyploy.Model.DailyStatusMailSetting, as: DailyStatusMailSettingsModel
   # alias Dailyploy.Model.UserWorkspaceSetting, as: UserWorkspaceSettingsModel
   import Ecto.Query
@@ -10,7 +11,7 @@ defmodule Dailyploy.Model.DailyStatusMailSetting do
   def list_daily_status_mail() do
     DailyStatusMailSetting
     |> Repo.all()
-    |> Repo.preload(workspace: [:users, :projects])
+    |> Repo.preload([:workspace, user: [:tasks, :projects]])
   end
 
   def daily_status_configuration(workspace_id, user_id) do

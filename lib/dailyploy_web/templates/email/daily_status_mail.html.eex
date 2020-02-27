@@ -1,0 +1,27 @@
+<section class="phx-hero"> 
+  <div>
+    Dear all,<br>
+      <br>
+      <span><%= gettext "%{name}", name: @user.name %></span>
+      has worked one the following tasks today:- 
+      <br>
+      <br>
+       <tabel border="1">
+       <tr>
+            <th> Task Name </th>
+            <th> Duration </th>
+       </tr>
+       <%= for {key, value} <- @day_tasks do %>
+       <tr>
+            <td> <%= key %></td>
+            <td> <%= value %></td>
+        </tr>
+        <% end %>
+        </tabel>
+      <br>
+      <br>
+    Thank You!
+    <br>
+    Dailyploy
+  </div>
+</section>
