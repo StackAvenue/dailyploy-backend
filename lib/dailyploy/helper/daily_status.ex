@@ -70,8 +70,9 @@ defmodule Dailyploy.Helper.DailyStatus do
 
         tasks = Map.get(RCModel.report_query(params), Date.to_string(Date.utc_today()))
         day_tasks = %{}
-
         day_tasks =
+        case is_nil(tasks) do 
+          false -> 
           Enum.reduce(tasks, %{}, fn task, acc ->
             time_tracks =
               Map.get(task.date_formatted_time_tracks, Date.to_string(Date.utc_today()))
@@ -91,6 +92,10 @@ defmodule Dailyploy.Helper.DailyStatus do
 
             Map.put_new(acc, "#{task.name}", sec_to_str(duration))
           end)
+          true -> 
+            %{}
+        end 
+        
 
         email_build
         |> Email.put_from("contact@stack-avenue.com")
