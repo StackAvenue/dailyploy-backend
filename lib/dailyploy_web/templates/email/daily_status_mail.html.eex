@@ -6,18 +6,20 @@
       has worked one the following tasks today:- 
       <br>
       <br>
-       <tabel border="1">
+       <table style="border: 2px solid black">
+       <tbody>
        <tr>
-            <th> Task Name </th>
-            <th> Duration </th>
+            <th style="border: 2px solid black"> Task Name </th>
+            <th style="border: 2px solid black"> Duration </th>
        </tr>
        <%= for {key, value} <- @day_tasks do %>
        <tr>
-            <td> <%= key %></td>
-            <td> <%= value %></td>
+            <td style="border: 2px solid black"> <%= key %></td>
+             <td style="border: 2px solid black"> <%= value = case String.length(value) do 0 -> "No Track Time"; _ -> value end%></td>
         </tr>
         <% end %>
-        </tabel>
+        </tbody>
+        </table>
       <br>
       <br>
     Thank You!
