@@ -31,13 +31,13 @@ defmodule Dailyploy.Schema.User do
 
     timestamps()
   end
-
+  
   @doc false
   def changeset(user, attrs) do
     user
     |> cast(attrs, [:name, :email, :password, :password_confirmation])
     |> validate_required([:name, :email, :password, :password_confirmation])
-    |> validate_format(:email, ~r/^[A-Za-z0-9._%+-+']+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/)
+    |> validate_format(:email, ~r/^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,})$/)
     |> validate_length(:password, min: 8)
     |> validate_confirmation(:password)
     |> put_password_hash
@@ -48,7 +48,7 @@ defmodule Dailyploy.Schema.User do
   def update_changeset(user, attrs) do
     user
     |> cast(attrs, [:name, :email, :password, :password_confirmation])
-    |> validate_format(:email, ~r/^[A-Za-z0-9._%+-+']+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/)
+    |> validate_format(:email, ~r/^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,})$/)
     |> validate_length(:password, min: 8)
     |> validate_confirmation(:password)
     |> put_password_hash
