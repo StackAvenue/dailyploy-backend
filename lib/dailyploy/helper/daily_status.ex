@@ -62,41 +62,51 @@ defmodule Dailyploy.Helper.DailyStatus do
 
         params = %{
           "frequency" => "daily",
-          "start_date" => Date.to_string(Date.utc_today()),
+          "start_date" => Date.to_string(Date.add(Date.utc_today(), -1)),
           "user_ids" => Integer.to_string(daily_status_mail.user_id),
           "workspace_id" => Integer.to_string(daily_status_mail.workspace_id),
-          "end_date" => Date.to_string(Date.utc_today())
+          "end_date" => Date.to_string(Date.add(Date.utc_today(), -1))
         }
 
-        tasks = Map.get(RCModel.report_query(params), Date.to_string(Date.utc_today()))
+        tasks =
+          Map.get(RCModel.report_query(params), Date.to_string(Date.add(Date.utc_today(), -1)))
+
         day_tasks = %{}
         day_tasks =
-        case is_nil(tasks) do 
-          false -> 
-          Enum.reduce(tasks, %{}, fn task, acc ->
-            time_tracks =
-              Map.get(task.date_formatted_time_tracks, Date.to_string(Date.utc_today()))
-
-            duration =
-              case is_nil(
-                     Map.get(task.date_formatted_time_tracks, Date.to_string(Date.utc_today()))
-                   ) do
-                true ->
-                  0
-
-                false ->
-                  calculate_durations(
-                    Map.get(task.date_formatted_time_tracks, Date.to_string(Date.utc_today()))
+          case is_nil(tasks) do
+            false ->
+              Enum.reduce(tasks, %{}, fn task, acc ->
+                time_tracks =
+                  Map.get(
+                    task.date_formatted_time_tracks,
+                    Date.to_string(Date.add(Date.utc_today(), -1))
                   )
-              end
 
-            Map.put_new(acc, "#{task.name}", sec_to_str(duration))
-          end)
-          true -> 
-            %{}
-        end 
-        
-        
+                duration =
+                  case is_nil(
+                         Map.get(
+                           task.date_formatted_time_tracks,
+                           Date.to_string(Date.add(Date.utc_today(), -1))
+                         )
+                       ) do
+                    true ->
+                      0
+
+                    false ->
+                      calculate_durations(
+                        Map.get(
+                          task.date_formatted_time_tracks,
+                          Date.to_string(Date.add(Date.utc_today(), -1))
+                        )
+                      )
+                  end
+
+                Map.put_new(acc, "#{task.name}", sec_to_str(duration))
+              end)
+
+            true ->
+              %{}
+          end
 
         email_build
         |> Email.put_from("contact@stack-avenue.com")
@@ -143,7 +153,7 @@ defmodule Dailyploy.Helper.DailyStatus do
         {rem(n, divisor), [div(n, divisor) | acc]}
       end)
 
-    ["#{w} wk", "#{d} d", "#{h} hr", "#{m} min", "#{s} sec"]
+    ["#{w} wk", "#{d} d", "#{h} hr", "#{m} min"]
     |> Enum.reject(fn str -> String.starts_with?(str, "0") end)
     |> Enum.join(", ")
   end
