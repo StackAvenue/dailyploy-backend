@@ -72,7 +72,6 @@ defmodule Dailyploy.Helper.DailyStatus do
           Map.get(RCModel.report_query(params), Date.to_string(Date.add(Date.utc_today(), -1)))
 
         day_tasks = %{}
-
         day_tasks =
           case is_nil(tasks) do
             false ->
