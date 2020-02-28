@@ -96,6 +96,7 @@ defmodule Dailyploy.Helper.DailyStatus do
             %{}
         end 
         
+        
 
         email_build
         |> Email.put_from("contact@stack-avenue.com")
