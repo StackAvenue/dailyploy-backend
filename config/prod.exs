@@ -44,8 +44,8 @@ config :ex_aws,
 # config quantum
 config :dailyploy, Dailyploy.Helper.Scheduler,
   jobs: [
-    # {"* * * * *", {Dailyploy.Helper.DailyStatus, :schedule_daily_status_mails, []}}
-    {"@daily", {Dailyploy.Helper.DailyStatus, :schedule_daily_status_mails, []}}
+    {"* * * * *", {Dailyploy.Helper.DailyStatus, :schedule_daily_status_mails, []}}
+    #{"@daily", {Dailyploy.Helper.DailyStatus, :schedule_daily_status_mails, []}}
   ]
 
 # ## SSL Support
