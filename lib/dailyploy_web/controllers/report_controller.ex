@@ -41,7 +41,12 @@ defmodule DailyployWeb.ReportController do
     render(conn, "task_summary_report.json", report_data: report_data)
   end
 
-  def index(conn, %{"start_date" => start_date} = params) do
+  def index(conn, params) do
+    reports = report_query(params)
+    render(conn, "index.json", reports: reports)
+  end
+
+  def report_query(%{"start_date" => start_date} = params) do
     {:ok, start_date} =
       start_date
       |> Date.from_iso8601()
@@ -191,8 +196,6 @@ defmodule DailyployWeb.ReportController do
           end
         end)
       end)
-
-    render(conn, "index.json", reports: reports)
   end
 
   def csv_download(conn, %{"start_date" => start_date} = params) do
