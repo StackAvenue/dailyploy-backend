@@ -41,11 +41,17 @@ config :ex_aws,
   secret_access_key: [System.get_env("AWS_SECRET_ACCESS_KEY"), :instance_role],
   region: "ap-south-1"
 
-# config quantum
 config :dailyploy, Dailyploy.Helper.Scheduler,
+  schedule: "@daily",
+  overlap: false,
+  timezone: "Asia/Calcutta",
+  # global: true,
   jobs: [
+    daily_status: [
+      task: {Dailyploy.Helper.DailyStatus, :schedule_daily_status_mails, []}
+    ]
     # {"* * * * *", {Dailyploy.Helper.DailyStatus, :schedule_daily_status_mails, []}}
-    {"@daily", {Dailyploy.Helper.DailyStatus, :schedule_daily_status_mails, []}}
+    # {Dailyploy.Helper.DailyStatus, :schedule_daily_status_mails, []}
   ]
 
 # ## SSL Support

@@ -31,7 +31,7 @@ defmodule Dailyploy.Schema.User do
 
     timestamps()
   end
-  
+
   @doc false
   def changeset(user, attrs) do
     user

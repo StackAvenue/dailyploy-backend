@@ -83,7 +83,8 @@ defmodule DailyployWeb.TaskController do
 
   def show(conn, %{"id" => id}) do
     task = TaskModel.get_task!(id) |> Repo.preload([:members, :owner, :category, :time_tracks])
-
+    date_formatted_time_tracks = date_wise_orientation(task.time_tracks)
+    task = Map.put(task, :date_formatted_time_tracks, date_formatted_time_tracks)
     render(conn, "task_with_user.json", task: task)
   end
 
@@ -118,5 +119,20 @@ defmodule DailyployWeb.TaskController do
         |> put_status(404)
         |> json(%{"resource_not_found" => true})
     end
+  end
+
+  defp date_wise_orientation(task_list) do
+    Enum.reduce(task_list, %{}, fn time_track, acc ->
+      case Map.has_key?(acc, Date.to_iso8601(time_track.start_time)) do
+        true ->
+          time_track_add = Map.get(acc, Date.to_iso8601(time_track.start_time)) ++ [time_track]
+          acc = Map.replace!(acc, Date.to_iso8601(time_track.start_time), time_track_add)
+
+        false ->
+          acc = Map.put_new(acc, Date.to_iso8601(time_track.start_time), [])
+          time_track_new = Map.get(acc, Date.to_iso8601(time_track.start_time)) ++ [time_track]
+          acc = Map.replace!(acc, Date.to_iso8601(time_track.start_time), time_track_new)
+      end
+    end)
   end
 end
