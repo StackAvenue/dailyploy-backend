@@ -34,7 +34,11 @@ defmodule DailyployWeb.TaskController do
           "task_created/#{conn.params["workspace_id"]}"
         )
 
-        render(conn, "show.json", task: task |> Repo.preload([:owner, :category, :time_tracks]))
+        task = task |> Repo.preload([:owner, :category, :time_tracks])
+        date_formatted_time_tracks = date_wise_orientation(task.time_tracks)
+        task = Map.put(task, :date_formatted_time_tracks, date_formatted_time_tracks)
+
+        render(conn, "show.json", task: task)
 
       {:error, task} ->
         conn
@@ -53,7 +57,11 @@ defmodule DailyployWeb.TaskController do
           "task_update/#{conn.params["workspace_id"]}"
         )
 
-        render(conn, "show.json", task: task |> Repo.preload([:owner, :category, :time_tracks]))
+        task = task |> Repo.preload([:owner, :category, :time_tracks])
+        date_formatted_time_tracks = date_wise_orientation(task.time_tracks)
+        task = Map.put(task, :date_formatted_time_tracks, date_formatted_time_tracks)
+
+        render(conn, "show.json", task: task)
 
       {:error, task} ->
         conn
@@ -72,7 +80,10 @@ defmodule DailyployWeb.TaskController do
           "task_completed/#{conn.params["workspace_id"]}"
         )
 
-        render(conn, "show.json", task: task |> Repo.preload([:owner, :category, :time_tracks]))
+        task = task |> Repo.preload([:owner, :category, :time_tracks])
+        date_formatted_time_tracks = date_wise_orientation(task.time_tracks)
+        task = Map.put(task, :date_formatted_time_tracks, date_formatted_time_tracks)
+        render(conn, "show.json", task: task)
 
       {:error, task} ->
         conn
