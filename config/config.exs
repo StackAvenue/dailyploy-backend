@@ -27,9 +27,16 @@ config :phoenix, :json_library, Jason
 
 # config quantum
 config :dailyploy, Dailyploy.Helper.Scheduler,
+  schedule: "@daily",
+  overlap: false,
+  timezone: "Asia/Calcutta",
+  # global: true,
   jobs: [
-    #{"* * * * *", {Dailyploy.Helper.DailyStatus, :schedule_daily_status_mails, []}}
-    {"@daily", {Dailyploy.Helper.DailyStatus, :schedule_daily_status_mails, []}}
+    daily_status: [
+      task: {Dailyploy.Helper.DailyStatus, :schedule_daily_status_mails, []}
+    ]
+    # {"* * * * *", {Dailyploy.Helper.DailyStatus, :schedule_daily_status_mails, []}}
+    # {Dailyploy.Helper.DailyStatus, :schedule_daily_status_mails, []}
   ]
 
 config :guardian, Auth.Guardian,
