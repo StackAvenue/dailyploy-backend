@@ -21,7 +21,7 @@ defmodule DailyployWeb.TimeTrackingController do
              {:create, {:ok, task_running}} <- {:create, TimeTracking.start_running(data)} do
           Firebase.insert_operation(
             Jason.encode(task_running),
-            "task_running/#{(conn.assigns.task |> Repo.preload(:project)).project.workspace_id}/#{
+            "task_status/#{(conn.assigns.task |> Repo.preload(:project)).project.workspace_id}/#{
               task_running.task_id
             }"
           )
@@ -56,7 +56,7 @@ defmodule DailyployWeb.TimeTrackingController do
 
           Firebase.insert_operation(
             Jason.encode(task_stopped),
-            "task_stopped/#{(task |> Repo.preload(:project)).project.workspace_id}/#{
+            "task_status/#{(task |> Repo.preload(:project)).project.workspace_id}/#{
               task_stopped.task_id
             }"
           )
