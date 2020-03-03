@@ -20,7 +20,15 @@ defmodule Dailyploy.MixProject do
   def application do
     [
       mod: {Dailyploy.Application, []},
-      extra_applications: [:logger, :runtime_tools, :calendar, :timex, :arc_ecto, :httpotion, :quantum]
+      extra_applications: [
+        :logger,
+        :runtime_tools,
+        :calendar,
+        :timex,
+        :arc_ecto,
+        :httpotion,
+        :quantum
+      ]
     ]
   end
 

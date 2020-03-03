@@ -89,6 +89,12 @@ defmodule Dailyploy.Schema.Task do
   end
 
   defp put_task_members(changeset, members) do
+    members =
+      case members do
+        nil -> []
+        _ -> members
+      end
+
     members = Repo.all(from(user in User, where: user.id in ^members))
 
     put_assoc(changeset, :members, Enum.map(members, &change/1))

@@ -50,7 +50,7 @@ defmodule DailyployWeb.TaskController do
   def update(conn, %{"id" => id, "task" => task_params}) do
     task = TaskModel.get_task!(id)
 
-    case TaskModel.update_task_status(task, task_params) do
+    case TaskModel.update_task(task, task_params) do
       {:ok, %Task{} = task} ->
         Firebase.insert_operation(
           Poison.encode(task |> Repo.preload([:project, :owner, :category, :time_tracks])),
@@ -129,6 +129,22 @@ defmodule DailyployWeb.TaskController do
         conn
         |> put_status(404)
         |> json(%{"resource_not_found" => true})
+    end
+  end
+
+  def running_task(conn, %{"workspace_id" => workspace_id} = params) do
+    %{id: user_id} = Guardian.Plug.current_resource(conn)
+
+    case TaskModel.running_task(%{user_id: user_id, workspace_id: workspace_id}) do
+      nil ->
+        conn
+        |> put_status(404)
+        |> json(%{"resource_not_found" => true})
+
+      time_track ->
+        conn
+        |> put_status(200)
+        |> render("task_running.json", time_track: time_track |> Repo.preload([:task]))
     end
   end
 
