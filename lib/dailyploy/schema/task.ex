@@ -71,30 +71,33 @@ defmodule Dailyploy.Schema.Task do
   end
 
   def update_status_changeset(task, attrs) do
-    task
-    |> Repo.preload([:members])
-    |> cast(attrs, [
-      :name,
-      :start_datetime,
-      :end_datetime,
-      :comments,
-      :project_id,
-      :category_id,
-      :status,
-      :priority
-    ])
-    |> assoc_constraint(:project)
-    |> validate_inclusion(:status, @task_status)
-    |> validate_inclusion(:priority, @task_priority)
+    task =
+      task
+      |> Repo.preload([:members])
+      |> cast(attrs, [
+        :name,
+        :start_datetime,
+        :end_datetime,
+        :comments,
+        :project_id,
+        :category_id,
+        :status,
+        :priority
+      ])
+      |> assoc_constraint(:project)
+      |> validate_inclusion(:status, @task_status)
+      |> validate_inclusion(:priority, @task_priority)
+
+    task =
+      case Map.has_key?(attrs, "member_ids") do
+        true -> put_task_members(task, attrs["member_ids"])
+        false -> task
+      end
+
+    # put_task_members(attrs["member_ids"])
   end
 
   defp put_task_members(changeset, members) do
-    members =
-      case members do
-        nil -> []
-        _ -> members
-      end
-
     members = Repo.all(from(user in User, where: user.id in ^members))
 
     put_assoc(changeset, :members, Enum.map(members, &change/1))

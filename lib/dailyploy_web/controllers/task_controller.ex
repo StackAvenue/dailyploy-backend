@@ -50,7 +50,7 @@ defmodule DailyployWeb.TaskController do
   def update(conn, %{"id" => id, "task" => task_params}) do
     task = TaskModel.get_task!(id)
 
-    case TaskModel.update_task(task, task_params) do
+    case TaskModel.update_task_status(task, task_params) do
       {:ok, %Task{} = task} ->
         Firebase.insert_operation(
           Poison.encode(task |> Repo.preload([:project, :owner, :category, :time_tracks])),
