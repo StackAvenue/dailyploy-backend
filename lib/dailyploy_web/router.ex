@@ -33,6 +33,7 @@ defmodule DailyployWeb.Router do
     resources "/users", UserController
 
     resources "/workspaces", WorkspaceController, only: [:index] do
+      get "/running_task", TaskController, :running_task
       resources "/members", MemberController, only: [:index, :show, :update, :delete]
       resources "/tags", TagController, only: [:create, :update, :delete, :index, :show]
       resources "/workspace_settings", UserWorkspaceSettingsController, only: [:update]

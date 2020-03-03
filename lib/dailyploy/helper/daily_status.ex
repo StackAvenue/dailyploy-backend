@@ -62,14 +62,14 @@ defmodule Dailyploy.Helper.DailyStatus do
 
         params = %{
           "frequency" => "daily",
-          "start_date" => Date.to_string(Date.add(Date.utc_today(), -1)),
+          "start_date" => Date.to_string(Date.add(Date.utc_today(), 0)),
           "user_ids" => Integer.to_string(daily_status_mail.user_id),
           "workspace_id" => Integer.to_string(daily_status_mail.workspace_id),
-          "end_date" => Date.to_string(Date.add(Date.utc_today(), -1))
+          "end_date" => Date.to_string(Date.add(Date.utc_today(), 0))
         }
 
         tasks =
-          Map.get(RCModel.report_query(params), Date.to_string(Date.add(Date.utc_today(), -1)))
+          Map.get(RCModel.report_query(params), Date.to_string(Date.add(Date.utc_today(), 0)))
 
         day_tasks = %{}
 
@@ -80,14 +80,14 @@ defmodule Dailyploy.Helper.DailyStatus do
                 time_tracks =
                   Map.get(
                     task.date_formatted_time_tracks,
-                    Date.to_string(Date.add(Date.utc_today(), -1))
+                    Date.to_string(Date.add(Date.utc_today(), 0))
                   )
 
                 duration =
                   case is_nil(
                          Map.get(
                            task.date_formatted_time_tracks,
-                           Date.to_string(Date.add(Date.utc_today(), -1))
+                           Date.to_string(Date.add(Date.utc_today(), 0))
                          )
                        ) do
                     true ->
@@ -97,7 +97,7 @@ defmodule Dailyploy.Helper.DailyStatus do
                       calculate_durations(
                         Map.get(
                           task.date_formatted_time_tracks,
-                          Date.to_string(Date.add(Date.utc_today(), -1))
+                          Date.to_string(Date.add(Date.utc_today(), 0))
                         )
                       )
                   end

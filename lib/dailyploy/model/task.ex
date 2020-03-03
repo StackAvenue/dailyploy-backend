@@ -586,4 +586,18 @@ defmodule Dailyploy.Model.Task do
         dynamic
     end)
   end
+
+  def running_task(%{user_id: user_id, workspace_id: workspace_id}) do
+    query =
+      from time_track in TimeTracking,
+        join: task in Task,
+        on: task.id == time_track.task_id and time_track.status == "running",
+        join: project in Project,
+        on: project.id == task.project_id and project.workspace_id == ^workspace_id,
+        join: user_task in UserTask,
+        on: user_task.user_id == ^user_id and user_task.task_id == time_track.task_id,
+        select: time_track
+
+    Repo.one(query)
+  end
 end

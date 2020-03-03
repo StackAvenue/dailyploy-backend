@@ -39,6 +39,17 @@ defmodule DailyployWeb.TaskView do
     }
   end
 
+  def render("task_running.json", %{time_track: time_track}) do
+    %{
+      id: time_track.id,
+      task_id: time_track.task_id,
+      start_datetime: time_track.start_time,
+      status: time_track.status,
+      time_log: time_track.time_log,
+      task: render_one(time_track.task, TaskView, "task.json")
+    }
+  end
+
   def render("task_with_user.json", %{task: task}) do
     %{
       id: task.id,
