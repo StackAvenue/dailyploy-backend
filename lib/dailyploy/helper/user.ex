@@ -129,6 +129,26 @@ defmodule Dailyploy.Helper.User do
     UserWorkspaceSettingsModel.create_user_workspace_settings(params)
   end
 
+  def individual_google_auth_signup(user_attrs) do
+    user_attrs = add_user_workspace(user_attrs)
+
+    case UserModel.create_google_user(user_attrs) do
+      {:ok, user} ->
+        successful_user_creation_without_company(user)
+
+      {:error, user} ->
+        case user.errors do
+          [] ->
+            [workspace] = user.changes.workspaces
+            user = Map.put(user, :errors, workspace.errors)
+            {:error, user}
+
+          _ ->
+            {:error, user}
+        end
+    end
+  end
+
   def add_existing_or_non_existing_user_to_member_for_invite(
         user_id,
         workspace_id,

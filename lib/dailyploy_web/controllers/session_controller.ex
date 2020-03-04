@@ -39,4 +39,28 @@ defmodule DailyployWeb.SessionController do
         {:error, :unauthorized}
     end
   end
+
+  def google_auth(conn, %{"user" => user_params}) do
+    case UserHelper.individual_google_auth_signup(user_params) do
+      {:ok, %User{} = user} ->
+        conn
+        |> put_status(:created)
+        |> render("show.json", %{user: user})
+
+      {:error, user} ->
+        conn
+        |> put_status(422)
+        |> render("signup_error.json", %{user: user})
+
+      {:error, _model, model_changeset, _valid_changesets} ->
+        conn
+        |> put_status(422)
+        |> render("changeset_error.json", %{errors: model_changeset.errors})
+
+      {:ok, %{company: _company, user: user}} ->
+        conn
+        |> put_status(:created)
+        |> render("show.json", %{user: user})
+    end
+  end
 end

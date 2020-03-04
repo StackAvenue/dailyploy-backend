@@ -131,6 +131,12 @@ defmodule Dailyploy.Model.User do
     |> Repo.insert()
   end
 
+  def create_google_user(attrs \\ %{}) do
+    %User{}
+    |> User.changeset_google_auth(attrs)
+    |> Repo.insert()
+  end
+
   def update_user(%User{} = user, attrs) do
     user
     |> User.update_changeset(attrs)

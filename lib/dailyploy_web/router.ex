@@ -12,6 +12,8 @@ defmodule DailyployWeb.Router do
   scope "/api/v1", DailyployWeb do
     post "/sign_up", SessionController, :sign_up
     post "/sign_in", SessionController, :sign_in
+    post "/google_auth", SessionController, :google_auth
+    post "/google_signin", SessionController, :google_auth_sign_in
     get "/forgot_password", PasswordRecoveryController, :generate_email
   end
 

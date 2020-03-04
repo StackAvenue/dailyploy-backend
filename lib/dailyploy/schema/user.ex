@@ -18,6 +18,10 @@ defmodule Dailyploy.Schema.User do
     field :password, :string, virtual: true
     field :password_confirmation, :string, virtual: true
     field :role, :string, virtual: true
+    field :provider, :string
+    field :token, :string
+    field :provider_id, :string
+    field :provider_img, :string
     # is_invited, :boolean, default: false
     has_many :user_workspace_settings, UserWorkspaceSetting
 
@@ -45,6 +49,38 @@ defmodule Dailyploy.Schema.User do
     |> cast_assoc(:workspaces, with: &Workspace.changeset/2)
   end
 
+  def changeset_google_auth(user, attrs) do
+    attrs = gen_random_password(attrs)
+
+    user
+    |> cast(attrs, [
+      :name,
+      :email,
+      :provider,
+      :provider_id,
+      :token,
+      :provider_img,
+      :password,
+      :password_confirmation
+    ])
+    |> validate_required([
+      :name,
+      :email,
+      :provider,
+      :provider_id,
+      :token,
+      :provider_img,
+      :password,
+      :password_confirmation
+    ])
+    |> validate_format(:email, ~r/^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,})$/)
+    |> validate_length(:password, min: 8)
+    |> validate_confirmation(:password)
+    |> put_password_hash
+    |> unique_constraint(:email)
+    |> cast_assoc(:workspaces, with: &Workspace.changeset/2)
+  end
+
   def update_changeset(user, attrs) do
     user
     |> cast(attrs, [:name, :email, :password, :password_confirmation])
@@ -63,5 +99,13 @@ defmodule Dailyploy.Schema.User do
       _ ->
         changeset
     end
+  end
+
+  defp gen_random_password(changeset) do
+    password = :crypto.strong_rand_bytes(8) |> Base.url_encode64() |> binary_part(0, 8)
+
+    changeset
+    |> Map.put_new("password", password)
+    |> Map.put_new("password_confirmation", password)
   end
 end
