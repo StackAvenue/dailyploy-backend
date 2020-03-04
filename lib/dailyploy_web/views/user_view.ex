@@ -20,6 +20,10 @@ defmodule DailyployWeb.UserView do
     %{id: user.id, name: user.name, email: user.email}
   end
 
+  def render("user_auth.json", %{user: user}) do
+    %{id: user.id, name: user.name, email: user.email, access_token: user.access_token}
+  end
+
   def render("user.json", %{user: user, workspace: workspace}) do
     case workspace do
       nil -> %{id: user.id, name: user.name, email: user.email, workspace_id: nil}

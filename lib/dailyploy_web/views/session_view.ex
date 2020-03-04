@@ -22,4 +22,8 @@ defmodule DailyployWeb.SessionView do
   def render("changeset_error.json", %{errors: errors}) do
     %{errors: ErrorHelpers.changeset_error_to_map(errors)}
   end
+
+  def render("show_auth.json", %{user: user}) do
+    %{user: render_one(user, UserView, "user_auth.json")}
+  end
 end

@@ -19,7 +19,6 @@ defmodule Dailyploy.Schema.User do
     field :password_confirmation, :string, virtual: true
     field :role, :string, virtual: true
     field :provider, :string
-    field :token, :string
     field :provider_id, :string
     field :provider_img, :string
     # is_invited, :boolean, default: false
@@ -58,7 +57,6 @@ defmodule Dailyploy.Schema.User do
       :email,
       :provider,
       :provider_id,
-      :token,
       :provider_img,
       :password,
       :password_confirmation
@@ -68,7 +66,6 @@ defmodule Dailyploy.Schema.User do
       :email,
       :provider,
       :provider_id,
-      :token,
       :provider_img,
       :password,
       :password_confirmation

@@ -4,7 +4,6 @@ defmodule Dailyploy.Repo.Migrations.AlterUserTable do
   def change do
     alter table(:users) do
       add :provider, :string
-      add :token, :string
       add :provider_id, :string
       add :provider_img, :string
     end

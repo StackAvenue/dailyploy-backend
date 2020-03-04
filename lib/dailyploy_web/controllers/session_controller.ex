@@ -3,6 +3,7 @@ defmodule DailyployWeb.SessionController do
   alias Dailyploy.Model.User, as: UserModel
   alias Dailyploy.Helper.User, as: UserHelper
   alias Dailyploy.Schema.User
+  alias Auth.Guardian
 
   action_fallback DailyployWeb.FallbackController
 
@@ -43,9 +44,12 @@ defmodule DailyployWeb.SessionController do
   def google_auth(conn, %{"user" => user_params}) do
     case UserHelper.individual_google_auth_signup(user_params) do
       {:ok, %User{} = user} ->
+        {:ok, access_token, _claim} = Guardian.encode_and_sign(user)
+        user = Map.put_new(user, :access_token, access_token)
+
         conn
         |> put_status(:created)
-        |> render("show.json", %{user: user})
+        |> render("show_auth.json", %{user: user})
 
       {:error, user} ->
         conn
@@ -66,10 +70,9 @@ defmodule DailyployWeb.SessionController do
 
   def google_auth_sign_in(conn, %{
         "email" => email,
-        "token" => token,
         "provider_id" => provider_id
       }) do
-    case UserModel.google_sign_in(email, token, provider_id) do
+    case UserModel.google_sign_in(email, provider_id) do
       {:ok, token, _claims} ->
         conn |> render("access_token.json", access_token: token)
 
