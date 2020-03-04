@@ -63,4 +63,18 @@ defmodule DailyployWeb.SessionController do
         |> render("show.json", %{user: user})
     end
   end
+
+  def google_auth_sign_in(conn, %{
+        "email" => email,
+        "token" => token,
+        "provider_id" => provider_id
+      }) do
+    case UserModel.google_sign_in(email, token, provider_id) do
+      {:ok, token, _claims} ->
+        conn |> render("access_token.json", access_token: token)
+
+      _ ->
+        {:error, :unauthorized}
+    end
+  end
 end

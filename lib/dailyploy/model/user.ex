@@ -147,6 +147,20 @@ defmodule Dailyploy.Model.User do
     Repo.delete(user)
   end
 
+  def google_sign_in(email, token, provider_id) do
+    with {:ok, user} <- get_by_email(email) do
+      case verify_token(user, token, provider_id) do
+        {:ok, user} ->
+          Guardian.encode_and_sign(user)
+
+        _ ->
+          {:error, :unauthorized}
+      end
+    else
+      {:error, _message} -> {:error, :unauthorized}
+    end
+  end
+
   def token_sign_in(email, password) do
     case email_password_auth(email, password) do
       {:ok, user} ->
@@ -180,6 +194,14 @@ defmodule Dailyploy.Model.User do
 
       user ->
         {:ok, user}
+    end
+  end
+
+  defp verify_token(user, token, provider_id) do
+    if user.token == token and user.provider_id == provider_id do
+      {:ok, user}
+    else
+      {:error, :invalid_token}
     end
   end
 
