@@ -76,8 +76,10 @@ defmodule DailyployWeb.SessionController do
       {:ok, token, _claims} ->
         conn |> render("access_token.json", access_token: token)
 
-      _ ->
-        {:error, :unauthorized}
+      {:error, message} ->
+        conn
+        |> put_status(400)
+        |> json(%{"message" => message})
     end
   end
 end

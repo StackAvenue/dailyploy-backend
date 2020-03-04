@@ -157,7 +157,7 @@ defmodule Dailyploy.Model.User do
           {:error, :unauthorized}
       end
     else
-      {:error, _message} -> {:error, :unauthorized}
+      {:error, _message} -> {:error, "Email Doesn't Exist"}
     end
   end
 
