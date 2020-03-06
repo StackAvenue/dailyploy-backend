@@ -111,6 +111,7 @@ defmodule DailyployWeb.TimeTrackingController do
 
     case TaskModel.get(task_id) do
       {:ok, task} ->
+        # TimeTracking.toggle_task(task)
         assign(conn, :task, task)
 
       {:error, _message} ->

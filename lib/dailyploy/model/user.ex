@@ -119,6 +119,16 @@ defmodule Dailyploy.Model.User do
     %{total_estimated_time: total_capacity_time, total_tracked_time: total_tracked_time}
   end
 
+  def get(id) when is_integer(id) do
+    case Repo.get(User, id) do
+      nil ->
+        {:error, "not found"}
+
+      task ->
+        {:ok, task}
+    end
+  end
+
   def get_user!(id), do: Repo.get!(User, id)
 
   def get_user(id), do: Repo.get(User, id)

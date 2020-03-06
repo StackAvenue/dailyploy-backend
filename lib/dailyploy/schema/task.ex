@@ -8,6 +8,7 @@ defmodule Dailyploy.Schema.Task do
   alias Dailyploy.Schema.User
   alias Dailyploy.Schema.TaskCategory
   alias Dailyploy.Schema.TimeTracking
+  alias Dailyploy.Schema.TaskComment
   alias Dailyploy.Schema.WorkspaceTaskCategory
 
   @task_status ~w(completed running not_started)s
@@ -24,6 +25,7 @@ defmodule Dailyploy.Schema.Task do
     belongs_to :owner, User
     belongs_to :project, Project
     has_many :time_tracks, TimeTracking
+    has_many :task_comments, TaskComment
     many_to_many :members, User, join_through: "user_tasks", on_replace: :delete
     belongs_to :category, TaskCategory
     timestamps()
