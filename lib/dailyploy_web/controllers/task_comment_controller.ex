@@ -2,6 +2,7 @@ defmodule DailyployWeb.TaskCommentController do
   use DailyployWeb, :controller
   alias Dailyploy.Repo
   alias Dailyploy.Helper.TaskComment
+  alias Dailyploy.Helper.ImageDeletion
   alias Dailyploy.Helper.CommentsAttachment
   alias Dailyploy.Model.Task, as: TaskModel
   alias Dailyploy.Model.User, as: UserModel
@@ -13,10 +14,7 @@ defmodule DailyployWeb.TaskCommentController do
   alias Dailyploy.Avatar
 
   plug :load_task_and_user when action in [:create]
-  plug :load_comment when action in [:update]
-
-  def index(conn, params) do
-  end
+  plug :load_comment when action in [:update, :delete, :show]
 
   def create(conn, params) do
     case conn.status do
@@ -53,12 +51,75 @@ defmodule DailyployWeb.TaskCommentController do
   end
 
   def show(conn, params) do
+    case conn.status do
+      nil ->
+        conn
+        |> put_status(200)
+        |> render("show.json", %{comment: conn.assigns.comment})
+
+      404 ->
+        conn
+        |> send_error(404, "Resource Not Found")
+    end
   end
 
   def update(conn, params) do
+    case conn.status do
+      nil ->
+        %{assigns: %{comment: comment}} = conn
+
+        case TCModel.update_task_comment(comment, params) do
+          {:ok, comment} ->
+            attachment =
+              with true <- Map.has_key?(params, "attachments") do
+                update_attachment(comment.attachment)
+                insert_attachments(comment, params)
+              else
+                false -> comment.attachment
+              end
+
+            comment = Map.replace!(comment, :attachment, attachment)
+
+            conn
+            |> put_status(200)
+            |> render("show.json", %{comment: comment})
+
+          {:error, comment} ->
+            error = extract_changeset_error(comment)
+
+            conn
+            |> send_error(400, error)
+        end
+
+      404 ->
+        conn
+        |> send_error(404, "Resource Not Found")
+    end
   end
 
   def delete(conn, params) do
+    case conn.status do
+      nil ->
+        case TCModel.delete_task_comment(conn.assigns.comment) do
+          {:ok, comment} ->
+            with false <- is_nil(List.first(comment.attachment)),
+                 do: delete_attachment(comment.attachment)
+
+            conn
+            |> put_status(200)
+            |> render("show.json", %{comment: comment})
+
+          {:error, comment} ->
+            error = extract_changeset_error(comment)
+
+            conn
+            |> send_error(400, error)
+        end
+
+      404 ->
+        conn
+        |> send_error(404, "Resource Not Found")
+    end
   end
 
   defp load_task_and_user(
@@ -85,15 +146,14 @@ defmodule DailyployWeb.TaskCommentController do
     end
   end
 
-  defp load_comment(%{params: %{"id" => id, "task_id" => task_id}} = conn, _params) do
+  defp load_comment(%{params: %{"id" => id}} = conn, _params) do
     {id, _} = Integer.parse(id)
-    {task_id, _} = Integer.parse(task_id)
 
-    case TCModel.get_comment(id, task_id) do
-      {:ok, comment} ->
+    case TCModel.get(id) do
+      comment ->
         assign(conn, :comment, comment)
 
-      {:error, _message} ->
+      nil ->
         conn
         |> put_status(404)
     end
@@ -111,7 +171,7 @@ defmodule DailyployWeb.TaskCommentController do
 
     with {:ok, image_name} <- Avatar.store({image, "attachments"}) do
       params = Map.put_new(params, "image_url", Avatar.url({image_name, "attachments"}))
-      params = Map.put_new(params, "comment_id", comment.id)
+      params = Map.put_new(params, "task_comment_id", comment.id)
       {:ok, params}
     else
       {:error, error} ->
@@ -122,5 +182,19 @@ defmodule DailyployWeb.TaskCommentController do
   defp create_attachment(attachment) do
     {:ok, changeset} = verify_attachment(attachment) |> extract_changeset_data
     CommentsAttachment.create_attachment(changeset)
+  end
+
+  defp delete_attachment(attachments) do
+    for attachment <- attachments do
+      ImageDeletion.delete_operation(attachment, "attachments")
+      # CAModel.delete_attachment(attachment)
+    end
+  end
+
+  defp update_attachment(attachments) do
+    for attachment <- attachments do
+      ImageDeletion.delete_operation(attachment, "attachments")
+      CAModel.delete_attachment(attachment)
+    end
   end
 end

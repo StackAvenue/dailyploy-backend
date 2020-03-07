@@ -4,7 +4,9 @@ defmodule DailyployWeb.TaskController do
   alias Dailyploy.Repo
   alias Dailyploy.Model.Task, as: TaskModel
   alias Dailyploy.Schema.Task
+  alias Dailyploy.Schema.TaskComment
   alias Dailyploy.Helper.Firebase
+  import Ecto.Query
   plug Auth.Pipeline
 
   action_fallback DailyployWeb.FallbackController
@@ -93,11 +95,28 @@ defmodule DailyployWeb.TaskController do
   end
 
   def show(conn, %{"id" => id}) do
-    task = TaskModel.get_task!(id) |> Repo.preload([:members, :owner, :category, :time_tracks])
+    query = from task_comment in TaskComment, order_by: [desc: task_comment.inserted_at]
+    # , :task_comments, task_comments: [:attachment, :user]]
+    task =
+      TaskModel.get_task!(id)
+      |> Repo.preload(task_comments: query)
+      |> Repo.preload([
+        :members,
+        :owner,
+        :category,
+        :time_tracks,
+        task_comments: [:attachment, :user]
+      ])
+
+    # task = task |> Repo.preload(task_comments: {query})
     date_formatted_time_tracks = date_wise_orientation(task.time_tracks)
     task = Map.put(task, :date_formatted_time_tracks, date_formatted_time_tracks)
-    render(conn, "task_with_user.json", task: task)
+    render(conn, "task_with_user_show.json", task: task)
   end
+
+  # defp comments_query() do
+  #   from c in TaskComment, order_by: c.inserted_at
+  # end
 
   def delete(conn, %{"id" => id}) do
     user = Guardian.Plug.current_resource(conn)

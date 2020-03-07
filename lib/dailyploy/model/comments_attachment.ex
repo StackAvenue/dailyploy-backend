@@ -7,4 +7,8 @@ defmodule Dailyploy.Model.CommentsAttachment do
     changeset = CommentsAttachment.changeset(%CommentsAttachment{}, params)
     Repo.insert(changeset)
   end
+
+  def delete_attachment(attachment) do
+    Repo.delete(attachment)
+  end
 end

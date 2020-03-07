@@ -5,6 +5,7 @@ defmodule DailyployWeb.TaskView do
   alias DailyployWeb.ProjectView
   alias DailyployWeb.TaskCategoryView
   alias DailyployWeb.TimeTrackingView
+  alias DailyployWeb.TaskCommentView
   alias DailyployWeb.ErrorHelpers
 
   def render("index.json", %{tasks: tasks}) do
@@ -26,6 +27,18 @@ defmodule DailyployWeb.TaskView do
       start_datetime: task.start_datetime,
       end_datetime: task.end_datetime,
       comments: task.comments
+    }
+  end
+
+  def render("task_comments.json", %{task: task}) do
+    %{
+      id: task.id,
+      name: task.name,
+      start_datetime: task.start_datetime,
+      end_datetime: task.end_datetime,
+      comments: task.comments,
+      status: task.status,
+      priority: task.priority
     }
   end
 
@@ -62,6 +75,29 @@ defmodule DailyployWeb.TaskView do
       members: render_many(task.members, UserView, "user.json"),
       owner: render_one(task.owner, UserView, "user.json"),
       category: render_one(task.category, TaskCategoryView, "task_category.json"),
+      time_tracked: render_many(task.time_tracks, TimeTrackingView, "task_with_track_time.json"),
+      date_formatted_time_tracks:
+        render_many(
+          task.date_formatted_time_tracks,
+          TimeTrackingView,
+          "date_formatted_time_tracks.json"
+        )
+    }
+  end
+
+  def render("task_with_user_show.json", %{task: task}) do
+    %{
+      id: task.id,
+      name: task.name,
+      start_datetime: task.start_datetime,
+      end_datetime: task.end_datetime,
+      comments: task.comments,
+      status: task.status,
+      priority: task.priority,
+      members: render_many(task.members, UserView, "user.json"),
+      owner: render_one(task.owner, UserView, "user.json"),
+      category: render_one(task.category, TaskCategoryView, "task_category.json"),
+      task_comments: render_many(task.task_comments, TaskCommentView, "task_comments.json"),
       time_tracked: render_many(task.time_tracks, TimeTrackingView, "task_with_track_time.json"),
       date_formatted_time_tracks:
         render_many(

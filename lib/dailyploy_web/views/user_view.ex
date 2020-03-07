@@ -51,4 +51,12 @@ defmodule DailyployWeb.UserView do
   def render("changeset_error.json", %{errors: errors}) do
     %{errors: ErrorHelpers.changeset_error_to_map(errors)}
   end
+
+  def render("user_task_comments.json", %{user: user}) do
+    %{
+      id: user.id,
+      name: user.name,
+      email: user.email
+    }
+  end
 end

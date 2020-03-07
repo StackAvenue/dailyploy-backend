@@ -3,7 +3,7 @@ defmodule DailyployWeb.Validators.CommentsAttachment do
 
   defparams(
     verify_attachment(%{
-      comment_id!: :integer,
+      task_comment_id!: :integer,
       image_url!: :string
     })
   )
