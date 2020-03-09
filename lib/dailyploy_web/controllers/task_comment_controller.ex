@@ -31,11 +31,11 @@ defmodule DailyployWeb.TaskCommentController do
               false -> []
             end
 
-          comment = Map.put_new(comment, :attachments, attachment)
+          comment = Map.put_new(comment, :attachment, attachment)
 
           conn
           |> put_status(200)
-          |> render("comment.json", %{comment: comment})
+          |> render("show.json", %{comment: comment})
         else
           {:extract, {:error, error}} ->
             send_error(conn, 400, error)
@@ -75,7 +75,9 @@ defmodule DailyployWeb.TaskCommentController do
                 update_attachment(comment.attachment)
                 insert_attachments(comment, params)
               else
-                false -> comment.attachment
+                false ->
+                  update_attachment(comment.attachment)
+                  []
               end
 
             comment = Map.replace!(comment, :attachment, attachment)
