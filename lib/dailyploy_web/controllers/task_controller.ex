@@ -163,7 +163,7 @@ defmodule DailyployWeb.TaskController do
       time_track ->
         conn
         |> put_status(200)
-        |> render("task_running.json", time_track: time_track |> Repo.preload([:task]))
+        |> render("task_running.json", time_track: time_track |> Repo.preload([task: [:members, :owner, :time_tracks, :category, :project, :task_comments]]))
     end
   end
 
