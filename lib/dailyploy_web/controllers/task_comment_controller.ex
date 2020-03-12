@@ -33,6 +33,7 @@ defmodule DailyployWeb.TaskCommentController do
 
           comment = Map.put_new(comment, :attachment, attachment)
 
+          # Task.async(TaskComment.send_activity_mail(comment)) task notification should be send as mail to the one who is responsible for this
           conn
           |> put_status(200)
           |> render("show.json", %{comment: comment})
@@ -152,12 +153,12 @@ defmodule DailyployWeb.TaskCommentController do
     {id, _} = Integer.parse(id)
 
     case TCModel.get(id) do
-      comment ->
-        assign(conn, :comment, comment)
-
       nil ->
         conn
         |> put_status(404)
+
+      comment ->
+        assign(conn, :comment, comment)
     end
   end
 

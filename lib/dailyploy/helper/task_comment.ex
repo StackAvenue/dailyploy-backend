@@ -1,5 +1,7 @@
 defmodule Dailyploy.Helper.TaskComment do
+  alias SendGrid.{Mail, Email}
   alias Dailyploy.Model.TaskComment, as: TCModel
+  alias Dailyploy.Repo
   import DailyployWeb.Helpers
 
   def create_comment(params) do
@@ -19,7 +21,7 @@ defmodule Dailyploy.Helper.TaskComment do
   end
 
   defp verify_create({:ok, comment}) do
-    comment = comment |> Dailyploy.Repo.preload([:user, :task])
+    comment = comment |> Dailyploy.Repo.preload([:user, :task, task: [:members, :owner]])
 
     {:ok,
      %{
@@ -35,4 +37,11 @@ defmodule Dailyploy.Helper.TaskComment do
   defp verify_create({:error, comment}) do
     {:error, %{error: extract_changeset_error(comment)}}
   end
+
+  # def send_activity_mail(comment) do
+  #   email_build = 
+  #     Email.build()
+  #     |> Map.put
+
+  # end
 end

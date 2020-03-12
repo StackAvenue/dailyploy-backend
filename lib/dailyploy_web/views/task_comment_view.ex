@@ -32,6 +32,7 @@ defmodule DailyployWeb.TaskCommentView do
       task_id: comment.task_id,
       user_id: comment.user_id,
       comments: comment.comments,
+      inserted_at: comment.inserted_at,
       attachments: render_many(comment.attachment, TaskCommentView, "attachment.json"),
       task: render_one(comment.task, TaskView, "task_comments.json"),
       user: render_one(comment.user, UserView, "user_task_comments.json")
