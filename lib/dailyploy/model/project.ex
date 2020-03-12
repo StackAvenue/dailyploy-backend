@@ -102,6 +102,16 @@ defmodule Dailyploy.Model.Project do
 
   def get_user_projects(project), do: Repo.preload(project, [:members, :owner])
 
+  def get(id) when is_integer(id) do
+    case Repo.get(Project, id) do
+      nil ->
+        {:error, "not found"}
+
+      project ->
+        {:ok, project}
+    end
+  end
+
   def create_project(attrs \\ %{}) do
     %Project{}
     |> Project.changeset(attrs)
