@@ -15,6 +15,16 @@ defmodule DailyployWeb.ContactView do
     }
   end
 
+  def render("contact.json", %{contact: contact}) do
+    %{
+      id: contact.id,
+      project_id: contact.project_id,
+      name: contact.name,
+      email: contact.email,
+      phone_number: contact.phone_number
+    }
+  end
+
   def render("changeset_error.json", %{error: errors}) do
     %{errors: ErrorHelpers.changeset_error_to_map(errors)}
   end
