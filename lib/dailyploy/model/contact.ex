@@ -18,4 +18,13 @@ defmodule Dailyploy.Model.Contact do
   end
 
   def get(id), do: Repo.get(Contact, id) |> Repo.preload([:project])
+
+  def get_all(project) do
+    query =
+      from contact in Contact,
+        where: contact.project_id == ^project.id,
+        select: contact
+
+    Repo.all(query) |> Repo.preload(:project)
+  end
 end

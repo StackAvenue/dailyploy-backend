@@ -7,8 +7,23 @@ defmodule DailyployWeb.ContactController do
   import DailyployWeb.Validators.Contact
   import DailyployWeb.Helpers
 
-  plug :load_project when action in [:create]
+  plug :load_project when action in [:create, :index]
   plug :load_contact when action in [:update, :delete, :show]
+
+  def index(conn, params) do
+    case conn.status do
+      nil ->
+        contacts = ContactModel.get_all(conn.assigns.project)
+
+        conn
+        |> put_status(200)
+        |> render("index.json", %{contacts: contacts})
+
+      404 ->
+        conn
+        |> send_error(404, "Data is not sufficient.")
+    end
+  end
 
   def create(conn, params) do
     case conn.status do
