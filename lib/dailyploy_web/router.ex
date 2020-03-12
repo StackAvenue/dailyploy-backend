@@ -72,7 +72,7 @@ defmodule DailyployWeb.Router do
       resources "/projects", ProjectController do
         resources "/tasks", TaskController, only: [:index, :create, :update, :delete]
         put "/make_as_complete/:id", TaskController, :task_completion
-        resources "/contact", ContactController, only: [:show, :create, :update, :delete]
+        resources "/contact", ContactController, only: [:show, :create, :update, :delete, :index]
       end
 
       delete "/projects", ProjectController, :delete
