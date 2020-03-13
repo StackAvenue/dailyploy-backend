@@ -31,6 +31,7 @@ defmodule DailyployWeb.Router do
     put "/tasks/:task_id/stop-tracking", TimeTrackingController, :stop_tracking
     resources "/comment", TaskCommentController
     put "/tasks/:task_id/edit_tracked_time/:id", TimeTrackingController, :edit_tracked_time
+    delete "/tasks/:task_id/delete/:id", TimeTrackingController, :delete
 
     get "/logged_in_user", UserController, :show
     resources "/users", UserController

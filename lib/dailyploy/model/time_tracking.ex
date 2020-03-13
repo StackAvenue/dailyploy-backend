@@ -10,6 +10,10 @@ defmodule Dailyploy.Model.TimeTracking do
     Repo.insert(changeset)
   end
 
+  def delete_time_track(time_track) do
+    Repo.delete(time_track)
+  end
+
   # Have to calculate duration here itself
   # and then have to append it with the changeset so that duration can go correctly
   # And have to put check wheather the given end time is not less then the start time

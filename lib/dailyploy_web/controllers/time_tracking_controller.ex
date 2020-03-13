@@ -10,7 +10,7 @@ defmodule DailyployWeb.TimeTrackingController do
 
   plug :load_task when action in [:start_tracking]
   plug :load_tracked_task when action in [:stop_tracking]
-  plug :load_time_tracked when action in [:edit_tracked_time]
+  plug :load_time_tracked when action in [:edit_tracked_time, :delete]
 
   def start_tracking(conn, params) do
     case conn.status do
@@ -80,6 +80,28 @@ defmodule DailyployWeb.TimeTrackingController do
         conn
         |> put_status(404)
         |> json(%{"Task Running" => false})
+    end
+  end
+
+  def delete(conn, params) do
+    case conn.status do
+      nil ->
+        case TTModel.delete_time_track(conn.assigns.time_tracked) do
+          {:ok, task_stopped} ->
+            conn
+            |> put_status(200)
+            |> render("task_stopped.json", %{task_stopped: task_stopped})
+
+          {:error, task_stopped} ->
+            error = extract_changeset_error(task_stopped)
+
+            conn
+            |> send_error(400, error)
+        end
+
+      404 ->
+        conn
+        |> send_error(404, "Resource Not Found")
     end
   end
 
