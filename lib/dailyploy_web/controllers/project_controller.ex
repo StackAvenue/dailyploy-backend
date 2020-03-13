@@ -2,10 +2,14 @@ defmodule DailyployWeb.ProjectController do
   use DailyployWeb, :controller
   alias Dailyploy.Repo
   alias Dailyploy.Model.Project, as: ProjectModel
+  alias Dailyploy.Helper.Contact
+  alias Dailyploy.Model.Contact, as: ContactModel
   alias Dailyploy.Schema.Project
   alias Dailyploy.Model.Workspace, as: WorkspaceModel
   alias Dailyploy.Schema.Workspace
   alias Dailyploy.Model.UserWorkspace, as: UserWorkspaceModel
+  import DailyployWeb.Validators.Contact
+  import DailyployWeb.Helpers
 
   plug Auth.Pipeline
   plug :load_workspace_by_user
@@ -23,7 +27,7 @@ defmodule DailyployWeb.ProjectController do
   end
 
   @spec create(Plug.Conn.t(), map) :: Plug.Conn.t()
-  def create(conn, %{"workspace_id" => workspace_id, "project" => project_params}) do
+  def create(conn, %{"workspace_id" => workspace_id, "project" => project_params} = params) do
     user = Guardian.Plug.current_resource(conn)
 
     project_params =
@@ -33,7 +37,15 @@ defmodule DailyployWeb.ProjectController do
 
     case ProjectModel.create_project(project_params) do
       {:ok, %Project{} = project} ->
-        render(conn, "show.json", project: project)
+        contacts =
+          with true <- Map.has_key?(params["project"], "contacts") do
+            add_contacts(params["project"]["contacts"], project)
+          else
+            false -> []
+          end
+
+        project = Repo.preload(project, :contacts)
+        render(conn, "show_create.json", project: project)
 
       {:error, project} ->
         conn
@@ -133,5 +145,30 @@ defmodule DailyployWeb.ProjectController do
 
   defp map_to_atom(params) do
     for {key, value} <- params, into: %{}, do: {String.to_atom(key), value}
+  end
+
+  defp add_contacts(contacts, project) do
+    for contact <- contacts do
+      case create_contact(contact, project) do
+        {:ok, contact} -> contact
+        {:error, message} -> message
+      end
+    end
+  end
+
+  defp create_contact(contact, project) do
+    contact = Map.put_new(contact, "project_id", project.id)
+    changeset = verify_contact(contact)
+
+    with {:extract, {:ok, data}} <- {:extract, extract_changeset_data(changeset)},
+         {:create, {:ok, contact}} <- {:create, Contact.create_contact(data)} do
+      {:ok, contact}
+    else
+      {:extract, {:error, error}} ->
+        {:error, error}
+
+      {:create, {:error, message}} ->
+        {:error, message}
+    end
   end
 end

@@ -30,6 +30,22 @@ defmodule DailyployWeb.TaskView do
     }
   end
 
+  def render("task_running_call.json", %{task: task}) do
+    %{
+      id: task.id,
+      name: task.name,
+      start_datetime: task.start_datetime,
+      end_datetime: task.end_datetime,
+      comments: task.comments,
+      status: task.status,
+      priority: task.priority,
+      members: render_many(task.members, UserView, "user.json"),
+      owner: render_one(task.owner, UserView, "user.json"),
+      category: render_one(task.category, TaskCategoryView, "task_category.json"),
+      time_tracked: render_many(task.time_tracks, TimeTrackingView, "task_with_track_time.json")
+    }
+  end
+
   def render("task_comments.json", %{task: task}) do
     %{
       id: task.id,
@@ -59,7 +75,7 @@ defmodule DailyployWeb.TaskView do
       start_datetime: time_track.start_time,
       status: time_track.status,
       time_log: time_track.time_log,
-      task: render_one(time_track.task, TaskView, "task.json")
+      task: render_one(time_track.task, TaskView, "task_running_call.json")
     }
   end
 
