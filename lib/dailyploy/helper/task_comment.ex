@@ -30,7 +30,8 @@ defmodule Dailyploy.Helper.TaskComment do
        user_id: comment.user_id,
        comments: comment.comments,
        user: comment.user,
-       task: comment.task
+       task: comment.task,
+       inserted_at: comment.inserted_at
      }}
   end
 
