@@ -160,8 +160,8 @@ defmodule DailyployWeb.WorkspaceController do
           UserModel.list_users(workspace_id, user_ids)
           |> Repo.preload(tasks: {query, project: [:members]})
       end
-
-    users = users |> Repo.preload(tasks: :time_tracks)
+		query = from time_track in TimeTracking, order_by: [desc: time_track.inserted_at]    	
+		users = users |> Repo.preload(tasks: [time_tracks: query])
 
     # task_id_list = 
     #   Enum.reduce(users, %{}, fn user, acc ->
@@ -224,9 +224,8 @@ defmodule DailyployWeb.WorkspaceController do
                 range_start_date = greater_date(DateTime.to_date(task.start_datetime), start_date)
                 [range_end_date, range_start_date]
               else
-                first_time_track = task.time_tracks |> List.first()
-                last_time_track = task.time_tracks |> List.last()
-
+                first_time_track = task.time_tracks |> List.last()
+                last_time_track = task.time_tracks |> List.first()
                 task_start_date =
                   smaller_date(task.start_datetime, first_time_track.start_time)
                   |> DateTime.to_date()
