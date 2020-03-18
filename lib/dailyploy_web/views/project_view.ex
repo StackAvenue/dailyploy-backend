@@ -55,6 +55,19 @@ defmodule DailyployWeb.ProjectView do
     }
   end
 
+  def render("project_show.json", %{project: project}) do
+    %{
+      id: project.id,
+      name: project.name,
+      start_date: project.start_date,
+      end_date: project.end_date,
+      description: project.description,
+      color_code: project.color_code,
+      contacts: render_many(project.contacts, ContactView, "contact.json"),
+      created_at: project.inserted_at
+    }
+  end
+
   def render("project_for_listing.json", %{project: project}) do
     %{
       id: project.id,

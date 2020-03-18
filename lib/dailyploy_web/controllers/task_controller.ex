@@ -111,6 +111,7 @@ defmodule DailyployWeb.TaskController do
     # task = task |> Repo.preload(task_comments: {query})
     date_formatted_time_tracks = date_wise_orientation(task.time_tracks)
     task = Map.put(task, :date_formatted_time_tracks, date_formatted_time_tracks)
+    task = Repo.preload(task, project: :contacts)
     render(conn, "task_with_user_show.json", task: task)
   end
 
