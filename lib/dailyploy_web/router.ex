@@ -10,6 +10,7 @@ defmodule DailyployWeb.Router do
   end
 
   scope "/api/v1", DailyployWeb do
+    resources "/enquires", EnquiryController, only: [:create]
     post "/sign_up", SessionController, :sign_up
     post "/sign_in", SessionController, :sign_in
     post "/google_auth", SessionController, :google_auth

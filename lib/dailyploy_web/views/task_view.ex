@@ -113,6 +113,7 @@ defmodule DailyployWeb.TaskView do
       members: render_many(task.members, UserView, "user.json"),
       owner: render_one(task.owner, UserView, "user.json"),
       category: render_one(task.category, TaskCategoryView, "task_category.json"),
+      project: render_one(task.project, ProjectView, "project_show.json"),
       task_comments: render_many(task.task_comments, TaskCommentView, "task_comments.json"),
       time_tracked: render_many(task.time_tracks, TimeTrackingView, "task_with_track_time.json"),
       date_formatted_time_tracks:
