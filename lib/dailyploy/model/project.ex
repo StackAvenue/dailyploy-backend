@@ -112,6 +112,35 @@ defmodule Dailyploy.Model.Project do
     end
   end
 
+  def extract_valid_project_ids(project_ids, workspace_id) do
+    query =
+      from project in Project,
+        where: project.id in ^project_ids and project.workspace_id == ^workspace_id,
+        select: project.id
+
+    Repo.all(query)
+  end
+
+  def extract_members(project_ids) do
+    query =
+      from project in Project,
+        where: project.id in ^project_ids
+
+    projects = Repo.all(query) |> Repo.preload([:members]) |> return_hash_list
+  end
+
+  defp return_hash_list(projects) do
+    Enum.reduce(projects, %{}, fn project, acc ->
+      member_ids = Enum.reduce(project.members, [], fn x, cc -> cc ++ [x.id] end)
+
+      acc =
+        case Map.has_key?(acc, project.id) do
+          false -> Map.put_new(acc, project.id, member_ids)
+          true -> acc
+        end
+    end)
+  end
+
   def create_project(attrs \\ %{}) do
     %Project{}
     |> Project.changeset(attrs)

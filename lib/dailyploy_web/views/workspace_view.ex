@@ -23,6 +23,13 @@ defmodule DailyployWeb.WorkspaceView do
     }
   end
 
+  def render("workspace_task.json", %{workspace: workspace}) do
+    %{
+      id: workspace.id,
+      name: workspace.name
+    }
+  end
+
   def render("changeset_error.json", %{errors: errors}) do
     %{errors: ErrorHelpers.changeset_error_to_map(errors)}
   end
