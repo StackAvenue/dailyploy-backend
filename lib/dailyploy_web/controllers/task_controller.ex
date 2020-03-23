@@ -6,6 +6,7 @@ defmodule DailyployWeb.TaskController do
   alias Dailyploy.Schema.Task
   alias Dailyploy.Schema.TaskComment
   alias Dailyploy.Helper.Firebase
+  alias Dailyploy.Helper.SendText
   import Ecto.Query
   plug Auth.Pipeline
 
@@ -82,6 +83,9 @@ defmodule DailyployWeb.TaskController do
           "task_completed/#{conn.params["workspace_id"]}/#{task.id}"
         )
 
+        with true <- Map.has_key?(task_params, "contact_ids"),
+             do: fetch_contacts(task, task_params["contact_ids"])
+
         task = task |> Repo.preload([:owner, :category, :time_tracks])
         date_formatted_time_tracks = date_wise_orientation(task.time_tracks)
         task = Map.put(task, :date_formatted_time_tracks, date_formatted_time_tracks)
@@ -92,6 +96,26 @@ defmodule DailyployWeb.TaskController do
         |> put_status(422)
         |> render("changeset_error.json", %{errors: task.errors})
     end
+  end
+
+  defp fetch_contacts(task, contact_ids) do
+    task = Repo.preload(task, project: :contacts)
+    contact_ids = contact_ids |> String.split(",") |> Enum.map(&String.to_integer/1)
+
+    Enum.each(contact_ids, fn contact_id ->
+      check_contact(task, task.project.contacts, contact_id)
+    end)
+  end
+
+  defp check_contact(task, contacts, contact_id) do
+    Enum.each(contacts, fn contact ->
+      if(contact.id === contact_id) do
+        SendText.text_operation(
+          "Task with name #{task.name} is been completed",
+          contact.phone_number
+        )
+      end
+    end)
   end
 
   def show(conn, %{"id" => id}) do

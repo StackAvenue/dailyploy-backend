@@ -129,6 +129,18 @@ defmodule Dailyploy.Model.User do
     end
   end
 
+  def extract_valid_user_ids(user_ids, workspace_id) do
+    query =
+      from user in User,
+        join: user_workspace in UserWorkspace,
+        on: user_workspace.workspace_id == ^workspace_id,
+        where: user.id in ^user_ids,
+        distinct: true,
+        select: user.id
+
+    Repo.all(query)
+  end
+
   def get_user!(id), do: Repo.get!(User, id)
 
   def get_user(id), do: Repo.get(User, id)
