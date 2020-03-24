@@ -21,4 +21,11 @@ defmodule DailyployWeb.Validators.RecurringTask do
       project_members_combination!: :map
     })
   )
+
+  defparams(
+    verify_index_params(%{
+      page_size: :integer,
+      page_number: :integer
+    })
+  )
 end

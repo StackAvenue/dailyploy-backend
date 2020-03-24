@@ -109,7 +109,7 @@ defmodule DailyployWeb.TaskController do
 
   defp check_contact(task, contacts, contact_id) do
     Enum.each(contacts, fn contact ->
-      if(contact.id === contact_id) do
+      if(contact.id === contact_id and !is_nil(contact.phone_number)) do
         SendText.text_operation(
           "Task with name #{task.name} is been completed",
           contact.phone_number

@@ -121,6 +121,14 @@ defmodule Dailyploy.Model.Project do
     Repo.all(query)
   end
 
+  def extract_project(project_ids) do
+    query =
+      from project in Project,
+        where: project.id in ^project_ids
+
+    Repo.all(query)
+  end
+
   def extract_members(project_ids) do
     query =
       from project in Project,

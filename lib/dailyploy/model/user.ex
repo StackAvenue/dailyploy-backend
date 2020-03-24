@@ -87,6 +87,14 @@ defmodule Dailyploy.Model.User do
     end)
   end
 
+  def extract_user(user_ids) do
+    query =
+      from project in User,
+        where: project.id in ^user_ids
+
+    Repo.all(query)
+  end
+
   def list_users(workspace_id, user_ids) do
     query =
       from(user_workspace in UserWorkspace,
