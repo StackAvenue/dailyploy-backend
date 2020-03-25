@@ -68,7 +68,7 @@ defmodule DailyployWeb.RecurringTaskController do
     task_params =
       case Map.has_key?(task_params, "number") do
         false -> Map.put_new(task_params, "number", nil)
-        true -> Map.replace!(task_params, "number", String.to_integer(task_params["number"]))
+        true -> Map.replace!(task_params, "number", task_params["number"])
       end
 
     task_params =
@@ -229,7 +229,7 @@ defmodule DailyployWeb.RecurringTaskController do
     params =
       case Map.has_key?(params, "number") do
         false -> params
-        true -> Map.replace!(params, "number", String.to_integer(params["number"]))
+        true -> Map.replace!(params, "number", params["number"])
       end
 
     params =
