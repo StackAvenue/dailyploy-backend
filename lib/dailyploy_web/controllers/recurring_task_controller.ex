@@ -3,6 +3,7 @@ defmodule DailyployWeb.RecurringTaskController do
   alias Dailyploy.Repo
   import DailyployWeb.Helpers
   alias Dailyploy.Helper.RecurringTask
+  alias Dailyploy.Helper.RecurringJobs
   import DailyployWeb.Validators.RecurringTask
   alias Dailyploy.Model.RecurringTask, as: RTModel
   alias Dailyploy.Model.Project, as: ProjectModel
@@ -10,6 +11,33 @@ defmodule DailyployWeb.RecurringTaskController do
 
   plug :load_recurring_task when action in [:update, :show, :delete]
   plug :check_project_member_inclusion when action in [:create]
+
+  def index(conn, params) do
+    # changeset = verify_index_params(params)
+    case conn.status do
+      nil ->
+        {:list, recurring_task} = {:list, RTModel.get_all([:category])}
+        new_recurring_task = []
+
+        recurring_task =
+          Enum.reduce(recurring_task, [], fn x, acc ->
+            projects = RTModel.attach_project(x.project_members_combination)
+            x = Map.put_new(x, :projects, projects)
+            members = RTModel.attach_member(x.project_members_combination)
+            x = Map.put_new(x, :members, members)
+            x = Repo.preload(x, [:category])
+            acc = acc ++ [x]
+          end)
+
+        conn
+        |> put_status(200)
+        |> render("index.json", %{recurring_task: recurring_task})
+
+      404 ->
+        conn
+        |> send_error(404, "Resource Not Found")
+    end
+  end
 
   def create(conn, %{"task" => task_params, "workspace_id" => workspace_id} = params) do
     task_params =
@@ -29,9 +57,18 @@ defmodule DailyployWeb.RecurringTaskController do
       end
 
     task_params =
+      case Map.has_key?(task_params, "schedule") do
+        false ->
+          Map.put_new(task_params, "schedule", true)
+
+        true ->
+          task_params
+      end
+
+    task_params =
       case Map.has_key?(task_params, "number") do
         false -> Map.put_new(task_params, "number", nil)
-        true -> Map.replace!(task_params, "number", String.to_integer(task_params["number"]))
+        true -> Map.replace!(task_params, "number", task_params["number"])
       end
 
     task_params =
@@ -47,6 +84,8 @@ defmodule DailyployWeb.RecurringTaskController do
 
     with {:extract, {:ok, data}} <- {:extract, extract_changeset_data(changeset)},
          {:create, {:ok, recurring_task}} <- {:create, RecurringTask.create_recurring_task(data)} do
+      #Task.async(RecurringJobs.task_analysis(recurring_task))
+
       conn
       |> put_status(200)
       |> render("show.json", %{recurring_task: recurring_task})
@@ -190,7 +229,7 @@ defmodule DailyployWeb.RecurringTaskController do
     params =
       case Map.has_key?(params, "number") do
         false -> params
-        true -> Map.replace!(params, "number", String.to_integer(params["number"]))
+        true -> Map.replace!(params, "number", params["number"])
       end
 
     params =

@@ -12,12 +12,16 @@ defmodule Dailyploy.Schema.RecurringTask do
 
   @task_status ~w(completed running not_started)s
   @task_priority ~w(low medium high no_priority)s
+  @frequency ~w(daily weekly monthly)s
+  @schedule ~w(true false)a
 
   schema "recurring_tasks" do
     field :name, :string
     field :start_datetime, :utc_datetime
     field :end_datetime, :utc_datetime
     field :comments, :string
+    field(:project, {:array, :map}, virtual: true)
+    field(:member, {:array, :map}, virtual: true)
     field :status, :string, default: "not_started"
     field :priority, :string
     field :project_ids, {:array, :integer}
@@ -68,6 +72,8 @@ defmodule Dailyploy.Schema.RecurringTask do
     ])
     |> validate_inclusion(:status, @task_status)
     |> validate_inclusion(:priority, @task_priority)
+    |> validate_inclusion(:schedule, @schedule)
+    |> validate_inclusion(:frequency, @frequency)
   end
 
   def update_changeset(recurring_task, attrs) do
@@ -92,6 +98,8 @@ defmodule Dailyploy.Schema.RecurringTask do
     ])
     |> validate_inclusion(:status, @task_status)
     |> validate_inclusion(:priority, @task_priority)
+    |> validate_inclusion(:schedule, @schedule)
+    |> validate_inclusion(:frequency, @frequency)
   end
 
   def task_status() do
@@ -100,5 +108,13 @@ defmodule Dailyploy.Schema.RecurringTask do
 
   def task_priority() do
     @task_priority
+  end
+
+  def schedule() do
+    @schedule
+  end
+
+  def frequency() do
+    @frequency
   end
 end

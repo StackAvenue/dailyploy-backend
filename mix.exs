@@ -27,7 +27,8 @@ defmodule Dailyploy.MixProject do
         :timex,
         :arc_ecto,
         :httpotion,
-        :quantum
+        :quantum,
+        :scrivener_ecto
       ]
     ]
   end
@@ -41,6 +42,8 @@ defmodule Dailyploy.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      # pagination
+      {:scrivener_ecto, "~> 2.0"},
       {:phoenix, "~> 1.4.9"},
       {:phoenix_pubsub, "~> 1.1"},
       {:phoenix_ecto, "~> 4.0"},
