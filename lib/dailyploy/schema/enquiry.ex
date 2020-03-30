@@ -3,20 +3,21 @@ defmodule Dailyploy.Schema.Enquiry do
   import Ecto.Changeset
 
   schema("enquires") do
-    field :phone_number, :string, size: 10
+    field :phone_number, :string
     field :email, :string
     field :name, :string
     field :comment, :string
+    field :company_name, :string
     timestamps()
   end
 
-  @optional_required_params ~w(email phone_number)a
+  @optional_required_params ~w(name company_name email phone_number)a
 
   def changeset(enquiry, attrs) do
     enquiry
-    |> cast(attrs, [:phone_number, :email, :name, :comment])
-    |> validate_inclusion(@optional_required_params)
-    |> validate_length(:phone_number, is: 10)
+    |> cast(attrs, [:phone_number, :email, :name, :comment, :company_name])
+    |> validate_required(@optional_required_params)
+    #|> validate_length(:phone_number, is: 10)
   end
 
   defp validate_inclusion(changeset, fields) do
