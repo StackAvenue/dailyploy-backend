@@ -3,7 +3,7 @@ defmodule Dailyploy.Repo.Migrations.AlterEnquiryTable do
 
   def up do
     alter table(:enquires) do
-      add :company_name, :string, null: false
+      add :company_name, :string
       modify :comment, :text
     end
   end
