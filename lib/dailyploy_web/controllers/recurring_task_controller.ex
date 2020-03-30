@@ -84,7 +84,7 @@ defmodule DailyployWeb.RecurringTaskController do
 
     with {:extract, {:ok, data}} <- {:extract, extract_changeset_data(changeset)},
          {:create, {:ok, recurring_task}} <- {:create, RecurringTask.create_recurring_task(data)} do
-      #Task.async(RecurringJobs.task_analysis(recurring_task))
+      # Task.async(RecurringJobs.task_analysis(recurring_task))
 
       conn
       |> put_status(200)
