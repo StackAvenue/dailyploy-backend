@@ -17,7 +17,8 @@ defmodule Dailyploy.Schema.Enquiry do
     enquiry
     |> cast(attrs, [:phone_number, :email, :name, :comment, :company_name])
     |> validate_required(@optional_required_params)
-    #|> validate_length(:phone_number, is: 10)
+
+    # |> validate_length(:phone_number, is: 10)
   end
 
   defp validate_inclusion(changeset, fields) do
