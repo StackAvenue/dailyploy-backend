@@ -2,6 +2,7 @@ defmodule DailyployWeb.SessionController do
   use DailyployWeb, :controller
   alias Dailyploy.Model.User, as: UserModel
   alias Dailyploy.Helper.User, as: UserHelper
+  alias Dailyploy.Helper.SignUp, as: SignUpHelper
   alias Dailyploy.Schema.User
   alias Auth.Guardian
 
@@ -10,6 +11,8 @@ defmodule DailyployWeb.SessionController do
   def sign_up(conn, %{"user" => user_params}) do
     case UserHelper.create_user_with_company(user_params) do
       {:ok, %User{} = user} ->
+        SignUpHelper.build_email(conn, user)
+
         conn
         |> put_status(:created)
         |> render("show.json", %{user: user})

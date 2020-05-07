@@ -10,15 +10,17 @@
 </div>
 <div style="width:100%;">
 <div style="width:80%;margin: 0 auto;height:auto;box-sizing: border-box;">
-<label style="font-size:20px;font-family: 'Muli', sans-serif;line-height:42px;">
-  Hello, <br/>
-  There is an online form submitted with the below details sent from the site visitor.<br/><br/>
-  Name: <span><%= gettext "%{name}", name: @user.name %></span> <br/>
-  Email Id: <span><%= gettext "%{name}", name: @user.email %></span> <br/>
-  Contact Number: <span><%= gettext "%{name}", name: @user.phone_number %></span><br/>
-  Company Name: <span><%= gettext "%{name}", name: @user.company_name %></span><br/><br/>
+<label style="font-size:24px;font-family: 'Muli', sans-serif;line-height:42px;">
+  Hey <span><%= gettext "%{name}", name: @user.name %></span>, <br/>
+   Thank you for your interest in Dailyploy.<br/>
+   We are excited to show you all the abilities of Dailyploy to fulfill your needs for best practices. <br/>
+   We will reach out to you shortly to arrange a product demo and talk about your requirements.<br/><br/>
+   Have a great day ahead!<br/>
   Regards,<br/>
-  Dailyploy
+  DailyPloy<br/>
+  Contact Us: +919665530611<br/>
+  Visit Us: www.dailyploy.com <br/>
+  Email Us: contact@stack-avenue.com
 </label>
 </div>
 </div>

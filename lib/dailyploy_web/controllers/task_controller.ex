@@ -6,6 +6,7 @@ defmodule DailyployWeb.TaskController do
   alias Dailyploy.Schema.Task
   alias Dailyploy.Schema.TaskComment
   alias Dailyploy.Helper.Firebase
+  alias Dailyploy.Helper.TaskComment
   alias Dailyploy.Helper.SendText
   import Ecto.Query
   plug Auth.Pipeline
@@ -36,6 +37,14 @@ defmodule DailyployWeb.TaskController do
           Poison.encode(task |> Repo.preload([:project, :owner, :category, :time_tracks])),
           "task_created/#{conn.params["workspace_id"]}/#{task.id}"
         )
+
+        params = %{
+          task_id: task.id,
+          user_id: user.id,
+          comments: "#{user.name} has created #{task.name} task."
+        }
+
+        TaskComment.create_comment(params)
 
         task = task |> Repo.preload([:owner, :category, :time_tracks])
         date_formatted_time_tracks = date_wise_orientation(task.time_tracks)
