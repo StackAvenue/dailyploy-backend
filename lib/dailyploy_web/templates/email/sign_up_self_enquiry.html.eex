@@ -15,8 +15,6 @@
   There is an online form submitted with the below details sent from the site visitor.<br/><br/>
   Name: <span><%= gettext "%{name}", name: @user.name %></span> <br/>
   Email Id: <span><%= gettext "%{name}", name: @user.email %></span> <br/>
-  Contact Number: <span><%= gettext "%{name}", name: @user.phone_number %></span><br/>
-  Company Name: <span><%= gettext "%{name}", name: @user.company_name %></span><br/><br/>
   Regards,<br/>
   Dailyploy
 </label>
