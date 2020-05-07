@@ -12,13 +12,10 @@
 <div style="width:80%;margin: 0 auto;height:auto;box-sizing: border-box;">
 <label style="font-size:20px;font-family: 'Muli', sans-serif;line-height:42px;">
   Hey,
-      <br>
-      <br>
       <span><%= gettext "%{name}", name: @invitation_details["sender_name"] %></span>
       has invited you to his workspace on Dailyploy. Click
       Click <a href= <%= gettext "https://app.dailyploy.com/login/%{name}/", name: @invitation_details["token_id"] %>> here </a>
       to join the team and experience a new and easy way to manage your tasks, team and projects.
-      <br>
       <br>
   Regards,<br/>
   DailyPloy<br/>
