@@ -43,4 +43,13 @@ defmodule Dailyploy.Model.Notification do
     changeset = Notification.changeset(notification, params)
     Repo.update(changeset)
   end
+
+  @doc """
+  Mark all notifications as read
+  """
+  def mark_all_as_read(notification_ids) do
+    Notification
+    |> where([notification], notification.id in ^notification_ids)
+    |> Repo.update_all(set: [read: true])
+  end
 end

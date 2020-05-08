@@ -39,6 +39,7 @@ defmodule DailyployWeb.Router do
     resources "/users", UserController do
       resources "/notifications", NotificationsController, only: [:index]
       put "/notifications/:id/mark_as_read", NotificationsController, :mark_as_read
+      put "/notifications/mark_all_as_read", NotificationsController, :mark_all_as_read
     end
 
     resources "/workspaces", WorkspaceController, only: [:index] do

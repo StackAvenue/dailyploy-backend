@@ -44,6 +44,14 @@ defmodule DailyployWeb.NotificationsController do
     end
   end
 
+  def mark_all_as_read(%{params: %{"notification_ids" => notification_ids}} = conn, _params) do
+    {:ok, notifications} = NotificationModel.mark_all_as_read(notification_ids)
+
+    conn
+    |> put_status(200)
+    |> render("index.json", %{notifications: notifications})
+  end
+
   defp fetch_notification(%{params: %{"id" => notification_id}} = conn, _params) do
     notification = NotificationModel.get(notification_id)
 

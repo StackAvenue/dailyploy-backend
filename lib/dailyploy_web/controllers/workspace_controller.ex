@@ -297,8 +297,7 @@ defmodule DailyployWeb.WorkspaceController do
 
                   if(
                     Enum.member?(is_time_track_present, true) or
-                      Date.diff(task.start_datetime, date) === 0 or
-                      Enum.empty?(task.time_tracks) or
+                      Date.diff(task.start_datetime, date) === 0 or Enum.empty?(task.time_tracks) or
                       (Date.diff(range_end_date, task.end_datetime) >= 0 and
                          Date.diff(range_start_date, task.start_datetime) <= 0 and
                          Enum.member?(
