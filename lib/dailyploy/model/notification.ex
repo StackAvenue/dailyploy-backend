@@ -20,9 +20,10 @@ defmodule Dailyploy.Model.Notification do
   @doc """
   Fetch all unreaded Notifications
   """
-  def get_unreads() do
+  def get_unreads(user_id) do
     Notification
     |> where([notification], notification.read == ^false)
+    |> where([notification], notification.receiver_id == ^user_id)
     |> Repo.all()
   end
 
