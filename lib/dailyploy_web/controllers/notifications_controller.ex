@@ -1,10 +1,10 @@
 defmodule DailyployWeb.NotificationsController do
   use DailyployWeb, :controller
   alias Dailyploy.Model.Notification, as: NotificationModel
-  alias Dailyploy.Repo
   import DailyployWeb.Helpers
 
   plug Auth.Pipeline
+  plug :fetch_notification when action in [:mark_as_read]
 
   action_fallback DailyployWeb.FallbackController
 
@@ -20,6 +20,39 @@ defmodule DailyployWeb.NotificationsController do
       404 ->
         conn
         |> send_error(404, "Resource Not Found")
+    end
+  end
+
+  def mark_as_read(conn, _params) do
+    case conn.status do
+      nil ->
+        notification = conn.assigns.notification
+
+        with {:update, {:ok, res}} <-
+               {:update, NotificationModel.update(notification, %{read: true})} do
+          conn
+          |> put_status(200)
+          |> render("notification_details.json", %{notifications: res})
+        else
+          {:update, {:error, message}} ->
+            send_error(conn, 400, message)
+        end
+
+      404 ->
+        conn
+        |> send_error(404, "Resource Not Found")
+    end
+  end
+
+  defp fetch_notification(%{params: %{"id" => notification_id}} = conn, _params) do
+    notification = NotificationModel.get(notification_id)
+
+    with false <- is_nil(notification) do
+      assign(notification, :user, notification)
+    else
+      true ->
+        conn
+        |> put_status(404)
     end
   end
 end
