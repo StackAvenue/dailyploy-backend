@@ -30,12 +30,12 @@ config :dailyploy, Dailyploy.Helper.Scheduler,
   schedule: "50 23 * * *",
   overlap: false,
   timezone: "Asia/Calcutta",
-  #global: true,
+  # global: true,
   jobs: [
     daily_status: [
       task: {Dailyploy.Helper.DailyStatus, :schedule_daily_status_mails, []}
     ]
-    #{"17 19 * * *", {Dailyploy.Helper.DailyStatus, :schedule_daily_status_mails, []}}
+    # {"17 19 * * *", {Dailyploy.Helper.DailyStatus, :schedule_daily_status_mails, []}}
     # {Dailyploy.Helper.DailyStatus, :schedule_daily_status_mails, []}
   ]
 
