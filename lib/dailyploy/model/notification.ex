@@ -20,10 +20,11 @@ defmodule Dailyploy.Model.Notification do
   @doc """
   Fetch all unreaded Notifications
   """
-  def get_unreads(user_id) do
+  def get_unreads(user_id, workspace_id) do
     Notification
     |> where([notification], notification.read == ^false)
     |> where([notification], notification.receiver_id == ^user_id)
+    |> where([notification], notification.workspace_id == ^workspace_id)
     |> order_by(desc: :inserted_at)
     |> Repo.all()
   end

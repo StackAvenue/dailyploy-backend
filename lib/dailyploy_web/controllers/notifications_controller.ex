@@ -8,10 +8,10 @@ defmodule DailyployWeb.NotificationsController do
 
   action_fallback DailyployWeb.FallbackController
 
-  def index(conn, %{"user_id" => user_id} = params) do
+  def index(conn, %{"user_id" => user_id, "workspace_id" => workspace_id} = params) do
     case conn.status do
       nil ->
-        {:list, notifications} = {:list, NotificationModel.get_unreads(user_id)}
+        {:list, notifications} = {:list, NotificationModel.get_unreads(user_id, workspace_id)}
 
         conn
         |> put_status(200)
