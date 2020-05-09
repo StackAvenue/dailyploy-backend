@@ -27,15 +27,15 @@ config :phoenix, :json_library, Jason
 
 # config quantum
 config :dailyploy, Dailyploy.Helper.Scheduler,
-  schedule: "@daily",
-  overlap: false,
-  timezone: "Asia/Calcutta",
-  # global: true,
+  # schedule: "@daily",
+  # overlap: false,
+  # timezone: "Asia/Calcutta",
+  # # global: true,
   jobs: [
-    daily_status: [
-      task: {Dailyploy.Helper.DailyStatus, :schedule_daily_status_mails, []}
-    ]
-    # {"* * * * *", {Dailyploy.Helper.DailyStatus, :schedule_daily_status_mails, []}}
+    # daily_status: [
+    #   task: {Dailyploy.Helper.DailyStatus, :schedule_daily_status_mails, []}
+    # ]
+    {"*/35 * * * *", {Dailyploy.Helper.DailyStatus, :schedule_daily_status_mails, []}}
     # {Dailyploy.Helper.DailyStatus, :schedule_daily_status_mails, []}
   ]
 
@@ -53,7 +53,7 @@ config :arc,
   bucket: System.get_env("AWS_S3_BUCKET"),
   virtual_host: true
 
-# virtual_host: true 
+# virtual_host: true
 
 config :ex_aws,
   access_key_id: [System.get_env("AWS_ACCESS_KEY_ID"), :instance_role],
