@@ -16,7 +16,7 @@ defmodule Dailyploy.Avatar do
 
   # Whitelist file extensions:
   def validate({file, _}) do
-    ~w(.csv .jpg .png .jpeg) |> Enum.member?(Path.extname(file.file_name))
+    ~w(.csv .jpg .png .jpeg .pdf .doc .docx) |> Enum.member?(Path.extname(file.file_name))
   end
 
   # Define a thumbnail transformation:

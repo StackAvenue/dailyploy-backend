@@ -22,7 +22,6 @@ defmodule Dailyploy.Helper.DailyStatus do
 
   def schedule_daily_status_mails() do
     daily_status_mails = DailyStatusMailSettingsModel.list_daily_status_mail()
-
     Enum.each(daily_status_mails, fn daily_status_mail ->
       send_daily_status_mail(daily_status_mail)
     end)
@@ -31,8 +30,8 @@ defmodule Dailyploy.Helper.DailyStatus do
   defp send_daily_status_mail(daily_status_mail) do
     case daily_status_mail.is_active do
       true ->
-        bcc_mails = %{}
-        cc_mails = %{}
+        bcc_mails = nil
+        cc_mails = nil
 
         {:ok, bcc_mails} =
           with false <- is_nil(daily_status_mail.bcc_mails) do
@@ -40,7 +39,7 @@ defmodule Dailyploy.Helper.DailyStatus do
               {:ok, Enum.map(daily_status_mail.bcc_mails, fn x -> %{email: x} end)}
           else
             true ->
-              {:ok, %{}}
+              {:ok, nil}
           end
 
         {:ok, cc_mails} =
@@ -48,7 +47,7 @@ defmodule Dailyploy.Helper.DailyStatus do
             {:ok, cc_mails} = {:ok, Enum.map(daily_status_mail.cc_mails, fn x -> %{email: x} end)}
           else
             true ->
-              {:ok, %{}}
+              {:ok, nil}
           end
 
         email_build = Email.build()
