@@ -244,8 +244,13 @@ defmodule DailyployWeb.TaskController do
   defp notification_create(%TaskSchema{} = task, type) do
     Enum.each(task.members, fn member ->
       unless member.id == task.owner.id do
-        notification_params(task.name, task.owner, member, task.project, type)
-        |> NotificationModel.create()
+        notification_parameters = notification_params(task.name, task.owner, member, task.project, type)
+        notification_parameters |> NotificationModel.create()
+
+        Firebase.insert_operation(
+          Poison.encode(notification_parameters),
+          "notification/#{task.project.workspace_id}/#{member.id}"
+        )
       end
     end)
   end
@@ -254,6 +259,7 @@ defmodule DailyployWeb.TaskController do
     %{
       creator_id: owner.id,
       receiver_id: member.id,
+      workspace_id: project.workspace_id,
       data: %{
         message:
           "#{String.capitalize(owner.name)} has #{type} a task '#{task_name}' for you in #{
