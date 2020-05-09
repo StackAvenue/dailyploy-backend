@@ -14,11 +14,13 @@ defmodule Dailyploy.Schema.TaskComment do
     timestamps()
   end
 
-  @changeset ~w(task_id user_id comments)a
+  @optional ~w(comments)a
+  @required ~w(task_id user_id)a
+  @permitted @required ++ @optional
 
   def changeset(task_comments, attrs) do
     task_comments
-    |> cast(attrs, @changeset)
-    |> validate_required(@changeset)
+    |> cast(attrs, @permitted)
+    |> validate_required(@required)
   end
 end

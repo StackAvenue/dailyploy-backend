@@ -23,34 +23,12 @@ defmodule DailyployWeb.TaskCommentController do
   def create(conn, params) do
     case conn.status do
       nil ->
-        changeset = verify_task_comment(params)
-
-        with {:extract, {:ok, data}} <- {:extract, extract_changeset_data(changeset)},
-             {:create, {:ok, comment}} <- {:create, TaskComment.create_comment(data)} do
-          # attachments are needed to be inserted here on
-          attachment =
-            with true <- Map.has_key?(params, "attachments") do
-              insert_attachments(comment, params)
-            else
-              false -> []
-            end
-
-          comment = Map.put_new(comment, :attachment, attachment)
-
-          # Task.async(TaskComment.send_activity_mail(comment)) task notification should be send as mail to the one who is responsible for this
-          Task.async(fn ->
-            notification_create(comment, "commented")
-          end)
-
-          conn
-          |> put_status(200)
-          |> render("show.json", %{comment: comment})
-        else
-          {:extract, {:error, error}} ->
-            send_error(conn, 400, error)
-
-          {:create, {:error, message}} ->
-            send_error(conn, 400, message)
+        case check_params(params) do
+          true ->
+            do_comment(conn, params)
+          false ->
+            conn
+            |> send_error(404, "Either comment or attachment should be present")
         end
 
       404 ->
@@ -239,5 +217,41 @@ defmodule DailyployWeb.TaskCommentController do
         source: "task_comment"
       }
     }
+  end
+
+  defp do_comment(conn, params) do
+    changeset = verify_task_comment(params)
+
+    with {:extract, {:ok, data}} <- {:extract, extract_changeset_data(changeset)},
+         {:create, {:ok, comment}} <- {:create, TaskComment.create_comment(data)} do
+      # attachments are needed to be inserted here on
+      attachment =
+        with true <- Map.has_key?(params, "attachments") do
+          insert_attachments(comment, params)
+        else
+          false -> []
+        end
+
+      comment = Map.put_new(comment, :attachment, attachment)
+
+      # Task.async(TaskComment.send_activity_mail(comment)) task notification should be send as mail to the one who is responsible for this
+      Task.async(fn ->
+        notification_create(comment, "commented")
+      end)
+
+      conn
+      |> put_status(200)
+      |> render("show.json", %{comment: comment})
+    else
+      {:extract, {:error, error}} ->
+        send_error(conn, 400, error)
+
+      {:create, {:error, message}} ->
+        send_error(conn, 400, message)
+    end
+  end
+
+  defp check_params(params) do
+    Map.has_key?(params, "comments") || Map.has_key?(params, "attachments")
   end
 end

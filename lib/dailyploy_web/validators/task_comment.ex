@@ -5,7 +5,7 @@ defmodule DailyployWeb.Validators.TaskComment do
     verify_task_comment(%{
       task_id!: :integer,
       user_id!: :integer,
-      comments!: :string
+      comments: :string
     })
   )
 end
