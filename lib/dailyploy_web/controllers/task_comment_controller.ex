@@ -1,5 +1,6 @@
 defmodule DailyployWeb.TaskCommentController do
   use DailyployWeb, :controller
+
   alias Dailyploy.Repo
   alias Dailyploy.Helper.TaskComment
   alias Dailyploy.Helper.ImageDeletion
@@ -8,10 +9,12 @@ defmodule DailyployWeb.TaskCommentController do
   alias Dailyploy.Model.User, as: UserModel
   alias Dailyploy.Model.TaskComment, as: TCModel
   alias Dailyploy.Model.CommentsAttachment, as: CAModel
+  alias Dailyploy.Model.Notification, as: NotificationModel
+  alias Dailyploy.Avatar
+
   import DailyployWeb.Validators.TaskComment
   import DailyployWeb.Validators.CommentsAttachment
   import DailyployWeb.Helpers
-  alias Dailyploy.Avatar
 
   plug :load_task_and_user when action in [:create]
   plug :load_comment when action in [:update, :delete, :show]
@@ -34,6 +37,10 @@ defmodule DailyployWeb.TaskCommentController do
           comment = Map.put_new(comment, :attachment, attachment)
 
           # Task.async(TaskComment.send_activity_mail(comment)) task notification should be send as mail to the one who is responsible for this
+          Task.async(fn ->
+            notification_create(comment, "commented")
+          end)
+
           conn
           |> put_status(200)
           |> render("show.json", %{comment: comment})
@@ -199,5 +206,31 @@ defmodule DailyployWeb.TaskCommentController do
       ImageDeletion.delete_operation(attachment, "attachments")
       CAModel.delete_attachment(attachment)
     end
+  end
+
+  defp notification_create(comment, type) do
+    task = comment.task
+    task = task |> Repo.preload([:project])
+
+    Enum.each(task.members, fn member ->
+      unless member.id == comment.user.id do
+        notification_params(task.name, comment.user, member, task.project, type)
+        |> NotificationModel.create()
+      end
+    end)
+  end
+
+  defp notification_params(task_name, owner, member, project, type) do
+    %{
+      creator_id: owner.id,
+      receiver_id: member.id,
+      data: %{
+        message:
+          "#{String.capitalize(owner.name)} has #{type} on your task '#{task_name}' in #{
+            String.capitalize(project.name)
+          }",
+        source: "task_comment"
+      }
+    }
   end
 end
