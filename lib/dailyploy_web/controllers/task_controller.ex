@@ -3,12 +3,14 @@ defmodule DailyployWeb.TaskController do
 
   alias Dailyploy.Repo
   alias Dailyploy.Model.Task, as: TaskModel
-  alias Dailyploy.Schema.Task
+  alias Dailyploy.Schema.Task, as: TaskSchema
   alias Dailyploy.Schema.TaskComment
   alias Dailyploy.Helper.Firebase
   alias Dailyploy.Helper.TaskComment, as: TCHelper
   alias Dailyploy.Helper.SendText
+  alias Dailyploy.Model.Notification, as: NotificationModel
   import Ecto.Query
+
   plug Auth.Pipeline
 
   action_fallback DailyployWeb.FallbackController
@@ -32,11 +34,17 @@ defmodule DailyployWeb.TaskController do
       |> Map.put("owner_id", user.id)
 
     case TaskModel.create_task(task_params) do
-      {:ok, %Task{} = task} ->
+      {:ok, %TaskSchema{} = task} ->
+        task = task |> Repo.preload([:project, :owner, :category, :time_tracks])
+
         Firebase.insert_operation(
-          Poison.encode(task |> Repo.preload([:project, :owner, :category, :time_tracks])),
+          Poison.encode(task),
           "task_created/#{conn.params["workspace_id"]}/#{task.id}"
         )
+
+        Task.async(fn ->
+          notification_create(task, "created")
+        end)
 
         params = %{
           task_id: task.id,
@@ -46,7 +54,6 @@ defmodule DailyployWeb.TaskController do
 
         TCHelper.create_comment(params)
 
-        task = task |> Repo.preload([:owner, :category, :time_tracks])
         date_formatted_time_tracks = date_wise_orientation(task.time_tracks)
         task = Map.put(task, :date_formatted_time_tracks, date_formatted_time_tracks)
 
@@ -63,13 +70,18 @@ defmodule DailyployWeb.TaskController do
     task = TaskModel.get_task!(id)
 
     case TaskModel.update_task_status(task, task_params) do
-      {:ok, %Task{} = task} ->
+      {:ok, %TaskSchema{} = task} ->
+        task = task |> Repo.preload([:project, :owner, :category, :time_tracks])
+
         Firebase.insert_operation(
-          Poison.encode(task |> Repo.preload([:project, :owner, :category, :time_tracks])),
+          Poison.encode(task),
           "task_update/#{conn.params["workspace_id"]}/#{task.id}"
         )
 
-        task = task |> Repo.preload([:owner, :category, :time_tracks])
+        Task.async(fn ->
+          notification_create(task, "updated")
+        end)
+
         date_formatted_time_tracks = date_wise_orientation(task.time_tracks)
         task = Map.put(task, :date_formatted_time_tracks, date_formatted_time_tracks)
 
@@ -86,7 +98,7 @@ defmodule DailyployWeb.TaskController do
     task = TaskModel.get_task!(id)
 
     case TaskModel.mark_task_complete(task, task_params) do
-      {:ok, %Task{} = task} ->
+      {:ok, %TaskSchema{} = task} ->
         Firebase.insert_operation(
           Poison.encode(task |> Repo.preload([:project, :owner, :category, :time_tracks])),
           "task_completed/#{conn.params["workspace_id"]}/#{task.id}"
@@ -159,7 +171,7 @@ defmodule DailyployWeb.TaskController do
     with false <- is_nil(task) do
       if user.id == task.owner_id do
         case TaskModel.delete_task(task) do
-          {:ok, %Task{} = task} ->
+          {:ok, %TaskSchema{} = task} ->
             Firebase.insert_operation(
               Poison.encode(task |> Repo.preload([:project, :owner, :category, :time_tracks])),
               "task_deleted/#{conn.params["workspace_id"]}/#{task.id}"
@@ -220,5 +232,26 @@ defmodule DailyployWeb.TaskController do
           acc = Map.replace!(acc, Date.to_iso8601(time_track.start_time), time_track_new)
       end
     end)
+  end
+
+  defp notification_create(%TaskSchema{} = task, type) do
+    Enum.each(task.members, fn member ->
+      notification_params(task.name, task.owner, member, task.project, type)
+      |> NotificationModel.create()
+    end)
+  end
+
+  defp notification_params(task_name, owner, member, project, type) do
+    %{
+      creator_id: owner.id,
+      receiver_id: member.id,
+      data: %{
+        message:
+          "#{String.capitalize(owner.name)} has #{type} a task '#{task_name}' for you in #{
+            String.capitalize(project.name)
+          }",
+        source: "task"
+      }
+    }
   end
 end

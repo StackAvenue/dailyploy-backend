@@ -13,4 +13,10 @@ defmodule DailyployWeb.NotificationsView do
       data: Map.from_struct(notification.data)
     }
   end
+
+  def render("notification_mark_as_read_success.json", %{message: message}) do
+    %{
+      status: message
+    }
+  end
 end
