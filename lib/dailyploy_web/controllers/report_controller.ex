@@ -136,6 +136,7 @@ defmodule DailyployWeb.ReportController do
         #   end)
         # end)
         task = Map.put(task, :date_formatted_time_tracks, date_formatted_time_tracks)
+
         # duration =
         #   with false <- is_nil(TTModel.calculate_task_duration(task.id)) do
         #     TTModel.calculate_task_duration(task.id)

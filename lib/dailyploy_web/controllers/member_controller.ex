@@ -2,6 +2,7 @@ defmodule DailyployWeb.MemberController do
   use DailyployWeb, :controller
   alias Dailyploy.Model.UserWorkspace, as: UserWorkspaceModel
   alias Dailyploy.Model.UserWorkspaceSetting, as: UserWorkspaceSettingsModel
+
   # alias Dailyploy.Model.Invitation, as: InvitationModel
 
   alias Dailyploy.Model.User, as: UserModel
@@ -16,9 +17,8 @@ defmodule DailyployWeb.MemberController do
     query_params = map_to_atom(params)
     query = UserModel.generate_query(query_params)
     # asd = UserModel.filter_users(query_params)
-    # require IEx
-    # IEx.pry
     members = UserModel.filter_users(query_params) |> Repo.preload(projects: query)
+
     # member_settings = UserWorkspaceSettingsModel.list_user_workspace_settings(workspace_id)
 
     member_results =

@@ -45,11 +45,11 @@ defmodule DailyployWeb.NotificationsController do
   end
 
   def mark_all_as_read(%{params: %{"notification_ids" => notification_ids}} = conn, _params) do
-    {:ok, notifications} = NotificationModel.mark_all_as_read(notification_ids)
+    {no_of_records, _} = NotificationModel.mark_all_as_read(notification_ids)
 
     conn
     |> put_status(200)
-    |> render("index.json", %{notifications: notifications})
+    |> render("notification_mark_as_read_success.json", %{message: "Marked as read successfully!"})
   end
 
   defp fetch_notification(%{params: %{"id" => notification_id}} = conn, _params) do

@@ -24,6 +24,7 @@ defmodule Dailyploy.Model.Notification do
     Notification
     |> where([notification], notification.read == ^false)
     |> where([notification], notification.receiver_id == ^user_id)
+    |> order_by(desc: :inserted_at)
     |> Repo.all()
   end
 

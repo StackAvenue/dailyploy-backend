@@ -215,6 +215,7 @@ defmodule Dailyploy.Helper.User do
     }
 
     %{"email" => email} = user_attrs
+
     # user_attrs = add_user_workspace(user_attrs)
 
     case UserModel.create_user(user_attrs) do
