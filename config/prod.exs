@@ -50,7 +50,7 @@ config :dailyploy, Dailyploy.Helper.Scheduler,
     # daily_status: [
     #   task: {Dailyploy.Helper.DailyStatus, :schedule_daily_status_mails, []}
     # ]
-     {"*/10 * * * *", {Dailyploy.Helper.DailyStatus, :schedule_daily_status_mails, []}}
+    {"0 1 * * *", {Dailyploy.Helper.DailyStatus, :schedule_daily_status_mails, []}}
     # {Dailyploy.Helper.DailyStatus, :schedule_daily_status_mails, []}
   ]
 
