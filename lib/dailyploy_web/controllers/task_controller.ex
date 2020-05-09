@@ -9,6 +9,7 @@ defmodule DailyployWeb.TaskController do
   alias Dailyploy.Helper.TaskComment, as: TCHelper
   alias Dailyploy.Helper.SendText
   alias Dailyploy.Model.Notification, as: NotificationModel
+
   import Ecto.Query
 
   plug Auth.Pipeline
@@ -236,8 +237,10 @@ defmodule DailyployWeb.TaskController do
 
   defp notification_create(%TaskSchema{} = task, type) do
     Enum.each(task.members, fn member ->
-      notification_params(task.name, task.owner, member, task.project, type)
-      |> NotificationModel.create()
+      unless member.id == task.owner.id do
+        notification_params(task.name, task.owner, member, task.project, type)
+        |> NotificationModel.create()
+      end
     end)
   end
 

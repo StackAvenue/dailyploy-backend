@@ -10,7 +10,8 @@ defmodule DailyployWeb.NotificationsView do
     %{
       id: notification.id,
       read: notification.read,
-      data: Map.from_struct(notification.data)
+      data: Map.from_struct(notification.data),
+      inserted_at: notification.inserted_at
     }
   end
 
