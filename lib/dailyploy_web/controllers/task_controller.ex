@@ -156,6 +156,8 @@ defmodule DailyployWeb.TaskController do
     user = Guardian.Plug.current_resource(conn)
     task = TaskModel.get_task!(id)
 
+    task_copy = task |> Repo.preload([:members, :project])
+
     with false <- is_nil(task) do
       if user.id == task.owner_id do
         case TaskModel.delete_task(task) do
@@ -164,6 +166,10 @@ defmodule DailyployWeb.TaskController do
               Poison.encode(task |> Repo.preload([:project, :owner, :category, :time_tracks])),
               "task_deleted/#{conn.params["workspace_id"]}/#{task.id}"
             )
+
+            Task.async(fn ->
+              notification_create(task_copy, "deleted")
+            end)
 
             render(conn, "deleted_task.json", task: task |> Repo.preload([:owner]))
 
