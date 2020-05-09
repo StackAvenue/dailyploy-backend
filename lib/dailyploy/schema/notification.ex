@@ -6,6 +6,7 @@ defmodule Dailyploy.Schema.Notification do
   use Ecto.Schema
   import Ecto.Changeset
   alias Dailyploy.Schema.User
+  alias Dailyploy.Schema.Workspace
   alias Dailyploy.Schema.Notification.Data
 
   schema "notifications" do
@@ -14,6 +15,7 @@ defmodule Dailyploy.Schema.Notification do
     # associations
     belongs_to(:receiver, User)
     belongs_to(:creator, User)
+    belongs_to(:workspace, Workspace)
 
     # embedded associations
     embeds_one(:data, Data)
@@ -21,7 +23,7 @@ defmodule Dailyploy.Schema.Notification do
     timestamps()
   end
 
-  @required ~w(receiver_id creator_id)a
+  @required ~w(receiver_id creator_id workspace_id)a
   @optional ~w(read)a
   @permitted @optional ++ @required
 
@@ -32,6 +34,7 @@ defmodule Dailyploy.Schema.Notification do
     |> validate_required(@required)
     |> assoc_constraint(:creator)
     |> assoc_constraint(:receiver)
+    |> assoc_constraint(:workspace)
   end
 end
 

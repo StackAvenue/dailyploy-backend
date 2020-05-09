@@ -230,6 +230,7 @@ defmodule DailyployWeb.TaskCommentController do
     %{
       creator_id: owner.id,
       receiver_id: member.id,
+      workspace_id: project.workspace_id,
       data: %{
         message:
           "#{String.capitalize(owner.name)} has #{type} on your task '#{task_name}' in #{
