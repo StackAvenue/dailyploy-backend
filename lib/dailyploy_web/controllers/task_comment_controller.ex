@@ -2,6 +2,7 @@ defmodule DailyployWeb.TaskCommentController do
   use DailyployWeb, :controller
 
   alias Dailyploy.Repo
+  alias Dailyploy.Helper.Firebase
   alias Dailyploy.Helper.TaskComment
   alias Dailyploy.Helper.ImageDeletion
   alias Dailyploy.Helper.CommentsAttachment
@@ -58,7 +59,7 @@ defmodule DailyployWeb.TaskCommentController do
     end
   end
 
-  def show(conn, params) do
+  def show(conn, _params) do
     case conn.status do
       nil ->
         conn
@@ -214,8 +215,13 @@ defmodule DailyployWeb.TaskCommentController do
 
     Enum.each(task.members, fn member ->
       unless member.id == comment.user.id do
-        notification_params(task.name, comment.user, member, task.project, type)
-        |> NotificationModel.create()
+        notification_parameters = notification_params(task.name, comment.user, member, task.project, type)
+        notification_parameters |> NotificationModel.create()
+
+        Firebase.insert_operation(
+          Poison.encode(notification_parameters),
+          "notification/#{task.project.workspace_id}/#{member.id}"
+        )
       end
     end)
   end
