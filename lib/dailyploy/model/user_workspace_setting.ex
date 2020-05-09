@@ -6,6 +6,7 @@ defmodule Dailyploy.Model.UserWorkspaceSetting do
   # alias Dailyploy.Model.User, as: UserModel
   alias Dailyploy.Model.Workspace, as: WorkspaceModel
   alias Dailyploy.Model.UserWorkspace, as: UserWorkspaceModel
+
   # alias Auth.Guardian
 
   def create_user_workspace_settings(attrs \\ %{}) do

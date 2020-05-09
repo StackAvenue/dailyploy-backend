@@ -35,7 +35,12 @@ defmodule DailyployWeb.Router do
     delete "/tasks/:task_id/delete/:id", TimeTrackingController, :delete
 
     get "/logged_in_user", UserController, :show
-    resources "/users", UserController
+
+    resources "/users", UserController do
+      resources "/notifications", NotificationsController, only: [:index]
+      put "/notifications/:id/mark_as_read", NotificationsController, :mark_as_read
+      put "/notifications/mark_all_as_read", NotificationsController, :mark_all_as_read
+    end
 
     resources "/workspaces", WorkspaceController, only: [:index] do
       resources "/recurring_task", RecurringTaskController,
