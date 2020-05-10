@@ -26,6 +26,7 @@ defmodule DailyployWeb.TaskCommentController do
         case check_params(params) do
           true ->
             do_comment(conn, params)
+
           false ->
             conn
             |> send_error(404, "Either comment or attachment should be present")
@@ -193,7 +194,9 @@ defmodule DailyployWeb.TaskCommentController do
 
     Enum.each(task.members, fn member ->
       unless member.id == comment.user.id do
-        notification_parameters = notification_params(task.name, comment.user, member, task.project, type)
+        notification_parameters =
+          notification_params(task.name, comment.user, member, task.project, type)
+
         notification_parameters |> NotificationModel.create()
 
         Firebase.insert_operation(

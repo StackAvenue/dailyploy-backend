@@ -102,7 +102,7 @@ defmodule DailyployWeb.MemberController do
     case UserWorkspaceModel.delete_user_workspace(user_workspace) do
       {:ok, _} ->
         case UserWorkspaceSettingsModel.delete_user_workspace_settings(user_workspace_settings) do
-          {:ok, _} -> send_resp(conn, :no_content, "User Successfully deleted from Workspace")
+          {:ok, _} -> send_resp(conn, 200, "User Successfully deleted from Workspace")
           {:error, _} -> send_resp(conn, 404, "Not Found")
         end
 

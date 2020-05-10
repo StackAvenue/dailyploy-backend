@@ -46,6 +46,12 @@ defmodule DailyployWeb.Router do
       resources "/recurring_task", RecurringTaskController,
         only: [:index, :delete, :show, :create, :update]
 
+      resources "/user/:admin_id/report_configuration", ReportConfigurationController,
+        only: [:create]
+
+      resources "/report_configuration", ReportConfigurationController,
+        only: [:update, :delete, :show]
+
       get "/running_task", TaskController, :running_task
       resources "/members", MemberController, only: [:index, :show, :update, :delete]
       resources "/tags", TagController, only: [:create, :update, :delete, :index, :show]

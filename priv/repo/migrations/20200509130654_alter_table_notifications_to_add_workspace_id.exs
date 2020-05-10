@@ -9,7 +9,7 @@ defmodule Dailyploy.Repo.Migrations.AlterTableNotificationsToAddWorkspaceId do
 
   def down do
     drop constraint("notifications", "notifications_workspace_id_fkey")
-    
+
     alter table(:notifications) do
       remove(:workspace_id)
     end

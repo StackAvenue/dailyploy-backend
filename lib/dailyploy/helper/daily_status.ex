@@ -1,18 +1,18 @@
 defmodule Dailyploy.Helper.DailyStatus do
   alias SendGrid.{Mail, Email}
-  alias Dailyploy.Schema.Workspace
-  alias Dailyploy.Schema.User
-  alias Dailyploy.Schema.Task
-  alias Dailyploy.Schema.Project
-  alias Dailyploy.Schema.DailyStatusMailSetting
-  alias Dailyploy.Schema.UserWorkspace
-  alias Dailyploy.Model.Workspace, as: WorkspaceModel
-  alias Dailyploy.Model.User, as: UserModel
-  alias Dailyploy.Model.Project, as: ProjectModel
-  alias Dailyploy.Model.Task, as: TaskModel
+  # alias Dailyploy.Schema.Workspace
+  # alias Dailyploy.Schema.User
+  # alias Dailyploy.Schema.Task
+  # alias Dailyploy.Schema.Project
+  # alias Dailyploy.Schema.DailyStatusMailSetting
+  # alias Dailyploy.Schema.UserWorkspace
+  # alias Dailyploy.Model.Workspace, as: WorkspaceModel
+  # alias Dailyploy.Model.User, as: UserModel
+  # alias Dailyploy.Model.Project, as: ProjectModel
+  # alias Dailyploy.Model.Task, as: TaskModel
   alias Dailyploy.Model.DailyStatusMailSetting, as: DailyStatusMailSettingsModel
   alias DailyployWeb.ReportController, as: RCModel
-  import Ecto.Query
+  # import Ecto.Query
 
   @minute 60
   @hour @minute * 60
@@ -24,7 +24,7 @@ defmodule Dailyploy.Helper.DailyStatus do
     daily_status_mails = DailyStatusMailSettingsModel.list_daily_status_mail()
 
     Enum.each(daily_status_mails, fn daily_status_mail ->
-      send_daily_status_mail(daily_status_mail)
+      Task.async(fn -> send_daily_status_mail(daily_status_mail) end)
     end)
   end
 
