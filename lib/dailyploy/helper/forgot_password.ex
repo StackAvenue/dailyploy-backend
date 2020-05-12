@@ -35,7 +35,8 @@ defmodule Dailyploy.Helper.ForgotPassword do
     Email.build()
     |> Email.add_to(user_update.email)
     |> Email.put_from("contact@stack-avenue.com")
-    |> Email.put_subject("Password Reset")
+    |> Email.put_subject("Forgot Your Password?
+    ")
     |> Email.put_phoenix_view(DailyployWeb.EmailView)
     |> Email.put_phoenix_template("password_reset.html",
       user: user_update

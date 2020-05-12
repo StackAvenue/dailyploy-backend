@@ -10,7 +10,8 @@ defmodule Dailyploy.Helper.SignUp do
     personalization_1 =
       Email.build()
       |> Email.add_to(enquiry.email)
-      |> Email.put_subject("Thanks For Enquiring")
+      |> Email.put_subject("Welcome Onboard
+      ")
       |> Email.to_personalization()
 
     personalization_2 =
@@ -21,7 +22,8 @@ defmodule Dailyploy.Helper.SignUp do
 
     Email.build()
     |> Email.put_from("contact@stack-avenue.com")
-    |> Email.put_subject("Thanks for Enquiring !")
+    |> Email.put_subject("Welcome Onboard
+    ")
     |> Email.put_phoenix_view(DailyployWeb.EmailView)
     |> Email.put_phoenix_template("sign_up_email.html", user: enquiry)
     |> Email.add_personalization(personalization_1)

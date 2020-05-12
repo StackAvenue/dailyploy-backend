@@ -83,7 +83,7 @@ defmodule Dailyploy.Helper.ReportConfigStatus do
 
         email_build
         |> Email.put_from("contact@stack-avenue.com")
-        |> Email.put_subject("Weekly Status Mail")
+        |> Email.put_subject("Here’s Your Weekly Report")
         |> Email.put_phoenix_view(DailyployWeb.EmailView)
         |> Email.put_phoenix_template("weekly_reports.html",
           csv_link: csv_link

@@ -5,19 +5,19 @@
 </div>
 <div style="width:100%;height:auto;margin-top:16px;margin-bottom:60px;background-color: #F6F6F7;box-sizing: border-box;display: flex;justify-content: center;align-items: center;">
 <div style="width:80%;margin: 0 auto;height:auto;box-sizing: border-box;text-align: justify;padding: 20px 0px 20px 0px">
-<label style="color:#28b458;font-size:30px;font-family: 'Muli', sans-serif;line-height:50px;"> Thanks for Enquiring </label>
+<label style="color:#28b458;font-size:30px;font-family: 'Muli', sans-serif;line-height:50px;"> You have an Invitation </label>
 </div>
 </div>
 <div style="width:100%;">
 <div style="width:80%;margin: 0 auto;height:auto;box-sizing: border-box;">
-<label style="font-size:20px;font-family: 'Muli', sans-serif;line-height:42px;">
-  Hey,
-      <span><%= gettext "%{name}", name: @invitation_details["sender_name"] %></span>
-      has invited you to his workspace on Dailyploy. Click
-      <a style= "color: hotpink" href= <%= gettext "https://app.dailyploy.com/signup/%{name}/", name: @invitation_details["token_id"] %>> here</a>
-      to join the team and experience a new and easy way to manage your tasks, team and projects.
-      <br>
-  Regards,<br/>
+<label style="font-size:18px;font-family: 'Muli', sans-serif;line-height:42px;">
+      Hi,<br/>
+    One of your team member <span><%= gettext "%{name}", name: @invitation_details["sender_name"] %></span>  would like you to join the
+      <span><%= gettext "%{name}", name: @invitation_details["workspace_name"] %></span> to contribute. <br/>
+    So, whether you are trying to manage your tasks or want to collaborate with your team in real time click <a href= <%= gettext "https://app.dailyploy.com/login/%{name}/", name: @invitation_details["token_id"] %>> here </a> and experience the productivity.<br/>
+
+    <br/>
+  Cheers,<br/>
   DailyPloy<br/>
   Contact Us: +919665530611<br/>
   Visit Us: www.dailyploy.com <br/>

@@ -111,7 +111,8 @@ defmodule Dailyploy.Helper.DailyStatus do
 
         email_build
         |> Email.put_from("contact@stack-avenue.com")
-        |> Email.put_subject("Daily Status Mail")
+        |> Email.put_subject("Status Update
+        ")
         |> Email.put_phoenix_view(DailyployWeb.EmailView)
         |> Email.put_phoenix_template("daily_status_mail.html",
           day_tasks: day_tasks,
