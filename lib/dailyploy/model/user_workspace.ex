@@ -55,6 +55,18 @@ defmodule Dailyploy.Model.UserWorkspace do
     {:ok, List.first(Repo.all(query))}
   end
 
+  def check_adminship(user_id, workspace_id) do
+    query =
+      from member in UserWorkspace,
+        where: member.user_id == ^user_id and member.workspace_id == ^workspace_id,
+        select: member
+
+    case List.first(Repo.all(query)) do
+      nil -> {:error, "User is not admin"}
+      _ -> {:ok, :admin}
+    end
+  end
+
   def get_member_using_user_id(user_id) do
     query =
       from member in UserWorkspace,

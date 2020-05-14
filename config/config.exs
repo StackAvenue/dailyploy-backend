@@ -27,15 +27,15 @@ config :phoenix, :json_library, Jason
 
 # config quantum
 config :dailyploy, Dailyploy.Helper.Scheduler,
-  schedule: "50 23 * * *",
   overlap: false,
   timezone: "Asia/Calcutta",
   # global: true,
   jobs: [
-    daily_status: [
-      task: {Dailyploy.Helper.DailyStatus, :schedule_daily_status_mails, []}
-    ]
-    # {"17 19 * * *", {Dailyploy.Helper.DailyStatus, :schedule_daily_status_mails, []}}
+    # daily_status: [
+    #   task: {Dailyploy.Helper.DailyStatus, :schedule_daily_status_mails, []}
+    # ]
+    {"50 23 * * *", {Dailyploy.Helper.DailyStatus, :schedule_daily_status_mails, []}},
+    {"@weekly", {Dailyploy.Helper.ReportConfigStatus, :schedule_weekly_reports, []}}
     # {Dailyploy.Helper.DailyStatus, :schedule_daily_status_mails, []}
   ]
 

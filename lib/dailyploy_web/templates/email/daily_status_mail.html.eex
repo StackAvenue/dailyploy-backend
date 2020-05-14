@@ -5,15 +5,15 @@
 </div>
 <div style="width:100%;height:auto;margin-top:16px;margin-bottom:60px;background-color: #F6F6F7;box-sizing: border-box;display: flex;justify-content: center;align-items: center;">
 <div style="width:80%;margin: 0 auto;height:auto;box-sizing: border-box;text-align: justify;padding: 20px 0px 20px 0px">
-<label style="color:#28b458;font-size:40px;font-family: 'Muli', sans-serif;line-height:50px;"> Thanks for Enquiring dailyploy main</label>
+<label style="color:#28b458;font-size:40px;font-family: 'Muli', sans-serif;line-height:50px;"> Status Update</label>
 </div>
 </div>
 <div style="width:100%;">
 <div style="width:80%;margin: 0 auto;height:auto;box-sizing: border-box;">
 <label style="font-size:24px;font-family: 'Muli', sans-serif;line-height:42px;">
-   Dear all,<br>
+   Hi all,<br>
       <br>
-      <span><%= gettext "%{name}", name: @user.name %></span>
+      Your team member <span><%= gettext "%{name}", name: @user.name %></span>
       has worked one the following tasks today:-
       <br>
       <br>
@@ -26,12 +26,14 @@
        <%= for {key, value} <- @day_tasks do %>
        <tr>
             <td style="border: 2px solid black"> <%= key %></td>
-             <td style="border: 2px solid black"> <%= value = case String.length(value) do 0 -> "No Track Time"; _ -> value end%></td>
+             <td style="border: 2px solid black"> <%= value = case String.length(value) do 0 -> "Not Worked"; _ -> value end%></td>
         </tr>
         <% end %>
         </tbody>
         </table>
       <br>
+      Give your team a pat on the back for a job well done. <br/>
+      <br/>
   Regards,<br/>
   DailyPloy<br/>
   Contact Us: +919665530611<br/>
