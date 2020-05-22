@@ -8,6 +8,7 @@ defmodule DailyployWeb.TaskController do
   alias Dailyploy.Helper.Firebase
   alias Dailyploy.Helper.TaskComment, as: TCHelper
   alias Dailyploy.Helper.SendText
+  alias Dailyploy.Helper.Contact
   alias Dailyploy.Model.Notification, as: NotificationModel
 
   import Ecto.Query
@@ -136,6 +137,8 @@ defmodule DailyployWeb.TaskController do
           "Task with name #{task.name} is been completed",
           contact.phone_number
         )
+
+        Contact.send_email(task, contact)
       end
     end)
   end

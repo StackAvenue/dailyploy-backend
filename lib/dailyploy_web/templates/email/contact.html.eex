@@ -1,0 +1,36 @@
+<section class="phx-hero">
+<div style="width:90%;display:block;margin-top:30px;margin-bottom:60px;border:1px solid #000;padding: 10px 0px 0px 0px;box-sizing: border-box; margin: 0 auto;">
+<div style="width:100%;padding: 10px 0px 0px 20px;box-sizing: border-box;">
+<img src="https://marketing-image-production.s3.amazonaws.com/uploads/cbbfe816d2c6196e996fdc7dd94a8ece3545dc5dd0bba250540dcb454f398dd714b171e7ca721b123c3d1da80639d8dd0ff85fe81ed65b1ca44178e51bdc1dc2.png" width="" height="6%"/>
+</div>
+<div style="width:100%;height:auto;margin-top:16px;margin-bottom:60px;background-color: #F6F6F7;box-sizing: border-box;display: flex;justify-content: center;align-items: center;">
+<div style="width:80%;margin: 0 auto;height:auto;box-sizing: border-box;text-align: justify;padding: 20px 0px 20px 0px">
+<label style="color:#28b458;font-size:40px;font-family: 'Muli', sans-serif;line-height:50px;"> Task Completed </label>
+</div>
+</div>
+<div style="width:100%;">
+<div style="width:80%;margin: 0 auto;height:auto;box-sizing: border-box;">
+<label style="font-size:18px;font-family: 'Muli', sans-serif;line-height:42px;">
+  Hi, <br/>
+    Task with the name: <span><%= gettext "%{name}", name: @task.name %></span><br/>
+    from the following project :<span><%= gettext "%{name}", name: @task.project.name %></span> has been completed.
+    <br/>
+    <br/>
+  Cheers,<br/>
+  DailyPloy<br/>
+  Contact Us: +919665530611<br/>
+  Visit Us: www.dailyploy.com <br/>
+  Email Us: contact@stack-avenue.com
+</label>
+</div>
+</div>
+<div style="width:100%;margin-top:60px;">
+<div style="width:100%;height:12%;background-color: #F0EFEF;box-sizing: border-box;padding: 20px;display: flex;align-items: center;">
+<span style="width:16%;">Powered By StackAvenue</span>
+<img src="https://marketing-image-production.s3.amazonaws.com/uploads/57297c68b73778feb36648b00591bb75ba841bf254c37c1f17e868f8a1c82597a0ca10f196b060c5dcf0e3c15ce316ef5b88e33ab6d6784e382ab80602561274.png" width="auto" height="50%"/>
+<span style="width: 50%;padding-left: 36%;">DailyPloy &copy; 2020. All Rights Reserved</span>
+</div>
+</div>
+</div>
+</div>
+</section>
