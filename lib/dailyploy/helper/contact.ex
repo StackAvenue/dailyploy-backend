@@ -1,7 +1,7 @@
 defmodule Dailyploy.Helper.Contact do
-  alias Dailyploy.Repo
   alias Dailyploy.Model.Contact, as: ContactModel
   import DailyployWeb.Helpers
+  alias SendGrid.{Mail, Email}
 
   def create_contact(params) do
     %{
@@ -37,5 +37,19 @@ defmodule Dailyploy.Helper.Contact do
 
   defp verify_create({:error, contact}) do
     {:error, extract_changeset_error(contact)}
+  end
+
+  def send_email(task, contact) do
+    user_email(task, contact)
+  end
+
+  defp user_email(task, contact) do
+    Email.build()
+    |> Email.add_to(contact.email)
+    |> Email.put_from("contact@stack-avenue.com")
+    |> Email.put_subject("Task Completed")
+    |> Email.put_phoenix_view(DailyployWeb.EmailView)
+    |> Email.put_phoenix_template("contact.html", task: task)
+    |> Mail.send()
   end
 end
