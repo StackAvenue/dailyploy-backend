@@ -3,6 +3,10 @@ defmodule Dailyploy.Helper.TaskStatus do
   alias Dailyploy.Repo
   import DailyployWeb.Helpers
 
+  defdelegate get(id), to: TSModel
+  defdelegate update(task_status, params), to: TSModel
+  defdelegate delete(task_status), to: TSModel
+
   def create(params) do
     %{
       project_id: project_id,
@@ -29,7 +33,8 @@ defmodule Dailyploy.Helper.TaskStatus do
        workspace_id: status.workspace_id,
        name: status.name,
        project: status.project,
-       workspace: status.workspace
+       workspace: status.workspace,
+       inserted_at: status.inserted_at
      }}
   end
 

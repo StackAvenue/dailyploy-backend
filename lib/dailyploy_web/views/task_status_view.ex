@@ -8,7 +8,8 @@ defmodule DailyployWeb.TaskStatusView do
       id: task_status.id,
       name: task_status.name,
       project: render_one(task_status.project, ProjectView, "show_project.json"),
-      workspace: render_one(task_status.workspace, WorkspaceView, "workspace_task.json")
+      workspace: render_one(task_status.workspace, WorkspaceView, "workspace_task.json"),
+      inserted_at: task_status.inserted_at
     }
   end
 end

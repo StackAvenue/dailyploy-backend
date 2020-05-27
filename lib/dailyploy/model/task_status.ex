@@ -35,6 +35,7 @@ defmodule Dailyploy.Model.TaskStatus do
         {:error, "not found"}
 
       task_status ->
+        task_status = task_status |> Repo.preload([:workspace, :project])
         {:ok, task_status}
     end
   end
