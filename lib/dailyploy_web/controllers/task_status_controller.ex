@@ -5,7 +5,7 @@ defmodule DailyployWeb.TaskStatusController do
   import DailyployWeb.Validators.TaskStatus
   import DailyployWeb.Helpers
 
-  plug DailyployWeb.Plug.TaskStatus when action in [:create, :show, :delete, :update]
+  plug DailyployWeb.Plug.TaskStatus when action in [:create, :show, :delete, :update, :index]
 
   def show(conn, %{"id" => id}) do
     case conn.status do
@@ -48,12 +48,23 @@ defmodule DailyployWeb.TaskStatusController do
     end
   end
 
-  # def index(conn, %{"workspace_id" => workspace_id}) do
-  #   workspace_id = String.to_integer(workspace_id)
-  #   {:ok, task_category} = WorkspaceModel.get(workspace_id)
-  #   task_category = task_category |> Repo.preload(:task_categories)
-  #   render(conn, "index.json", task_category: task_category)
-  # end
+  def index(conn, params) do
+    changeset = verify_index_params(params)
+
+    case conn.status do
+      nil ->
+        {:extract, {:ok, data}} = {:extract, extract_changeset_data(changeset)}
+        {:list, task_status} = {:list, TaskStatus.get_all(data, [:project, :workspace])}
+
+        conn
+        |> put_status(200)
+        |> render("index.json", task_status)
+
+      404 ->
+        conn
+        |> send_error(404, "Resource Not Found")
+    end
+  end
 
   def update(conn, params) do
     case conn.status do

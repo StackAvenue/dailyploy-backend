@@ -11,6 +11,8 @@ defmodule DailyployWeb.Validators.TaskStatus do
 
   defparams(
     verify_index_params(%{
+      project_id!: :integer,
+      workspace_id!: :integer,
       page_size: :integer,
       page_number: :integer
     })

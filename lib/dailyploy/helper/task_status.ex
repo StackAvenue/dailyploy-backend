@@ -6,6 +6,7 @@ defmodule Dailyploy.Helper.TaskStatus do
   defdelegate get(id), to: TSModel
   defdelegate update(task_status, params), to: TSModel
   defdelegate delete(task_status), to: TSModel
+  defdelegate get_all(data, preloads), to: TSModel
 
   def create(params) do
     %{
