@@ -6,7 +6,9 @@ defmodule DailyployWeb.TaskView do
   alias DailyployWeb.TaskCategoryView
   alias DailyployWeb.TimeTrackingView
   alias DailyployWeb.TaskCommentView
+  alias DailyployWeb.TaskStatusView
   alias DailyployWeb.ErrorHelpers
+  alias Dailyploy.Repo
 
   def render("index.json", %{tasks: tasks}) do
     %{tasks: render_many(tasks, TaskView, "task_with_user.json")}
@@ -31,13 +33,15 @@ defmodule DailyployWeb.TaskView do
   end
 
   def render("task_running_call.json", %{task: task}) do
+    task = task |> Repo.preload([:status])
+
     %{
       id: task.id,
       name: task.name,
       start_datetime: task.start_datetime,
       end_datetime: task.end_datetime,
       comments: task.comments,
-      status: task.status,
+      status: render_one(task.status, TaskStatusView, "status.json"),
       priority: task.priority,
       members: render_many(task.members, UserView, "user.json"),
       owner: render_one(task.owner, UserView, "user.json"),
@@ -47,22 +51,26 @@ defmodule DailyployWeb.TaskView do
   end
 
   def render("task_comments.json", %{task: task}) do
+    task = task |> Repo.preload([:status])
+
     %{
       id: task.id,
       name: task.name,
       start_datetime: task.start_datetime,
       end_datetime: task.end_datetime,
       comments: task.comments,
-      status: task.status,
+      status: render_one(task.status, TaskStatusView, "status.json"),
       priority: task.priority
     }
   end
 
   def render("deleted_task.json", %{task: task}) do
+    task = task |> Repo.preload([:status])
+
     %{
       id: task.id,
       name: task.name,
-      status: task.status,
+      status: render_one(task.status, TaskStatusView, "status.json"),
       priority: task.priority,
       owner: render_one(task.owner, UserView, "user.json")
     }
@@ -86,7 +94,7 @@ defmodule DailyployWeb.TaskView do
       start_datetime: task.start_datetime,
       end_datetime: task.end_datetime,
       comments: task.comments,
-      status: task.status,
+      status: render_one(task.status, TaskStatusView, "status.json"),
       priority: task.priority,
       members: render_many(task.members, UserView, "user.json"),
       owner: render_one(task.owner, UserView, "user.json"),
@@ -102,13 +110,15 @@ defmodule DailyployWeb.TaskView do
   end
 
   def render("task_with_user_show.json", %{task: task}) do
+    task = task |> Repo.preload([:status])
+
     %{
       id: task.id,
       name: task.name,
       start_datetime: task.start_datetime,
       end_datetime: task.end_datetime,
       comments: task.comments,
-      status: task.status,
+      status: render_one(task.status, TaskStatusView, "status.json"),
       priority: task.priority,
       members: render_many(task.members, UserView, "user.json"),
       owner: render_one(task.owner, UserView, "user.json"),
@@ -126,13 +136,15 @@ defmodule DailyployWeb.TaskView do
   end
 
   def render("task_with_project.json", %{task: task}) do
+    task = task |> Repo.preload([:status])
+
     %{
       id: task.id,
       name: task.name,
       start_datetime: task.start_datetime,
       end_datetime: task.end_datetime,
       comments: task.comments,
-      status: task.status,
+      status: render_one(task.status, TaskStatusView, "status.json"),
       priority: task.priority,
       duration: task.duration,
       project: render_one(task.project, ProjectView, "project.json"),
@@ -148,13 +160,15 @@ defmodule DailyployWeb.TaskView do
   end
 
   def render("task_with_user_and_project.json", %{task: task}) do
+    task = task |> Repo.preload([:status])
+
     %{
       id: task.id,
       name: task.name,
       start_datetime: task.start_datetime,
       end_datetime: task.end_datetime,
       comments: task.comments,
-      status: task.status,
+      status: render_one(task.status, TaskStatusView, "status.json"),
       priority: task.priority,
       duration: task.duration,
       duration_in_string: task.duration_in_string,

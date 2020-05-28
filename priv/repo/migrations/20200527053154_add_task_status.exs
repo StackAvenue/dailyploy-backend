@@ -15,7 +15,7 @@ defmodule Dailyploy.Repo.Migrations.AddTaskStatus do
 
     alter table(:tasks) do
       remove :status
-      add :status, references(:task_status, on_delete: :restrict)
+      add :status_id, references(:task_status, on_delete: :restrict)
     end
   end
 
@@ -24,7 +24,7 @@ defmodule Dailyploy.Repo.Migrations.AddTaskStatus do
     # drop constraint(:tasks, "tasks_status_id_fkey")
 
     alter table(:tasks) do
-      remove :status
+      remove :status_id
       add :status, :string
     end
 

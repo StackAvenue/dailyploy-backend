@@ -22,4 +22,12 @@ defmodule DailyployWeb.TaskStatusView do
       total_pages: task_status.total_pages
     }
   end
+
+  def render("status.json", %{task_status: task_status}) do
+    %{
+      id: task_status.id,
+      name: task_status.name,
+      inserted_at: task_status.inserted_at
+    }
+  end
 end

@@ -41,6 +41,16 @@ defmodule Dailyploy.Model.TaskStatus do
     end
   end
 
+  def get_running_status(project_id, workspace_id, status) do
+    query =
+      from task_status in TaskStatus,
+        join: project in Project,
+        on: project.id == ^project_id and project.workspace_id == ^workspace_id,
+        where: task_status.project_id == ^project_id and task_status.name == ^status
+
+    List.first(Repo.all(query))
+  end
+
   def get_all(params, preloads) do
     %{
       page_size: page_size,

@@ -164,38 +164,38 @@ defmodule DailyployWeb.WorkspaceController do
     query = from time_track in TimeTracking, order_by: [desc: time_track.inserted_at]
     users = users |> Repo.preload(tasks: [time_tracks: query])
 
-    # task_id_list = 
+    # task_id_list =
     #   Enum.reduce(users, %{}, fn user, acc ->
-    #     id_list = 
+    #     id_list =
     #     Enum.reduce(user.tasks, [], fn task, task_acc ->
     #         case Enum.member?(task_acc, task.id) do
-    #           true -> task_acc 
+    #           true -> task_acc
     #           false -> task_acc ++ [task.id]
     #         end
     #     end)
     #     Map.put_new(acc, user.id, id_list)
-    #   end)  
+    #   end)
 
-    # users = 
-    #   Enum.map(users, fn user -> 
+    # users =
+    #   Enum.map(users, fn user ->
     #     user_task_ids = Map.fetch!(task_id_list, user.id)
     #     tasks = []
     #     alternate_task_ids = []
 
-    #     Enum.map(user.tasks, fn task -> 
-    #       tasks = 
+    #     Enum.map(user.tasks, fn task ->
+    #       tasks =
     #         case Enum.member?(user_task_ids, task.id) and !Enum.member?(alternate_task_ids, task.id) do
     #           true ->
     #             alternate_task_ids = alternate_task_ids ++ task.id
     #             IO.inspect(task)
     #             tasks = tasks ++ [task]
-    #           false -> 
+    #           false ->
     #             alternate_task_ids = alternate_task_ids ++ task.id
     #             tasks
     #         end
     #     end)
     #     user = Map.replace!(user, :tasks, tasks)
-    #   end) 
+    #   end)
 
     users =
       Enum.reduce(users, [], fn user, acc ->
@@ -243,11 +243,11 @@ defmodule DailyployWeb.WorkspaceController do
 
             date_formatted_time_tracks = date_wise_orientation(task.time_tracks)
             # Enum.reduce(task.time_tracks, %{}, fn time_track, time_acc ->
-            #   duration = 
+            #   duration =
             #       case is_nil(time_track.duration) do
             #         true -> 0
             #         false -> time_track.duration
-            #       end 
+            #       end
             #   time_track = Map.replace!(time_track, :duration, duration)
 
             #   time_track_range_start_date =
