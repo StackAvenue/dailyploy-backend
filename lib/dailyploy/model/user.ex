@@ -102,7 +102,7 @@ defmodule Dailyploy.Model.User do
         on: user_workspace.user_id == user.id,
         join: role in Role,
         on: user_workspace.role_id == role.id,
-        where: user_workspace.workspace_id == ^workspace_id and user.id in ^user_ids,
+        where: user_workspace.workspace_id == ^workspace_id or user.id in ^user_ids,
         select: %{user | role: role.name}
       )
 

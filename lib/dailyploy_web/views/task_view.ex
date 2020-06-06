@@ -159,6 +159,20 @@ defmodule DailyployWeb.TaskView do
     }
   end
 
+  def render("user_tasks.json", %{task: task}) do
+    task = task |> Repo.preload([:status])
+    %{
+      id: task.id,
+      name: task.name,
+      start_datetime: task.start_datetime,
+      end_datetime: task.end_datetime,
+      status: render_one(task.status, TaskStatusView, "status.json"),
+      priority: task.priority,
+      duration: task.duration,
+      project: render_one(task.project, ProjectView, "project_user_task.json")
+    }
+  end
+
   def render("task_with_user_and_project.json", %{task: task}) do
     task = task |> Repo.preload([:status])
 
@@ -189,7 +203,7 @@ defmodule DailyployWeb.TaskView do
   def render("date_formatted_user_tasks.json", %{task: {date, tasks}}) do
     %{
       date: date,
-      tasks: render_many(tasks, TaskView, "task_with_project.json")
+      tasks: render_many(tasks, TaskView, "user_tasks.json")
     }
   end
 
