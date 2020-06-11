@@ -41,14 +41,17 @@ defmodule DailyployWeb.WorkspaceController do
         "frequency" => frequency,
         "start_date" => start_date
       }) do
+    # query params keys are converted from string format to atom
+    query_params = map_to_atom(conn.query_params)
+    # start and end date over which task need to get displayed
+    {start_date, end_date} = select_dates(start_date, frequency)
+    # project ids are extracted
+    project_ids = get_project_ids(conn.query_params)
+    # based on start date and end date query is made to extract out task in the given dashboard
+    query = create_query(project_ids, workspace_id, start_date, end_date)
 
-    query_params = map_to_atom(conn.query_params) #query params keys are converted from string format to atom
-    {start_date, end_date} = select_dates(start_date, frequency) #start and end date over which task need to get displayed
-    project_ids = get_project_ids(conn.query_params) #project ids are extracted
-    query = create_query(project_ids, workspace_id, start_date, end_date) #based on start date and end date query is made to extract out task in the given dashboard
-
-    users = get_users(query_params, query, workspace_id) #here the above query is being preloaded for each and every user
-
+    # here the above query is being preloaded for each and every user
+    users = get_users(query_params, query, workspace_id)
 
     # users = users |> Repo.preload(tasks: [time_tracks: query])
 
@@ -76,7 +79,8 @@ defmodule DailyployWeb.WorkspaceController do
         date_formatted_tasks =
           user.tasks
           |> Enum.reduce(%{}, fn task, acc ->
-            task = Repo.preload(task, [time_tracks: query])
+            task = Repo.preload(task, time_tracks: query)
+
             [range_end_date, range_start_date] =
               if(Enum.empty?(task.time_tracks)) do
                 range_end_date = smaller_date(DateTime.to_date(task.end_datetime), end_date)
@@ -144,8 +148,24 @@ defmodule DailyployWeb.WorkspaceController do
                           )
                       end
 
+                    time_track =
+                      if date_formatted_time_tracks != %{} do
+                        extract_time_track(task)
+                      end
+
+                    [time_track_status, time_track] =
+                      case time_track do
+                        nil -> [false, nil]
+                        _ -> [true, time_track]
+                      end
+
                     duration = sec_to_str(duration)
-                    task = Map.put_new(task, :duration, duration)
+
+                    task =
+                      Map.put_new(task, :duration, duration)
+                      |> Map.put_new(:time_track_status, time_track_status)
+                      |> Map.put_new(:time_track, time_track)
+
                     tasks = Map.get(date_acc, Date.to_iso8601(date)) ++ [task]
                     Map.put(date_acc, Date.to_iso8601(date), tasks)
                   else
@@ -203,12 +223,12 @@ defmodule DailyployWeb.WorkspaceController do
   end
 
   defp calculate_durations(task_list) when is_nil(task_list) == false do
-      Enum.reduce(task_list, 0, fn time_track, acc ->
-        case is_nil(time_track.duration) do
-          true -> acc
-          false -> acc + time_track.duration
-        end
-      end)
+    Enum.reduce(task_list, 0, fn time_track, acc ->
+      case is_nil(time_track.duration) do
+        true -> acc
+        false -> acc + time_track.duration
+      end
+    end)
   end
 
   def to_str(time) do
@@ -253,69 +273,85 @@ defmodule DailyployWeb.WorkspaceController do
           days = Date.days_in_month(start_date)
           Date.add(start_date, days - 1)
       end
-      {start_date, end_date}
+
+    {start_date, end_date}
   end
 
   defp get_project_ids(query_params) do
     case is_nil(String.first(query_params["project_ids"])) do
       true ->
         []
+
       false ->
         project_ids =
-          Enum.map(String.split(query_params["project_ids"], ","), fn x -> String.to_integer(x) end)
+          Enum.map(String.split(query_params["project_ids"], ","), fn x ->
+            String.to_integer(x)
+          end)
+
         [0 | project_ids]
     end
   end
 
   defp create_query(project_ids, workspace_id, start_date, end_date) do
     from task in Task,
-            join: project in Project,
-            on: task.project_id == project.id or task.project_id in ^project_ids,
-            left_join: time_track in TimeTracking,
-            on: time_track.task_id == task.id,
-            where:
-              project.workspace_id == ^workspace_id and
-                (fragment("?::date BETWEEN ? AND ?", task.start_datetime, ^start_date, ^end_date) or
-                   fragment("?::date BETWEEN ? AND ?", task.end_datetime, ^start_date, ^end_date) or
-                   fragment(
-                     "?::date <= ? AND ?::date >= ?",
-                     task.start_datetime,
-                     ^start_date,
-                     task.end_datetime,
-                     ^end_date
-                   ) or
-                   fragment(
-                     "?::date BETWEEN ? AND ?",
-                     time_track.start_time,
-                     ^start_date,
-                     ^end_date
-                   ) or
-                   fragment(
-                     "?::date BETWEEN ? AND ?",
-                     time_track.end_time,
-                     ^start_date,
-                     ^end_date
-                   ) or
-                   fragment(
-                     "?::date <= ? AND ?::date >= ?",
-                     time_track.start_time,
-                     ^start_date,
-                     time_track.end_time,
-                     ^end_date
-                   ))
+      join: project in Project,
+      on: task.project_id == project.id or task.project_id in ^project_ids,
+      left_join: time_track in TimeTracking,
+      on: time_track.task_id == task.id,
+      where:
+        project.workspace_id == ^workspace_id and
+          (fragment("?::date BETWEEN ? AND ?", task.start_datetime, ^start_date, ^end_date) or
+             fragment("?::date BETWEEN ? AND ?", task.end_datetime, ^start_date, ^end_date) or
+             fragment(
+               "?::date <= ? AND ?::date >= ?",
+               task.start_datetime,
+               ^start_date,
+               task.end_datetime,
+               ^end_date
+             ) or
+             fragment(
+               "?::date BETWEEN ? AND ?",
+               time_track.start_time,
+               ^start_date,
+               ^end_date
+             ) or
+             fragment(
+               "?::date BETWEEN ? AND ?",
+               time_track.end_time,
+               ^start_date,
+               ^end_date
+             ) or
+             fragment(
+               "?::date <= ? AND ?::date >= ?",
+               time_track.start_time,
+               ^start_date,
+               time_track.end_time,
+               ^end_date
+             ))
   end
 
   defp get_users(query_params, query, workspace_id) do
     user_ids =
-    case is_nil(String.first(query_params.user_id)) do
-      true ->
-        [0]
-      false ->
-        user_ids =
-          Enum.map(String.split(query_params.user_id, ","), fn x -> String.to_integer(x) end)
+      case is_nil(String.first(query_params.user_id)) do
+        true ->
+          [0]
+
+        false ->
+          user_ids =
+            Enum.map(String.split(query_params.user_id, ","), fn x -> String.to_integer(x) end)
+
           [0 | user_ids]
-    end
+      end
+
     UserModel.list_users(workspace_id, user_ids)
-        |> Repo.preload(tasks: {query, :project})
+    |> Repo.preload(tasks: {query, :project})
+  end
+
+  defp extract_time_track(task) do
+    query =
+      from time_tracking in TimeTracking,
+        where: time_tracking.task_id == ^task.id and time_tracking.status == "running"
+
+    List.first(Repo.all(query))
   end
 end

@@ -161,6 +161,7 @@ defmodule DailyployWeb.TaskView do
 
   def render("user_tasks.json", %{task: task}) do
     task = task |> Repo.preload([:status])
+
     %{
       id: task.id,
       name: task.name,
@@ -169,8 +170,25 @@ defmodule DailyployWeb.TaskView do
       status: render_one(task.status, TaskStatusView, "status.json"),
       priority: task.priority,
       duration: task.duration,
+      time_track_status: task.time_track_status,
+      time_track: render_one(task.time_track, TaskView, "task_running.json"),
       project: render_one(task.project, ProjectView, "project_user_task.json")
     }
+  end
+
+  def render("task_running.json", %{task: task}) do
+    if task != nil do
+      %{
+        id: task.id,
+        start_time: task.start_time,
+        status: task.status,
+        task_id: task.task_id
+      }
+    else
+      %{
+        time_track: nil
+      }
+    end
   end
 
   def render("task_with_user_and_project.json", %{task: task}) do
