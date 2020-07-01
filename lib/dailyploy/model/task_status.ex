@@ -9,22 +9,10 @@ defmodule Dailyploy.Model.TaskStatus do
     |> Repo.insert()
   end
 
-  # def list_all_categories() do
-  #   Repo.all(TaskStatus)
-  # end
-
   def update(task_category, params) do
     changeset = TaskStatus.changeset(task_category, params)
     Repo.update(changeset)
   end
-
-  # def query_already_existing_category(name) do
-  #   query =
-  #     from task_category in TaskStatus,
-  #       where: task_category.name == ^name
-
-  #   List.first(Repo.all(query))
-  # end
 
   def delete(task_category) do
     Repo.delete(task_category)

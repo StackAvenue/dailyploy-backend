@@ -2,6 +2,7 @@ defmodule DailyployWeb.Plug.TaskStatus do
   import Plug.Conn
   alias Dailyploy.Model.TaskStatus, as: TSModel
   alias Dailyploy.Model.Project, as: PModel
+
   def init(default), do: default
 
   def call(%{params: %{"id" => id}} = conn, _params) do

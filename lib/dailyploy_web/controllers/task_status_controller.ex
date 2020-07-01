@@ -5,7 +5,7 @@ defmodule DailyployWeb.TaskStatusController do
   import DailyployWeb.Validators.TaskStatus
   import DailyployWeb.Helpers
 
-  plug DailyployWeb.Plug.TaskStatus when action in [:create, :show, :delete, :update, :index]
+  plug DailyployWeb.Plug.TaskStatus
 
   def show(conn, %{"id" => id}) do
     case conn.status do

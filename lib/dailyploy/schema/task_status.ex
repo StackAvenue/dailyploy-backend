@@ -5,7 +5,7 @@ defmodule Dailyploy.Schema.TaskStatus do
   alias Dailyploy.Schema.Project
 
   schema "task_status" do
-    field :name, :string
+    field :name, :string, null: false
     belongs_to :workspace, Workspace
     belongs_to :project, Project
     timestamps()

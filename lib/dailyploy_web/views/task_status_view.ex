@@ -1,6 +1,5 @@
 defmodule DailyployWeb.TaskStatusView do
   use DailyployWeb, :view
-  # alias DailyployWeb.ProjectTaskListView
   alias DailyployWeb.{ProjectView, WorkspaceView, TaskStatusView}
 
   def render("task_status.json", %{task_status: task_status}) do

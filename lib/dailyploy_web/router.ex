@@ -86,8 +86,7 @@ defmodule DailyployWeb.Router do
       get "/priority_summary_report", ReportController, :priorities_summary_report
 
       resources "/projects", ProjectController do
-        resources "/task_status", TaskStatusController,
-          only: [:index, :create, :update, :delete, :show]
+        resources "/task_status", TaskStatusController
 
         resources "/tasks", TaskController, only: [:index, :create, :update, :delete]
         put "/make_as_complete/:id", TaskController, :task_completion
