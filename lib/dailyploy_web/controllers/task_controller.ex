@@ -21,7 +21,7 @@ defmodule DailyployWeb.TaskController do
   def index(conn, %{"project_id" => project_id}) do
     tasks =
       TaskModel.list_tasks(project_id)
-      |> Repo.preload([:members, :owner, :category, :time_tracks])
+      |> Repo.preload([:members, :owner, :category, :time_tracks, :task_status])
 
     render(conn, "index.json", tasks: tasks)
   end
@@ -37,7 +37,8 @@ defmodule DailyployWeb.TaskController do
     case TaskModel.create_task(task_params) do
       {:ok, %TaskSchema{} = task} ->
         task =
-          task |> Repo.preload([:members, :project, :owner, :category, :time_tracks, :status])
+          task
+          |> Repo.preload([:members, :project, :owner, :category, :time_tracks, :task_status])
 
         Task.async(fn ->
           Firebase.insert_operation(

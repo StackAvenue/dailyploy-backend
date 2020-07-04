@@ -1,6 +1,7 @@
 defmodule Dailyploy.Helper.Seed.Task do
   alias Dailyploy.Repo
   alias Dailyploy.Schema.Task
+  alias Dailyploy.Model.Task, as: TaskModel
   alias Dailyploy.Model.TaskStatus
 
   def seed_task() do
@@ -24,23 +25,25 @@ defmodule Dailyploy.Helper.Seed.Task do
     task_status =
       TaskStatus.get_running_status(task.project_id, task.project.workspace_id, "completed")
 
-    require IEx
-    IEx.pry()
+    insert_data_into_task(task, task_status)
   end
 
   defp prepare_running(task) do
     task_status =
       TaskStatus.get_running_status(task.project_id, task.project.workspace_id, "running")
 
-    require IEx
-    IEx.pry()
+    insert_data_into_task(task, task_status)
   end
 
   defp prepare_not_started(task) do
     task_status =
       TaskStatus.get_running_status(task.project_id, task.project.workspace_id, "not_started")
 
-    require IEx
-    IEx.pry()
+    insert_data_into_task(task, task_status)
+  end
+
+  defp insert_data_into_task(task, task_status) do
+    params = %{task_status_id: task_status.id}
+    TaskModel.update_task_status(task, params)
   end
 end

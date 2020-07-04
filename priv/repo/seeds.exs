@@ -12,8 +12,10 @@
 
 alias Dailyploy.Schema.Role
 alias Dailyploy.Helper.Seed.Status
+alias Dailyploy.Helper.Seed.Task
 alias Dailyploy.Repo
 
 # Repo.insert!(Role.changeset(%Role{}, %{name: "admin"}))
 # Repo.insert!(Role.changeset(%Role{}, %{name: "member"}))
 Status.seed_status()
+Task.seed_task()

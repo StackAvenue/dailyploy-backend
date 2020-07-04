@@ -19,8 +19,9 @@ defmodule Dailyploy.Schema.Task do
     field :end_datetime, :utc_datetime
     field :comments, :string
     field :priority, :string
+    field :status, :string
 
-    belongs_to :status, TaskStatus
+    belongs_to :task_status, TaskStatus
     belongs_to :owner, User
     belongs_to :project, Project
     has_many :time_tracks, TimeTracking
@@ -41,7 +42,7 @@ defmodule Dailyploy.Schema.Task do
       :project_id,
       :owner_id,
       :category_id,
-      :status_id,
+      :task_status_id,
       :priority
     ])
     |> validate_required([
@@ -50,11 +51,11 @@ defmodule Dailyploy.Schema.Task do
       :end_datetime,
       :project_id,
       :owner_id,
-      :status_id
+      :task_status_id
     ])
     |> assoc_constraint(:owner)
     |> assoc_constraint(:project)
-    |> assoc_constraint(:status)
+    |> assoc_constraint(:task_status)
     |> validate_inclusion(:priority, @task_priority)
     |> put_task_members(attrs["member_ids"])
   end
@@ -69,11 +70,11 @@ defmodule Dailyploy.Schema.Task do
       :comments,
       :project_id,
       :category_id,
-      :status_id,
+      :task_status_id,
       :priority
     ])
     |> assoc_constraint(:project)
-    |> assoc_constraint(:status)
+    |> assoc_constraint(:task_status)
     |> validate_inclusion(:priority, @task_priority)
     |> put_task_members(attrs["member_ids"])
   end
@@ -89,11 +90,11 @@ defmodule Dailyploy.Schema.Task do
         :comments,
         :project_id,
         :category_id,
-        :status_id,
+        :task_status_id,
         :priority
       ])
       |> assoc_constraint(:project)
-      |> assoc_constraint(:status)
+      |> assoc_constraint(:task_status)
       |> validate_inclusion(:priority, @task_priority)
 
     case Map.has_key?(attrs, "member_ids") do
