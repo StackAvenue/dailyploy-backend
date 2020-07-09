@@ -1,23 +1,34 @@
 defmodule DailyployWeb.TaskListsView do
   use DailyployWeb, :view
   # alias DailyployWeb.ProjectTaskListView
-  alias DailyployWeb.{UserView, ProjectTaskListView, TaskCategoryView}
+  alias DailyployWeb.{UserView, WorkspaceView, ProjectView}
 
-  def render("show.json", %{task_lists: task_lists}) do
+  def render("show.json", %{project_task_list: project_task_list}) do
     %{
-      id: task_lists.id,
-      name: task_lists.name,
-      description: task_lists.description,
-      estimation: task_lists.estimation,
-      status: task_lists.status,
-      priority: task_lists.priority,
-      owner_id: task_lists.owner_id,
-      category_id: task_lists.category_id,
-      project_task_list_id: task_lists.project_task_list_id,
-      owner: render_one(task_lists.owner, UserView, "user.json"),
-      category: render_one(task_lists.category, TaskCategoryView, "task_category.json"),
-      project_task_list:
-        render_one(task_lists.project_task_list, ProjectTaskListView, "show_project_list.json")
+      id: project_task_list.id,
+      name: project_task_list.name,
+      start_date: project_task_list.start_date,
+      end_date: project_task_list.end_date,
+      description: project_task_list.description,
+      color_code: project_task_list.color_code,
+      workspace_id: project_task_list.workspace_id,
+      creator_id: project_task_list.creator_id,
+      project_id: project_task_list.project_id,
+      project: render_one(project_task_list.project, ProjectView, "show_project.json"),
+      workspace: render_one(project_task_list.workspace, WorkspaceView, "workspace_task.json"),
+      creator: render_one(project_task_list.creator, UserView, "user.json")
+    }
+  end
+
+  def render("show_project_list.json", %{project_task_list: project_task_list}) do
+    %{
+      id: project_task_list.id,
+      name: project_task_list.name,
+      start_date: project_task_list.start_date,
+      end_date: project_task_list.end_date,
+      workspace_id: project_task_list.workspace_id,
+      creator_id: project_task_list.creator_id,
+      project_id: project_task_list.project_id
     }
   end
 end

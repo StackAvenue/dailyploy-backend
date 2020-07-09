@@ -1,22 +1,22 @@
 defmodule DailyployWeb.TaskListsController do
   use DailyployWeb, :controller
   alias Dailyploy.Helper.TaskLists
-  alias Dailyploy.Model.TaskLists, as: TLModel
+  alias Dailyploy.Model.TaskLists, as: PTModel
   import DailyployWeb.Validators.TaskLists
   import DailyployWeb.Helpers
 
-  plug :load_task_list when action in [:update, :delete, :show]
+  plug :load_project_task_list when action in [:update, :delete, :show]
 
   def create(conn, params) do
     case conn.status do
       nil ->
-        changeset = verify_task_list(params)
+        changeset = verify_project_task_list(params)
 
         with {:extract, {:ok, data}} <- {:extract, extract_changeset_data(changeset)},
-             {:create, {:ok, task_lists}} <- {:create, TaskLists.create(data)} do
+             {:create, {:ok, project_task_list}} <- {:create, TaskLists.create(data)} do
           conn
           |> put_status(200)
-          |> render("show.json", %{task_lists: task_lists})
+          |> render("show.json", %{project_task_list: project_task_list})
         else
           {:extract, {:error, error}} ->
             send_error(conn, 400, error)
@@ -31,10 +31,10 @@ defmodule DailyployWeb.TaskListsController do
     end
   end
 
-  defp load_task_list(%{params: %{"id" => id}} = conn, _params) do
+  defp load_project_task_list(%{params: %{"id" => id}} = conn, _params) do
     {id, _} = Integer.parse(id)
 
-    case TLModel.get(id) do
+    case PTModel.get(id) do
       {:ok, project_task_list} ->
         assign(conn, :project_task_list, project_task_list)
 

@@ -7,6 +7,7 @@ defmodule Dailyploy.Schema.Task do
   alias Dailyploy.Schema.Project
   alias Dailyploy.Schema.User
   alias Dailyploy.Schema.TaskCategory
+  alias Dailyploy.Schema.TaskListTasks
   alias Dailyploy.Schema.TimeTracking
   alias Dailyploy.Schema.TaskComment
   alias Dailyploy.Schema.WorkspaceTaskCategory
@@ -19,11 +20,13 @@ defmodule Dailyploy.Schema.Task do
     field :start_datetime, :utc_datetime
     field :end_datetime, :utc_datetime
     field :comments, :string
+    field :estimation, :integer
     field :status, :string, default: "not_started"
     field :priority, :string
 
     belongs_to :owner, User
     belongs_to :project, Project
+    belongs_to :task_list_tasks, TaskListTasks
     has_many :time_tracks, TimeTracking
     has_many :task_comments, TaskComment
     many_to_many :members, User, join_through: "user_tasks", on_replace: :delete
@@ -38,16 +41,19 @@ defmodule Dailyploy.Schema.Task do
       :name,
       :start_datetime,
       :end_datetime,
+      :task_list_tasks_id,
       :comments,
       :project_id,
       :owner_id,
       :category_id,
       :status,
+      :estimation,
       :priority
     ])
     |> validate_required([:name, :start_datetime, :end_datetime, :project_id, :owner_id])
     |> assoc_constraint(:owner)
     |> assoc_constraint(:project)
+    |> assoc_constraint(:task_list_tasks)
     |> validate_inclusion(:status, @task_status)
     |> validate_inclusion(:priority, @task_priority)
     |> put_task_members(attrs["member_ids"])
@@ -61,12 +67,14 @@ defmodule Dailyploy.Schema.Task do
       :start_datetime,
       :end_datetime,
       :comments,
+      :task_list_tasks_id,
       :project_id,
       :category_id,
       :status,
       :priority
     ])
     |> assoc_constraint(:project)
+    |> assoc_constraint(:task_list_tasks)
     |> validate_inclusion(:status, @task_status)
     |> validate_inclusion(:priority, @task_priority)
     |> put_task_members(attrs["member_ids"])
@@ -83,10 +91,12 @@ defmodule Dailyploy.Schema.Task do
         :comments,
         :project_id,
         :category_id,
+        :task_list_tasks_id,
         :status,
         :priority
       ])
       |> assoc_constraint(:project)
+      |> assoc_constraint(:task_list_tasks)
       |> validate_inclusion(:status, @task_status)
       |> validate_inclusion(:priority, @task_priority)
 
