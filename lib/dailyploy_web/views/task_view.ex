@@ -88,6 +88,8 @@ defmodule DailyployWeb.TaskView do
   end
 
   def render("task_with_user.json", %{task: task}) do
+    task = Repo.preload(task, :task_status)
+
     %{
       id: task.id,
       name: task.name,
