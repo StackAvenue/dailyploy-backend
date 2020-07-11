@@ -9,13 +9,32 @@ defmodule Dailyploy.Model.TaskStatus do
     |> Repo.insert()
   end
 
-  def update(task_category, params) do
-    changeset = TaskStatus.changeset(task_category, params)
+  def update(task_status, params) do
+    changeset = TaskStatus.changeset(task_status, params)
+
+    changeset =
+      case task_status.name == "not_started" do
+        true ->
+          Ecto.Changeset.add_error(changeset, :default_status, "Default status cannot be updated")
+
+        false ->
+          changeset
+      end
+
     Repo.update(changeset)
   end
 
-  def delete(task_category) do
-    Repo.delete(task_category)
+  def delete(task_status) do
+    changeset = TaskStatus.changeset(task_status, %{})
+
+    case task_status.name == "not_started" do
+      true ->
+        {:error,
+         Ecto.Changeset.add_error(changeset, :default_status, "Default status cannot be updated")}
+
+      false ->
+        Repo.delete(task_status)
+    end
   end
 
   def get(id) when is_integer(id) do

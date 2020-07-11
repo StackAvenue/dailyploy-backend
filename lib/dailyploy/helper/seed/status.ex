@@ -4,6 +4,7 @@ defmodule Dailyploy.Helper.Seed.Status do
   alias Dailyploy.Model.TaskStatus
 
   @task_status ~w(completed running not_started)s
+  @project_status ~w(not_started)s
 
   def seed_status() do
     projects = Repo.all(Project)
@@ -21,5 +22,9 @@ defmodule Dailyploy.Helper.Seed.Status do
       {:ok, task_status} -> :ok
       {:error, task_status} -> :ignore
     end
+  end
+
+  def seed_status_in_project(project) do
+    Enum.each(@project_status, fn task_status -> insert_status(task_status, project) end)
   end
 end
