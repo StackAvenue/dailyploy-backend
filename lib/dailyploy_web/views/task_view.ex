@@ -172,7 +172,8 @@ defmodule DailyployWeb.TaskView do
       duration: task.duration,
       time_track_status: task.time_track_status,
       time_track: render_one(task.time_track, TaskView, "task_running.json"),
-      project: render_one(task.project, ProjectView, "project_user_task.json")
+      project: render_one(task.project, ProjectView, "project_user_task.json"),
+      time_tracked: render_many(task.time_tracks, TimeTrackingView, "task_with_track_time.json")
     }
   end
 
