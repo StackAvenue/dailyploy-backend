@@ -23,6 +23,7 @@ defmodule DailyployWeb do
 
       import Plug.Conn
       import DailyployWeb.Gettext
+      use ScoutApm.Instrumentation
       alias DailyployWeb.Router.Helpers, as: Routes
     end
   end

@@ -23,6 +23,9 @@ config :dailyploy, DailyployWeb.Endpoint,
   check_origin: false,
   watchers: []
 
+config :scout_apm,
+  dev_trace: true
+
 # config :dailyploy, DailyployWeb.EmailConfig,
 #   api_key: "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",
 #   api_keyID: "nYWCtRLIRxC3BtlkZ3u01A"
