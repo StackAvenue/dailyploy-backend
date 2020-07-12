@@ -21,12 +21,11 @@ defmodule DailyployWeb.TaskController do
   def index(conn, %{"project_id" => project_id}) do
     tasks =
       TaskModel.list_tasks(project_id)
-      |> Repo.preload([:members, :owner, :category, :time_tracks])
+      |> Repo.preload([:members, :owner, :category, :time_tracks, :task_status])
 
     render(conn, "index.json", tasks: tasks)
   end
 
-  @spec create(Plug.Conn.t(), map) :: Plug.Conn.t()
   def create(conn, %{"project_id" => project_id, "task" => task_params}) do
     user = Guardian.Plug.current_resource(conn)
 
@@ -37,12 +36,16 @@ defmodule DailyployWeb.TaskController do
 
     case TaskModel.create_task(task_params) do
       {:ok, %TaskSchema{} = task} ->
-        task = task |> Repo.preload([:members, :project, :owner, :category, :time_tracks])
+        task =
+          task
+          |> Repo.preload([:members, :project, :owner, :category, :time_tracks, :task_status])
 
-        Firebase.insert_operation(
-          Poison.encode(task),
-          "task_created/#{conn.params["workspace_id"]}/#{task.id}"
-        )
+        Task.async(fn ->
+          Firebase.insert_operation(
+            Poison.encode(task),
+            "task_created/#{conn.params["workspace_id"]}/#{task.id}"
+          )
+        end)
 
         Task.async(fn ->
           notification_create(task, "created")

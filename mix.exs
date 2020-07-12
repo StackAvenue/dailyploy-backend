@@ -28,7 +28,8 @@ defmodule Dailyploy.MixProject do
         :arc_ecto,
         :httpotion,
         :quantum,
-        :scrivener_ecto
+        :scrivener_ecto,
+        :scout_apm
       ]
     ]
   end
@@ -65,6 +66,7 @@ defmodule Dailyploy.MixProject do
       {:params, "~> 2.0"},
       {:nimble_csv, "~> 0.6"},
       {:csv, "~> 2.3"},
+      {:scout_apm, "~> 1.0"},
 
       # csv upload
       {:arc, "~> 0.11.0"},

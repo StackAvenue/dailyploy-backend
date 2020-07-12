@@ -1,6 +1,6 @@
 defmodule Dailyploy.Helper.Firebase do
   @production "https://dailyploy-56283.firebaseio.com"
-  @test "https://dailyploy-test.firebaseio.com"
+  # @test "https://dailyploy-test.firebaseio.com"
 
   def insert_operation({:ok, json_data}, prefix) do
     Task.async(fn ->
@@ -9,8 +9,10 @@ defmodule Dailyploy.Helper.Firebase do
   end
 
   defp insert_into_firebase(json_data, prefix) do
-    Tesla.put!(@production <> "/#{prefix}.json", json_data,
-      headers: [{"content-type", "application/json"}]
-    )
+    Task.async(fn ->
+      Tesla.put!(@production <> "/#{prefix}.json", json_data,
+        headers: [{"content-type", "application/json"}]
+      )
+    end)
   end
 end

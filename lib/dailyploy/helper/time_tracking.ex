@@ -1,13 +1,14 @@
 defmodule Dailyploy.Helper.TimeTracking do
   alias Dailyploy.Repo
-  alias Dailyploy.Schema.UserTask
-  alias Dailyploy.Schema.Project
-  alias Dailyploy.Schema.TimeTracking
-  alias Dailyploy.Schema.Task
-  alias Dailyploy.Helper.Firebase
+  # alias Dailyploy.Schema.UserTask
+  # alias Dailyploy.Schema.Project
+  # alias Dailyploy.Schema.TimeTracking
+  # alias Dailyploy.Schema.Task
+  alias Dailyploy.Model.TaskStatus
+  # alias Dailyploy.Helper.Firebase
   alias Dailyploy.Model.TimeTracking, as: TTModel
   alias Dailyploy.Model.Task, as: TaskModel
-  import Ecto.Query
+  # import Ecto.Query
   import DailyployWeb.Helpers
 
   def start_running(params) do
@@ -46,8 +47,28 @@ defmodule Dailyploy.Helper.TimeTracking do
   end
 
   defp verify_running({:ok, running_status}) do
-    task = TaskModel.get_task!(running_status.task_id)
-    params = %{"status" => "running"}
+    task = TaskModel.get_task!(running_status.task_id) |> Repo.preload([:project])
+
+    task_status =
+      TaskStatus.get_running_status(task.project_id, task.project.workspace_id, "running")
+
+    status_id =
+      case task_status do
+        nil ->
+          params = %{
+            workspace_id: task.project.workspace_id,
+            project_id: task.project_id,
+            name: "running"
+          }
+
+          {:ok, status} = TaskStatus.create(params)
+          status.id
+
+        _anything ->
+          task_status.id
+      end
+
+    params = %{"status_id" => status_id}
 
     case TaskModel.update_task_status(task, params) do
       {:ok, _task} ->

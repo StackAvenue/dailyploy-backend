@@ -8,15 +8,15 @@ defmodule DailyployWeb.ProjectController do
   alias Dailyploy.Model.Workspace, as: WorkspaceModel
   alias Dailyploy.Schema.Workspace
   alias Dailyploy.Model.UserWorkspace, as: UserWorkspaceModel
+  alias Dailyploy.Helper.Seed.Status
   import DailyployWeb.Validators.Contact
   import DailyployWeb.Helpers
 
   plug Auth.Pipeline
-  plug :load_workspace_by_user
+  # plug :load_workspace_by_user
   plug :load_user_project_in_workspace when action in [:show]
   plug :check_user_project_in_workspace when action in [:delete]
 
-  @spec index(Plug.Conn.t(), any) :: Plug.Conn.t()
   def index(conn, params) do
     query_params = map_to_atom(params)
 
@@ -26,7 +26,6 @@ defmodule DailyployWeb.ProjectController do
     render(conn, "index.json", projects: projects)
   end
 
-  @spec create(Plug.Conn.t(), map) :: Plug.Conn.t()
   def create(conn, %{"workspace_id" => workspace_id, "project" => project_params} = params) do
     user = Guardian.Plug.current_resource(conn)
 
@@ -37,6 +36,8 @@ defmodule DailyployWeb.ProjectController do
 
     case ProjectModel.create_project(project_params) do
       {:ok, %Project{} = project} ->
+        Status.seed_status_in_project(project)
+
         contacts =
           with true <- Map.has_key?(params["project"], "contacts") do
             add_contacts(params["project"]["contacts"], project)
@@ -48,19 +49,16 @@ defmodule DailyployWeb.ProjectController do
         render(conn, "show_create.json", project: project)
 
       {:error, project} ->
-        conn
-        |> put_status(422)
-        |> render("changeset_error.json", %{errors: project.errors})
+        error = extract_changeset_error(project)
+        send_error(conn, 400, error)
     end
   end
 
-  @spec show(Plug.Conn.t(), any) :: Plug.Conn.t()
   def show(conn, _) do
     project = ProjectModel.get_user_projects(conn.assigns.project)
     render(conn, "show.json", project: project)
   end
 
-  @spec update(Plug.Conn.t(), map) :: Plug.Conn.t()
   def update(conn, %{"id" => id, "project" => project_params}) do
     project = ProjectModel.get_project!(id)
 
@@ -133,7 +131,7 @@ defmodule DailyployWeb.ProjectController do
 
       # projects = ProjectModel.list_projects()
       # project_id_list = []
-      # project_ids = Enum.map(projects, fn project -> project.workspace_id == workspace_id 
+      # project_ids = Enum.map(projects, fn project -> project.workspace_id == workspace_id
       #   Enum.concat(project_id_list, [project.id])
       # end)
       Map.replace!(conn, :query_params, ids)
