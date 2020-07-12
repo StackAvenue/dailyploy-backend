@@ -13,10 +13,10 @@ defmodule DailyployWeb.TaskListTasksController do
         changeset = verify_task_list(params)
 
         with {:extract, {:ok, data}} <- {:extract, extract_changeset_data(changeset)},
-             {:create, {:ok, task_lists}} <- {:create, TaskListTasks.create(data)} do
+             {:create, {:ok, task_list_tasks}} <- {:create, TaskListTasks.create(data)} do
           conn
           |> put_status(200)
-          |> render("show.json", %{task_lists: task_lists})
+          |> render("show.json", %{task_list_tasks: task_list_tasks})
         else
           {:extract, {:error, error}} ->
             send_error(conn, 400, error)

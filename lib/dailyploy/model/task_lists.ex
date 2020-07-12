@@ -1,5 +1,5 @@
 defmodule Dailyploy.Model.TaskLists do
-  # import Ecto.Query
+  import Ecto.Query
   alias Dailyploy.Repo
   alias Dailyploy.Schema.TaskLists
 
@@ -29,12 +29,25 @@ defmodule Dailyploy.Model.TaskLists do
     end
   end
 
-  # def get_all(project) do
-  #   query =
-  #     from task_lists in TaskLists,
-  #       where: task_lists.project_id == ^project.id,
-  #       select: task_lists
+  def get_all(%{page_size: page_size, page_number: page_number}, preloads, project_id) do
+    query =
+      from task_list in TaskLists,
+        where: task_list.project_id == ^project_id
 
-  #   Repo.all(query) |> Repo.preload(:project)
-  # end
+    task_lists_data =
+      query |> order_by(:id) |> Repo.paginate(page: page_number, page_size: page_size)
+
+    task_lists_with_preloads = task_lists_data.entries |> Repo.preload(preloads)
+    paginated_response(task_lists_with_preloads, task_lists_data)
+  end
+
+  defp paginated_response(data, pagination_data) do
+    %{
+      entries: data,
+      page_number: pagination_data.page_number,
+      page_size: pagination_data.page_size,
+      total_entries: pagination_data.total_entries,
+      total_pages: pagination_data.total_pages
+    }
+  end
 end
