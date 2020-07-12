@@ -91,6 +91,12 @@ defmodule Dailyploy.Model.Task do
     |> Repo.insert()
   end
 
+  def create_task_list(attrs \\ %{}) do
+    %Task{}
+    |> Task.task_list_changeset(attrs)
+    |> Repo.insert()
+  end
+
   def update_task(task, attrs) do
     task
     |> Task.update_changeset(attrs)

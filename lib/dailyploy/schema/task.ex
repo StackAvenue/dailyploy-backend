@@ -10,7 +10,7 @@ defmodule Dailyploy.Schema.Task do
   alias Dailyploy.Schema.TaskListTasks
   alias Dailyploy.Schema.TimeTracking
   alias Dailyploy.Schema.TaskComment
-  alias Dailyploy.Schema.WorkspaceTaskCategory
+  alias Dailyploy.Schema.TaskListTasks
 
   @task_status ~w(completed running not_started)s
   @task_priority ~w(low medium high no_priority)s
@@ -36,27 +36,58 @@ defmodule Dailyploy.Schema.Task do
 
   @doc false
   def changeset(task, attrs) do
-    task
-    |> cast(attrs, [
-      :name,
-      :start_datetime,
-      :end_datetime,
-      :task_list_tasks_id,
-      :comments,
-      :project_id,
-      :owner_id,
-      :category_id,
-      :status,
-      :estimation,
-      :priority
-    ])
-    |> validate_required([:name, :start_datetime, :end_datetime, :project_id, :owner_id])
-    |> assoc_constraint(:owner)
-    |> assoc_constraint(:project)
-    |> assoc_constraint(:task_list_tasks)
-    |> validate_inclusion(:status, @task_status)
-    |> validate_inclusion(:priority, @task_priority)
-    |> put_task_members(attrs["member_ids"])
+    task =
+      task
+      |> cast(attrs, [
+        :name,
+        :start_datetime,
+        :end_datetime,
+        :task_list_tasks_id,
+        :comments,
+        :project_id,
+        :owner_id,
+        :category_id,
+        :status,
+        :estimation,
+        :priority
+      ])
+      |> validate_required([:name, :start_datetime, :end_datetime, :project_id, :owner_id])
+      |> assoc_constraint(:owner)
+      |> assoc_constraint(:project)
+      |> assoc_constraint(:task_list_tasks)
+      |> validate_inclusion(:status, @task_status)
+      |> validate_inclusion(:priority, @task_priority)
+      |> put_task_members(attrs["member_ids"])
+  end
+
+  def task_list_changeset(task, attrs) do
+    task =
+      task
+      |> cast(attrs, [
+        :name,
+        :start_datetime,
+        :end_datetime,
+        :task_list_tasks_id,
+        :comments,
+        :project_id,
+        :owner_id,
+        :category_id,
+        :status,
+        :estimation,
+        :priority
+      ])
+      |> validate_required([:name, :start_datetime, :end_datetime, :project_id, :owner_id])
+      |> assoc_constraint(:owner)
+      |> assoc_constraint(:project)
+      |> assoc_constraint(:task_list_tasks)
+      |> foreign_key_constraint(:task_list_tasks)
+      |> validate_inclusion(:status, @task_status)
+      |> validate_inclusion(:priority, @task_priority)
+
+    case Map.has_key?(attrs, "member_ids") do
+      true -> put_task_members(task, attrs["member_ids"])
+      false -> task
+    end
   end
 
   def update_changeset(task, attrs) do

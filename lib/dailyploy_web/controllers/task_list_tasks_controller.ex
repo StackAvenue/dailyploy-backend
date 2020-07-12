@@ -5,7 +5,7 @@ defmodule DailyployWeb.TaskListTasksController do
   import DailyployWeb.Validators.TaskListTasks
   import DailyployWeb.Helpers
 
-  plug :load_task_list when action in [:update, :delete, :show]
+  plug :load_task_list when action in [:update, :delete, :show, :move_task]
 
   def create(conn, params) do
     case conn.status do
@@ -31,12 +31,64 @@ defmodule DailyployWeb.TaskListTasksController do
     end
   end
 
+  def delete(conn, _params) do
+    case conn.status do
+      nil ->
+        with {:delete, {:ok, task_list_tasks}} <-
+               {:delete, TLModel.delete(conn.assigns.task_list_tasks)} do
+          conn
+          |> put_status(200)
+          |> render("show.json", %{task_list_tasks: task_list_tasks})
+        else
+          {:delete, {:error, error}} ->
+            require IEx
+            IEx.pry()
+            send_error(conn, 400, error)
+        end
+
+      404 ->
+        conn
+        |> send_error(404, "Resource Not Found")
+    end
+  end
+
+  def move_task(conn, _params) do
+    case conn.status do
+      nil ->
+        with {:create, {:ok, _task}} <- {:create, TLModel.move_task(conn.assigns.task_list_tasks)} do
+          conn
+          |> put_status(200)
+          |> render("show.json", %{task_list_tasks: conn.assigns.task_list_tasks})
+        else
+          {:create, {:error, error}} ->
+            send_error(conn, 400, extract_changeset_error(error))
+        end
+
+      404 ->
+        conn
+        |> send_error(404, "Resource Not Found")
+    end
+  end
+
+  def show(conn, _params) do
+    case conn.status do
+      nil ->
+        conn
+        |> put_status(200)
+        |> render("show.json", %{task_list_tasks: conn.assigns.task_list_tasks})
+
+      404 ->
+        conn
+        |> send_error(404, "Resource Not Found")
+    end
+  end
+
   defp load_task_list(%{params: %{"id" => id}} = conn, _params) do
     {id, _} = Integer.parse(id)
 
     case TLModel.get(id) do
-      {:ok, project_task_list} ->
-        assign(conn, :project_task_list, project_task_list)
+      {:ok, task_list_tasks} ->
+        assign(conn, :task_list_tasks, task_list_tasks)
 
       {:error, _message} ->
         conn

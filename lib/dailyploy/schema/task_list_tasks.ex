@@ -21,21 +21,26 @@ defmodule Dailyploy.Schema.TaskListTasks do
     timestamps()
   end
 
-  @required_params ~w(name owner_id task_lists_id)a
-  @optional_params ~w(description estimation status priority category_id task_id)a
+  @required_params ~w(name task_lists_id)a
+  @optional_params ~w(description owner_id estimation status priority category_id task_id)a
 
   @permitted_params @required_params ++ @optional_params
 
   def changeset(%__MODULE__{} = task_list_tasks, attrs) do
-    task_list_tasks
-    |> cast(attrs, @permitted_params)
-    |> validate_required(@required_params)
-    |> assoc_constraint(:owner)
-    |> assoc_constraint(:task_lists)
-    |> assoc_constraint(:task)
-    |> assoc_constraint(:category)
-    |> validate_inclusion(:status, @task_status)
-    |> validate_inclusion(:priority, @task_priority)
+    asd =
+      task_list_tasks
+      |> cast(attrs, @permitted_params)
+      |> validate_required(@required_params)
+      |> assoc_constraint(:owner)
+      |> assoc_constraint(:task_lists)
+      |> assoc_constraint(:task)
+      |> assoc_constraint(:category)
+      |> validate_inclusion(:status, @task_status)
+      |> validate_inclusion(:priority, @task_priority)
+      |> foreign_key_constraint(:task_id, name: :task_list_tasks_task_id_fkey)
+
+    require IEx
+    IEx.pry()
   end
 
   def task_status() do
