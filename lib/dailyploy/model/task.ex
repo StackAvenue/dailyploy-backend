@@ -10,6 +10,7 @@ defmodule Dailyploy.Model.Task do
   alias Dailyploy.Schema.TimeTracking
   alias Dailyploy.Model.TimeTracking, as: TTModel
   alias Dailyploy.Model.Task, as: TaskModel
+  alias Dailyploy.Model.TaskListTasks, as: TLTModel
   alias Dailyploy.Model.UserWorkspaceSetting, as: UWSModel
 
   def list_tasks(project_id) do
@@ -97,19 +98,32 @@ defmodule Dailyploy.Model.Task do
     |> Repo.insert()
   end
 
+  def update_task_list(task, attrs \\ %{}) do
+    update_tlt(task, attrs)
+
+    task
+    |> Task.task_list_changeset(attrs)
+    |> Repo.update()
+  end
+
   def update_task(task, attrs) do
+    update_tlt(task, attrs)
+
     task
     |> Task.update_changeset(attrs)
     |> Repo.update()
   end
 
   def update_task_status(task, attrs) do
+    update_tlt(task, attrs)
+
     task
     |> Task.update_status_changeset(attrs)
     |> Repo.update()
   end
 
   def mark_task_complete(task, attrs) do
+    update_tlt(task, attrs)
     time_tracks = TTModel.find_with_task_id(task.id)
 
     case is_nil(time_tracks) do
@@ -127,6 +141,17 @@ defmodule Dailyploy.Model.Task do
         task
         |> Task.update_status_changeset(attrs)
         |> Repo.update()
+    end
+  end
+
+  def update_tlt(task, attrs) do
+    case task.task_list_tasks_id do
+      nil ->
+        :nothing
+
+      _id ->
+        task = Repo.preload(task, [:task_list_tasks])
+        TLTModel.update_task_list(task.task_list_tasks, attrs)
     end
   end
 

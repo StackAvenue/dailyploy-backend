@@ -59,9 +59,4 @@ defmodule DailyployWeb.UserView do
       email: user.email
     }
   end
-
-  def render("user_project_task_listing.json", params) do
-    require IEx
-    IEx.pry()
-  end
 end

@@ -11,7 +11,7 @@ defmodule Dailyploy.Repo.Migrations.AddTaskLists do
       add :priority, :string
 
       add :task_lists_id, references(:task_lists, on_delete: :delete_all), null: false
-      add :task_id, references(:tasks, on_delete: :restrict)
+      add :task_id, references(:tasks, on_delete: :delete_all)
       add :estimation, :integer
 
       timestamps()
@@ -19,7 +19,7 @@ defmodule Dailyploy.Repo.Migrations.AddTaskLists do
 
     alter table(:tasks) do
       add :estimation, :integer
-      add :task_list_tasks_id, references(:task_list_tasks, on_delete: :restrict)
+      add :task_list_tasks_id, references(:task_list_tasks, on_delete: :delete_all)
     end
   end
 end

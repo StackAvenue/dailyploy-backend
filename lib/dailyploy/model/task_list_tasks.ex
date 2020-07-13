@@ -14,6 +14,20 @@ defmodule Dailyploy.Model.TaskListTasks do
   end
 
   def update(%TaskListTasks{} = task_list_tasks, params) do
+    case task_list_tasks.task_id do
+      nil ->
+        changeset = TaskListTasks.changeset(task_list_tasks, params)
+        Repo.update(changeset)
+
+      _id ->
+        task_list_tasks = Repo.preload(task_list_tasks, [:task])
+        Task.update_task_list(task_list_tasks.task, params)
+        changeset = TaskListTasks.changeset(task_list_tasks, params)
+        Repo.update(changeset)
+    end
+  end
+
+  def update_task_list(%TaskListTasks{} = task_list_tasks, params) do
     changeset = TaskListTasks.changeset(task_list_tasks, params)
     Repo.update(changeset)
   end
@@ -31,7 +45,13 @@ defmodule Dailyploy.Model.TaskListTasks do
   end
 
   def move_task(task_list) do
-    Task.create_task_list(Map.from_struct(task_list) |> extract_params())
+    case Task.create_task_list(Map.from_struct(task_list) |> extract_params()) do
+      {:ok, task} ->
+        update(task_list, %{task_id: task.id})
+
+      {:error, error} ->
+        {:error, error}
+    end
   end
 
   defp extract_params(params) do

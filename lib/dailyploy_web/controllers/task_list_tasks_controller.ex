@@ -41,9 +41,25 @@ defmodule DailyployWeb.TaskListTasksController do
           |> render("show.json", %{task_list_tasks: task_list_tasks})
         else
           {:delete, {:error, error}} ->
-            require IEx
-            IEx.pry()
             send_error(conn, 400, error)
+        end
+
+      404 ->
+        conn
+        |> send_error(404, "Resource Not Found")
+    end
+  end
+
+  def update(conn, params) do
+    case conn.status do
+      nil ->
+        with {:update, {:ok, task_list_tasks}} <-
+               {:update, TLModel.update(conn.assigns.task_list_tasks, params)} do
+          conn
+          |> put_status(200)
+          |> render("show.json", %{task_list_tasks: task_list_tasks})
+        else
+          {:update, {:error, error}} -> send_error(conn, 400, error)
         end
 
       404 ->

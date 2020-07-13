@@ -27,20 +27,15 @@ defmodule Dailyploy.Schema.TaskListTasks do
   @permitted_params @required_params ++ @optional_params
 
   def changeset(%__MODULE__{} = task_list_tasks, attrs) do
-    asd =
-      task_list_tasks
-      |> cast(attrs, @permitted_params)
-      |> validate_required(@required_params)
-      |> assoc_constraint(:owner)
-      |> assoc_constraint(:task_lists)
-      |> assoc_constraint(:task)
-      |> assoc_constraint(:category)
-      |> validate_inclusion(:status, @task_status)
-      |> validate_inclusion(:priority, @task_priority)
-      |> foreign_key_constraint(:task_id, name: :task_list_tasks_task_id_fkey)
-
-    require IEx
-    IEx.pry()
+    task_list_tasks
+    |> cast(attrs, @permitted_params)
+    |> validate_required(@required_params)
+    |> assoc_constraint(:owner)
+    |> assoc_constraint(:task_lists)
+    |> assoc_constraint(:task)
+    |> assoc_constraint(:category)
+    |> validate_inclusion(:status, @task_status)
+    |> validate_inclusion(:priority, @task_priority)
   end
 
   def task_status() do
