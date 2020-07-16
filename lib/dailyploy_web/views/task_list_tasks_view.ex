@@ -1,7 +1,7 @@
 defmodule DailyployWeb.TaskListTasksView do
   use DailyployWeb, :view
   # alias DailyployWeb.ProjectTaskListView
-  alias DailyployWeb.{UserView, TaskListsView, TaskCategoryView}
+  alias DailyployWeb.{UserView, TaskListTasksView, TaskListsView, TaskCategoryView}
 
   def render("show.json", %{task_list_tasks: task_list_tasks}) do
     %{
@@ -17,6 +17,16 @@ defmodule DailyployWeb.TaskListTasksView do
       owner: render_one(task_list_tasks.owner, UserView, "user.json"),
       category: render_one(task_list_tasks.category, TaskCategoryView, "task_category.json"),
       task_lists: render_one(task_list_tasks.task_lists, TaskListsView, "show_project_list.json")
+    }
+  end
+
+  def render("index.json", %{task_lists: task_lists}) do
+    %{
+      entries: render_many(task_lists.entries, TaskListTasksView, "show.json"),
+      page_number: task_lists.page_number,
+      page_size: task_lists.page_size,
+      total_entries: task_lists.total_entries,
+      total_pages: task_lists.total_pages
     }
   end
 end

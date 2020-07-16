@@ -7,6 +7,26 @@ defmodule DailyployWeb.TaskListTasksController do
 
   plug :load_task_list when action in [:update, :delete, :show, :move_task]
 
+  def index(conn, params) do
+    changeset = verify_index_params(params)
+
+    case conn.status do
+      nil ->
+        {:extract, {:ok, data}} = {:extract, extract_changeset_data(changeset)}
+
+        {:list, task_lists} =
+          {:list, TLModel.get_all(data, [:owner, :category, :task_lists], data.task_lists_id)}
+
+        conn
+        |> put_status(200)
+        |> render("index.json", %{task_lists: task_lists})
+
+      404 ->
+        conn
+        |> send_error(404, "Resource Not Found")
+    end
+  end
+
   def create(conn, params) do
     case conn.status do
       nil ->

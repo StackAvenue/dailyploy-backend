@@ -17,7 +17,8 @@ defmodule DailyployWeb.Validators.TaskListTasks do
   defparams(
     verify_index_params(%{
       page_size: :integer,
-      page_number: :integer
+      page_number: :integer,
+      task_lists_id!: :integer
     })
   )
 end
