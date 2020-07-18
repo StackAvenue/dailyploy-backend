@@ -1,4 +1,4 @@
-defmodule Dailyploy.Repo.Migrations.AddTaskLists do
+defmodule Dailyploy.Repo.Migrations.CreateTaskListsTasks do
   use Ecto.Migration
 
   def change do

@@ -30,6 +30,6 @@ defmodule Dailyploy.Schema.TaskLists do
     |> assoc_constraint(:workspace)
     |> assoc_constraint(:creator)
     |> assoc_constraint(:project)
-    |> unique_constraint(:project, name: :unique_project_index)
+    |> unique_constraint(:project, name: :unique_name_per_project)
   end
 end
