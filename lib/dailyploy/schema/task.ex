@@ -52,7 +52,14 @@ defmodule Dailyploy.Schema.Task do
         :estimation,
         :priority
       ])
-      |> validate_required([:name, :start_datetime, :end_datetime, :project_id, :owner_id, :task_status_id])
+      |> validate_required([
+        :name,
+        :start_datetime,
+        :end_datetime,
+        :project_id,
+        :owner_id,
+        :task_status_id
+      ])
       |> assoc_constraint(:owner)
       |> assoc_constraint(:project)
       |> assoc_constraint(:task_list_tasks)
@@ -77,7 +84,14 @@ defmodule Dailyploy.Schema.Task do
         :estimation,
         :priority
       ])
-      |> validate_required([:name, :start_datetime, :end_datetime, :project_id, :owner_id, :task_status_id])
+      |> validate_required([
+        :name,
+        :start_datetime,
+        :end_datetime,
+        :project_id,
+        :owner_id,
+        :task_status_id
+      ])
       |> assoc_constraint(:owner)
       |> assoc_constraint(:project)
       |> assoc_constraint(:task_list_tasks)
@@ -93,25 +107,25 @@ defmodule Dailyploy.Schema.Task do
 
   def update_changeset(task, attrs) do
     task =
-    task
-    |> Repo.preload([:members])
-    |> cast(attrs, [
-      :name,
-      :start_datetime,
-      :end_datetime,
-      :task_list_tasks_id,
-      :comments,
-      :project_id,
-      :owner_id,
-      :category_id,
-      :task_status_id,
-      :estimation,
-      :priority
-    ])
-    |> assoc_constraint(:project)
-    |> assoc_constraint(:task_list_tasks)
-    |> assoc_constraint(:task_status)
-    |> validate_inclusion(:priority, @task_priority)
+      task
+      |> Repo.preload([:members])
+      |> cast(attrs, [
+        :name,
+        :start_datetime,
+        :end_datetime,
+        :task_list_tasks_id,
+        :comments,
+        :project_id,
+        :owner_id,
+        :category_id,
+        :task_status_id,
+        :estimation,
+        :priority
+      ])
+      |> assoc_constraint(:project)
+      |> assoc_constraint(:task_list_tasks)
+      |> assoc_constraint(:task_status)
+      |> validate_inclusion(:priority, @task_priority)
 
     case Map.has_key?(attrs, "member_ids") do
       true -> put_task_members(task, attrs["member_ids"])
