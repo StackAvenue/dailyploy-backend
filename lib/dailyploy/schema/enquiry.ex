@@ -11,33 +11,35 @@ defmodule Dailyploy.Schema.Enquiry do
     timestamps()
   end
 
-  @optional_required_params ~w(name company_name email phone_number)a
+  @required_params ~w(name email phone_number)a
+  @optional_params ~w(company_name)a
+
+  @permitted @required_params ++ @optional_params
 
   def changeset(enquiry, attrs) do
     enquiry
-    |> cast(attrs, [:phone_number, :email, :name, :comment, :company_name])
-    |> validate_required(@optional_required_params)
-
-    # |> validate_length(:phone_number, is: 10)
+    |> cast(attrs, @permitted)
+    |> validate_required(@required_params)
   end
 
-  defp validate_inclusion(changeset, fields) do
-    present = Enum.count(fields, fn field -> present?(get_field(changeset, field)) end)
+  # need to be done for phonenumbers
+  # defp validate_inclusion(changeset, fields) do
+  #   present = Enum.count(fields, fn field -> present?(get_field(changeset, field)) end)
 
-    case present do
-      0 ->
-        add_error(
-          changeset,
-          :missing_error,
-          "Either phone-number or email is required, both can't be empty"
-        )
+  #   case present do
+  #     0 ->
+  #       add_error(
+  #         changeset,
+  #         :missing_error,
+  #         "Either phone-number or email is required, both can't be empty"
+  #       )
 
-      _ ->
-        changeset
-    end
-  end
+  #     _ ->
+  #       changeset
+  #   end
+  # end
 
-  defp present?(nil), do: false
-  defp present?(""), do: false
-  defp present?(_), do: true
+  # defp present?(nil), do: false
+  # defp present?(""), do: false
+  # defp present?(_), do: true
 end
