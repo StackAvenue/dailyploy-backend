@@ -8,6 +8,7 @@ defmodule Dailyploy.Repo.Migrations.CreateTaskListsTasks do
       add :owner_id, references(:users, on_delete: :delete_all)
       add :category_id, references(:task_categories)
       add :status, :string
+      add :task_status_id, references(:task_status, on_delete: :restrict)
       add :priority, :string
 
       add :task_lists_id, references(:task_lists, on_delete: :delete_all), null: false

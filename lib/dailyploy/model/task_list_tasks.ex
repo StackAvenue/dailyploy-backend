@@ -2,6 +2,7 @@ defmodule Dailyploy.Model.TaskListTasks do
   import Ecto.Query
   alias Dailyploy.Repo
   alias Dailyploy.Schema.TaskListTasks
+  alias Dailyploy.Schema.UserTask
   alias Dailyploy.Model.TaskListTasks, as: TLTModel
   alias Dailyploy.Model.Task
 
@@ -48,6 +49,7 @@ defmodule Dailyploy.Model.TaskListTasks do
   def move_task(task_list) do
     case Task.create_task_list(Map.from_struct(task_list) |> extract_params()) do
       {:ok, task} ->
+        insert_into_user_tasks(task_list.owner_id, task.id)
         TLTModel.update(task_list, %{task_id: task.id})
 
       {:error, error} ->
@@ -58,16 +60,23 @@ defmodule Dailyploy.Model.TaskListTasks do
   defp extract_params(params) do
     %{
       name: params.name,
-      start_datetime: DateTime.utc_now(),
-      end_datetime: DateTime.utc_now(),
+      start_datetime: params.start_datetime,
+      end_datetime: params.end_datetime,
       task_list_tasks_id: params.id,
       project_id: params.task_lists.project_id,
       owner_id: params.owner_id,
       category_id: params.category_id,
-      status: params.status,
+      task_status_id: params.task_status_id,
       estimation: params.estimation,
-      priority: params.priority
+      priority: params.priority,
+      time_tracked: []
     }
+  end
+
+  defp insert_into_user_tasks(user_id, task_id) do
+    params = %{user_id: user_id, task_id: task_id}
+    changeset = UserTask.changeset(%UserTask{}, params)
+    Repo.insert(changeset)
   end
 
   def get_all(%{page_size: page_size, page_number: page_number}, preloads, task_lists_id) do

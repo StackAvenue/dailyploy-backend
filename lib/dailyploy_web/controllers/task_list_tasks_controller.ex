@@ -15,7 +15,12 @@ defmodule DailyployWeb.TaskListTasksController do
         {:extract, {:ok, data}} = {:extract, extract_changeset_data(changeset)}
 
         {:list, task_lists} =
-          {:list, TLModel.get_all(data, [:owner, :category, :task_lists], data.task_lists_id)}
+          {:list,
+           TLModel.get_all(
+             data,
+             [:owner, :category, :task_lists, :task_status],
+             data.task_lists_id
+           )}
 
         conn
         |> put_status(200)
@@ -94,7 +99,11 @@ defmodule DailyployWeb.TaskListTasksController do
         with {:create, {:ok, _task}} <- {:create, TLModel.move_task(conn.assigns.task_list_tasks)} do
           conn
           |> put_status(200)
-          |> render("show.json", %{task_list_tasks: conn.assigns.task_list_tasks})
+          |> render("show.json", %{
+            task_list_tasks:
+              conn.assigns.task_list_tasks
+              |> Dailyploy.Repo.preload([:owner, :category, :task_lists, :task_status])
+          })
         else
           {:create, {:error, error}} ->
             send_error(conn, 400, extract_changeset_error(error))

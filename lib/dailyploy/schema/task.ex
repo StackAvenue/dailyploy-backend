@@ -22,7 +22,6 @@ defmodule Dailyploy.Schema.Task do
     field :estimation, :integer
     field :status, :string, default: "not_started"
     field :priority, :string
-    field :status, :string
 
     belongs_to :task_status, TaskStatus
     belongs_to :owner, User
@@ -89,6 +88,7 @@ defmodule Dailyploy.Schema.Task do
         :start_datetime,
         :end_datetime,
         :project_id,
+        :task_list_tasks_id,
         :owner_id,
         :task_status_id
       ])

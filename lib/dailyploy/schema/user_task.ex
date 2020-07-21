@@ -7,8 +7,6 @@ defmodule Dailyploy.Schema.UserTask do
   schema "user_tasks" do
     belongs_to :user, User
     belongs_to :task, Task
-
-    timestamps()
   end
 
   def changeset(user_task, attrs) do
