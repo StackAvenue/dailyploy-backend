@@ -87,7 +87,7 @@ defmodule DailyployWeb.TaskCommentController do
     end
   end
 
-  def delete(conn, params) do
+  def delete(conn, _params) do
     case conn.status do
       nil ->
         case TCModel.delete_task_comment(conn.assigns.comment) do
@@ -122,7 +122,7 @@ defmodule DailyployWeb.TaskCommentController do
     case TaskModel.get(task_id) do
       {:ok, task} ->
         case UserModel.get(user_id) do
-          {:ok, user} ->
+          {:ok, _user} ->
             assign(conn, :task, task)
 
           {:error, _message} ->

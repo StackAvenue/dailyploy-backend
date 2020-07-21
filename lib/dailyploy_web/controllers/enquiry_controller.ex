@@ -1,6 +1,5 @@
 defmodule DailyployWeb.EnquiryController do
   use DailyployWeb, :controller
-  alias Dailyploy.Repo
   alias Dailyploy.Helper.Enquiry, as: EnquiryHelper
   alias Dailyploy.Model.Enquiry, as: EModel
   import DailyployWeb.Helpers

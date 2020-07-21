@@ -10,9 +10,8 @@ defmodule Dailyploy.Schema.Task do
   alias Dailyploy.Schema.TaskListTasks
   alias Dailyploy.Schema.TimeTracking
   alias Dailyploy.Schema.TaskComment
-  alias Dailyploy.Schema.TaskListTasks
+  alias Dailyploy.Schema.TaskStatus
 
-  @task_status ~w(completed running not_started)s
   @task_priority ~w(low medium high no_priority)s
 
   schema "tasks" do
@@ -23,7 +22,9 @@ defmodule Dailyploy.Schema.Task do
     field :estimation, :integer
     field :status, :string, default: "not_started"
     field :priority, :string
+    field :status, :string
 
+    belongs_to :task_status, TaskStatus
     belongs_to :owner, User
     belongs_to :project, Project
     belongs_to :task_list_tasks, TaskListTasks
@@ -47,15 +48,15 @@ defmodule Dailyploy.Schema.Task do
         :project_id,
         :owner_id,
         :category_id,
-        :status,
+        :task_status_id,
         :estimation,
         :priority
       ])
-      |> validate_required([:name, :start_datetime, :end_datetime, :project_id, :owner_id])
+      |> validate_required([:name, :start_datetime, :end_datetime, :project_id, :owner_id, :task_status_id])
       |> assoc_constraint(:owner)
       |> assoc_constraint(:project)
       |> assoc_constraint(:task_list_tasks)
-      |> validate_inclusion(:status, @task_status)
+      |> assoc_constraint(:task_status)
       |> validate_inclusion(:priority, @task_priority)
       |> put_task_members(attrs["member_ids"])
   end
@@ -72,16 +73,16 @@ defmodule Dailyploy.Schema.Task do
         :project_id,
         :owner_id,
         :category_id,
-        :status,
+        :task_status_id,
         :estimation,
         :priority
       ])
-      |> validate_required([:name, :start_datetime, :end_datetime, :project_id, :owner_id])
+      |> validate_required([:name, :start_datetime, :end_datetime, :project_id, :owner_id, :task_status_id])
       |> assoc_constraint(:owner)
       |> assoc_constraint(:project)
       |> assoc_constraint(:task_list_tasks)
+      |> assoc_constraint(:task_status)
       |> foreign_key_constraint(:task_list_tasks)
-      |> validate_inclusion(:status, @task_status)
       |> validate_inclusion(:priority, @task_priority)
 
     case Map.has_key?(attrs, "member_ids") do
@@ -91,24 +92,31 @@ defmodule Dailyploy.Schema.Task do
   end
 
   def update_changeset(task, attrs) do
+    task =
     task
     |> Repo.preload([:members])
     |> cast(attrs, [
       :name,
       :start_datetime,
       :end_datetime,
-      :comments,
       :task_list_tasks_id,
+      :comments,
       :project_id,
+      :owner_id,
       :category_id,
-      :status,
+      :task_status_id,
+      :estimation,
       :priority
     ])
     |> assoc_constraint(:project)
     |> assoc_constraint(:task_list_tasks)
-    |> validate_inclusion(:status, @task_status)
+    |> assoc_constraint(:task_status)
     |> validate_inclusion(:priority, @task_priority)
-    |> put_task_members(attrs["member_ids"])
+
+    case Map.has_key?(attrs, "member_ids") do
+      true -> put_task_members(task, attrs["member_ids"])
+      false -> task
+    end
   end
 
   def update_status_changeset(task, attrs) do
@@ -119,35 +127,31 @@ defmodule Dailyploy.Schema.Task do
         :name,
         :start_datetime,
         :end_datetime,
+        :task_list_tasks_id,
         :comments,
         :project_id,
+        :owner_id,
         :category_id,
-        :task_list_tasks_id,
-        :status,
+        :task_status_id,
+        :estimation,
         :priority
       ])
       |> assoc_constraint(:project)
       |> assoc_constraint(:task_list_tasks)
-      |> validate_inclusion(:status, @task_status)
+      |> assoc_constraint(:project)
+      |> assoc_constraint(:task_status)
       |> validate_inclusion(:priority, @task_priority)
 
-    task =
-      case Map.has_key?(attrs, "member_ids") do
-        true -> put_task_members(task, attrs["member_ids"])
-        false -> task
-      end
-
-    # put_task_members(attrs["member_ids"])
+    case Map.has_key?(attrs, "member_ids") do
+      true -> put_task_members(task, attrs["member_ids"])
+      false -> task
+    end
   end
 
   defp put_task_members(changeset, members) do
     members = Repo.all(from(user in User, where: user.id in ^members))
 
     put_assoc(changeset, :members, Enum.map(members, &change/1))
-  end
-
-  def task_status() do
-    @task_status
   end
 
   def task_priority() do

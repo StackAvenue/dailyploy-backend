@@ -46,23 +46,14 @@ defmodule DailyployWeb.ReportController do
     render(conn, "index.json", reports: reports)
   end
 
-  def report_query(%{"start_date" => start_date} = params) do
+  def report_query(%{"start_date" => start_date, "end_date" => end_date} = params) do
     {:ok, start_date} =
       start_date
       |> Date.from_iso8601()
 
-    end_date =
-      case params["frequency"] do
-        "daily" ->
-          start_date
-
-        "weekly" ->
-          Date.add(start_date, 6)
-
-        "monthly" ->
-          days = Date.days_in_month(start_date)
-          Date.add(start_date, days - 1)
-      end
+    {:ok, end_date} =
+      end_date
+      |> Date.from_iso8601()
 
     # user params  convert back to list.
     # if params["user_ids"] do
@@ -203,23 +194,14 @@ defmodule DailyployWeb.ReportController do
     render(conn, "csv_download.json", csv_url: csv_url)
   end
 
-  def csv_helper(%{"start_date" => start_date} = params) do
+  def csv_helper(%{"start_date" => start_date, "end_date" => end_date} = params) do
     {:ok, start_date} =
       start_date
       |> Date.from_iso8601()
 
-    end_date =
-      case params["frequency"] do
-        "daily" ->
-          start_date
-
-        "weekly" ->
-          Date.add(start_date, 6)
-
-        "monthly" ->
-          days = Date.days_in_month(start_date)
-          Date.add(start_date, days - 1)
-      end
+    {:ok, end_date} =
+      end_date
+      |> Date.from_iso8601()
 
     params =
       params

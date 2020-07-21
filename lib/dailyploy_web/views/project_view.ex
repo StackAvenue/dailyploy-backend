@@ -55,6 +55,14 @@ defmodule DailyployWeb.ProjectView do
     }
   end
 
+  def render("project_user_task.json", %{project: project}) do
+    %{
+      id: project.id,
+      name: project.name,
+      color_code: project.color_code
+    }
+  end
+
   def render("project_show.json", %{project: project}) do
     %{
       id: project.id,
