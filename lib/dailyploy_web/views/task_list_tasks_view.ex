@@ -14,6 +14,7 @@ defmodule DailyployWeb.TaskListTasksView do
       id: task_list_tasks.id,
       name: task_list_tasks.name,
       description: task_list_tasks.description,
+      task_id: task_list_tasks.task_id,
       estimation: task_list_tasks.estimation,
       status: task_list_tasks.status,
       priority: task_list_tasks.priority,
