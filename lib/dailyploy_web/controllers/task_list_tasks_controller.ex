@@ -63,10 +63,14 @@ defmodule DailyployWeb.TaskListTasksController do
                {:delete, TLModel.delete(conn.assigns.task_list_tasks)} do
           conn
           |> put_status(200)
-          |> render("show.json", %{task_list_tasks: task_list_tasks})
+          |> render("show.json", %{
+            task_list_tasks:
+              task_list_tasks
+              |> Dailyploy.Repo.preload([:owner, :category, :task_lists, :task_status])
+          })
         else
           {:delete, {:error, error}} ->
-            send_error(conn, 400, error)
+            send_error(conn, 400, extract_changeset_error(error))
         end
 
       404 ->
@@ -82,9 +86,14 @@ defmodule DailyployWeb.TaskListTasksController do
                {:update, TLModel.update(conn.assigns.task_list_tasks, params)} do
           conn
           |> put_status(200)
-          |> render("show.json", %{task_list_tasks: task_list_tasks})
+          |> render("show.json", %{
+            task_list_tasks:
+              task_list_tasks
+              |> Dailyploy.Repo.preload([:owner, :category, :task_lists, :task_status])
+          })
         else
-          {:update, {:error, error}} -> send_error(conn, 400, error)
+          {:update, {:error, error}} ->
+            send_error(conn, 400, extract_changeset_error(error))
         end
 
       404 ->
@@ -120,7 +129,11 @@ defmodule DailyployWeb.TaskListTasksController do
       nil ->
         conn
         |> put_status(200)
-        |> render("show.json", %{task_list_tasks: conn.assigns.task_list_tasks})
+        |> render("show.json", %{
+          task_list_tasks:
+            conn.assigns.task_list_tasks
+            |> Dailyploy.Repo.preload([:owner, :category, :task_lists, :task_status])
+        })
 
       404 ->
         conn
