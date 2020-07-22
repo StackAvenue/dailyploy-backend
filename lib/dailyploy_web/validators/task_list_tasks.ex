@@ -8,6 +8,7 @@ defmodule DailyployWeb.Validators.TaskListTasks do
       estimation!: :integer,
       status: :string,
       priority: :string,
+      task_id: :integer,
       owner_id: :integer,
       task_status_id: :integer,
       category_id: :integer,

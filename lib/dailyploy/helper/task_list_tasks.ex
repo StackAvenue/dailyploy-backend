@@ -45,6 +45,7 @@ defmodule Dailyploy.Helper.TaskListTasks do
        task_status: task_list_tasks.task_status,
        priority: task_list_tasks.priority,
        owner_id: task_list_tasks.owner_id,
+       task_id: task_list_tasks.task_id,
        category_id: task_list_tasks.category_id,
        task_lists_id: task_list_tasks.task_lists_id,
        owner: task_list_tasks.owner,
