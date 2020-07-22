@@ -102,10 +102,11 @@ defmodule DailyployWeb.TaskListTasksController do
     end
   end
 
-  def move_task(conn, _params) do
+  def move_task(conn, params) do
     case conn.status do
       nil ->
-        with {:create, {:ok, _task}} <- {:create, TLModel.move_task(conn.assigns.task_list_tasks)} do
+        with {:create, {:ok, _task}} <-
+               {:create, TLModel.move_task(conn.assigns.task_list_tasks, params)} do
           conn
           |> put_status(200)
           |> render("show.json", %{

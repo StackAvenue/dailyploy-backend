@@ -46,8 +46,8 @@ defmodule Dailyploy.Model.TaskListTasks do
     end
   end
 
-  def move_task(task_list) do
-    case Task.create_task_list(Map.from_struct(task_list) |> extract_params()) do
+  def move_task(task_list, params) do
+    case Task.create_task_list(Map.from_struct(task_list) |> extract_params(params)) do
       {:ok, task} ->
         insert_into_user_tasks(task_list.owner_id, task.id)
         TLTModel.update(task_list, %{task_id: task.id})
@@ -57,11 +57,11 @@ defmodule Dailyploy.Model.TaskListTasks do
     end
   end
 
-  defp extract_params(params) do
+  defp extract_params(params, dates) do
     %{
       name: params.name,
-      start_datetime: params.start_datetime,
-      end_datetime: params.end_datetime,
+      start_datetime: dates["start_datetime"],
+      end_datetime: dates["end_datetime"],
       task_list_tasks_id: params.id,
       project_id: params.task_lists.project_id,
       owner_id: params.owner_id,
