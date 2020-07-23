@@ -3,5 +3,5 @@ defmodule Dailyploy.Repo do
     otp_app: :dailyploy,
     adapter: Ecto.Adapters.Postgres
 
-  use Scrivener, page_size: 10
+  use Scrivener, page_size: 1000
 end

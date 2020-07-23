@@ -1,8 +1,8 @@
-defmodule Dailyploy.Repo.Migrations.AddProjectTaskList do
+defmodule Dailyploy.Repo.Migrations.CreateTaskLists do
   use Ecto.Migration
 
   def change do
-    create table(:add_project_task_list) do
+    create table(:task_lists) do
       add :name, :string
       add :start_date, :date
       add :end_date, :date
@@ -15,7 +15,7 @@ defmodule Dailyploy.Repo.Migrations.AddProjectTaskList do
       timestamps()
     end
 
-    create index(:add_project_task_list, [:project_id])
-    create unique_index(:add_project_task_list, [:project_id], name: :unique_project_index)
+    create index(:task_lists, [:project_id])
+    create unique_index(:task_lists, [:name, :project_id], name: :unique_name_per_project)
   end
 end

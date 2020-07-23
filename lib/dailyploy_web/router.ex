@@ -91,8 +91,9 @@ defmodule DailyployWeb.Router do
         resources "/tasks", TaskController, only: [:index, :create, :update, :delete]
         put "/make_as_complete/:id", TaskController, :task_completion
 
-        resources "/task_lists", ProjectTaskListController, only: [:create] do
-          resources "/task_list_tasks", TaskListsController, only: [:create]
+        resources "/task_lists", TaskListsController, except: [:new, :edit] do
+          resources "/task_list_tasks", TaskListTasksController, except: [:new, :edit]
+          post "/move/:id", TaskListTasksController, :move_task
         end
 
         resources "/contact", ContactController, only: [:show, :create, :update, :delete, :index]

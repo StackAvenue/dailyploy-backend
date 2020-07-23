@@ -1,45 +1,35 @@
 defmodule Dailyploy.Schema.TaskLists do
   use Ecto.Schema
-  alias Dailyploy.Schema.{TaskCategory, User, ProjectTaskList, TaskLists}
+  alias Dailyploy.Schema.{Workspace, Project, User, TaskListTasks}
   import Ecto.Changeset
 
-  @task_status ~w(completed running not_started)s
-  @task_priority ~w(low medium high no_priority)s
-
-  schema "add_task_lists" do
+  schema "task_lists" do
     field :name, :string
+    field :start_date, :date
+    field :end_date, :date
     field :description, :string
-    field :estimation, :integer
-    field :status, :string, default: "not_started"
-    field :priority, :string, default: "no_priority"
+    field :color_code, :string
 
-    belongs_to :owner, User
-    belongs_to :category, TaskCategory
-    belongs_to :project_task_list, ProjectTaskList
+    belongs_to :workspace, Workspace
+    belongs_to :creator, User
+    belongs_to :project, Project
 
+    has_many :task_list_tasks, TaskListTasks
     timestamps()
   end
 
-  @required_params ~w(name estimation owner_id project_task_list_id)a
-  @optional_params ~w(description status priority category_id)a
+  @required_params ~w(name start_date end_date workspace_id creator_id project_id)a
+  @optional_params ~w(description color_code)a
 
   @permitted_params @required_params ++ @optional_params
 
-  def changeset(%TaskLists{} = task_lists, attrs) do
+  def changeset(%__MODULE__{} = task_lists, attrs) do
     task_lists
     |> cast(attrs, @permitted_params)
     |> validate_required(@required_params)
-    |> assoc_constraint(:owner)
-    |> assoc_constraint(:project_task_list)
-    |> validate_inclusion(:status, @task_status)
-    |> validate_inclusion(:priority, @task_priority)
-  end
-
-  def task_status() do
-    @task_status
-  end
-
-  def task_priority() do
-    @task_priority
+    |> assoc_constraint(:workspace)
+    |> assoc_constraint(:creator)
+    |> assoc_constraint(:project)
+    |> unique_constraint(:project, name: :unique_name_per_project)
   end
 end
