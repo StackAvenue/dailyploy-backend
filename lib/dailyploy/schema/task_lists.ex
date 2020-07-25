@@ -18,8 +18,8 @@ defmodule Dailyploy.Schema.TaskLists do
     timestamps()
   end
 
-  @required_params ~w(name start_date end_date workspace_id creator_id project_id)a
-  @optional_params ~w(description color_code)a
+  @required_params ~w(name workspace_id creator_id project_id)a
+  @optional_params ~w(description end_date start_date color_code)a
 
   @permitted_params @required_params ++ @optional_params
 
