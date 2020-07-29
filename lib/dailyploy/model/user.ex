@@ -52,6 +52,7 @@ defmodule Dailyploy.Model.User do
         on: role.id == user_workspace.role_id,
         where: ^filter_where(params),
         distinct: true,
+        order_by: user.id,
         select: %{user | role: role.name}
       )
 
