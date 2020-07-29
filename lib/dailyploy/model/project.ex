@@ -30,6 +30,7 @@ defmodule Dailyploy.Model.Project do
         on: user_project.project_id == project.id
       )
       |> where(^filter_where(params))
+      |> order_by(:id)
       |> distinct(true)
 
     Repo.all(query)
