@@ -4,8 +4,8 @@ defmodule DailyployWeb.Validators.TaskLists do
   defparams(
     verify_project_task_list(%{
       name!: :string,
-      start_date!: :date,
-      end_date!: :date,
+      start_date: :date,
+      end_date: :date,
       description: :string,
       color_code: :string,
       workspace_id!: :integer,
