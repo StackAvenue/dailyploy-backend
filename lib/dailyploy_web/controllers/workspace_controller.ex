@@ -7,6 +7,8 @@ defmodule DailyployWeb.WorkspaceController do
   alias Dailyploy.Model.Workspace, as: WorkspaceModel
   alias Dailyploy.Model.Task, as: TaskModel
   alias Dailyploy.Model.User, as: UserModel
+  alias Dailyploy.Model.Project, as: PModel
+  alias Dailyploy.Model.UserWorkspace
 
   alias Dailyploy.Schema.Task
   alias Dailyploy.Schema.Project
@@ -46,7 +48,7 @@ defmodule DailyployWeb.WorkspaceController do
     # start and end date over which task need to get displayed
     {start_date, end_date} = select_dates(start_date, frequency)
     # project ids are extracted
-    project_ids = get_project_ids(conn.query_params)
+    project_ids = get_project_ids(conn.query_params, workspace_id)
     # based on start date and end date query is made to extract out task in the given dashboard
     query = create_query(project_ids, workspace_id, start_date, end_date)
 
@@ -277,10 +279,10 @@ defmodule DailyployWeb.WorkspaceController do
     {start_date, end_date}
   end
 
-  defp get_project_ids(query_params) do
+  defp get_project_ids(query_params, workspace_id) do
     case is_nil(String.first(query_params["project_ids"])) do
       true ->
-        []
+        fetch_project_ids(workspace_id)
 
       false ->
         project_ids =
@@ -292,10 +294,14 @@ defmodule DailyployWeb.WorkspaceController do
     end
   end
 
+  defp fetch_project_ids(workspace_id) do
+    PModel.get_project_ids_in_workspace!(workspace_id) ++ [0]
+  end
+
   defp create_query(project_ids, workspace_id, start_date, end_date) do
     from task in Task,
       join: project in Project,
-      on: task.project_id == project.id or task.project_id in ^project_ids,
+      on: task.project_id == project.id and task.project_id in ^project_ids,
       left_join: time_track in TimeTracking,
       on: time_track.task_id == task.id,
       where:
@@ -334,7 +340,7 @@ defmodule DailyployWeb.WorkspaceController do
     user_ids =
       case is_nil(String.first(query_params.user_id)) do
         true ->
-          [0]
+          fetch_user_ids(workspace_id)
 
         false ->
           user_ids =
@@ -345,6 +351,10 @@ defmodule DailyployWeb.WorkspaceController do
 
     UserModel.list_users(workspace_id, user_ids)
     |> Repo.preload(tasks: {query, :project})
+  end
+
+  defp fetch_user_ids(workspace_id) do
+    UserWorkspace.get_user_id_using_workspace_id!(workspace_id)
   end
 
   defp extract_time_track(task) do

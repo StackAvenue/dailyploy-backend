@@ -181,6 +181,16 @@ defmodule Dailyploy.Model.Project do
     List.first(Repo.all(query))
   end
 
+  def get_project_ids_in_workspace!(workspace_id) do
+    query =
+      from project in Project,
+        where: project.workspace_id == ^workspace_id,
+        select: project.id,
+        distinct: true
+
+    Repo.all(query)
+  end
+
   def capacity(
         %{
           "start_date" => start_date,
