@@ -103,6 +103,16 @@ defmodule Dailyploy.Model.UserWorkspace do
     Repo.all(query)
   end
 
+  def get_user_id_using_workspace_id!(workspace_id) do
+    query =
+      from member in UserWorkspace,
+        where: member.workspace_id == ^workspace_id,
+        select: member.user_id,
+        distinct: true
+
+    Repo.all(query)
+  end
+
   def create_user_workspace(attrs \\ %{}) do
     %UserWorkspace{}
     |> UserWorkspace.changeset(attrs)
