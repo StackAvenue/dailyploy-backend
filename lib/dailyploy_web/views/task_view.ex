@@ -26,6 +26,7 @@ defmodule DailyployWeb.TaskView do
     %{
       id: task.id,
       name: task.name,
+      estimate: task.estimate,
       start_datetime: task.start_datetime,
       end_datetime: task.end_datetime,
       comments: task.comments
@@ -43,6 +44,7 @@ defmodule DailyployWeb.TaskView do
       comments: task.comments,
       status: render_one(task.task_status, TaskStatusView, "status.json"),
       priority: task.priority,
+      estimate: task.estimate,
       members: render_many(task.members, UserView, "user.json"),
       owner: render_one(task.owner, UserView, "user.json"),
       category: render_one(task.category, TaskCategoryView, "task_category.json"),
@@ -58,6 +60,7 @@ defmodule DailyployWeb.TaskView do
       name: task.name,
       start_datetime: task.start_datetime,
       end_datetime: task.end_datetime,
+      estimate: task.estimate,
       comments: task.comments,
       status: render_one(task.task_status, TaskStatusView, "status.json"),
       priority: task.priority
@@ -70,6 +73,7 @@ defmodule DailyployWeb.TaskView do
     %{
       id: task.id,
       name: task.name,
+      estimate: task.estimate,
       status: render_one(task.task_status, TaskStatusView, "status.json"),
       priority: task.priority,
       owner: render_one(task.owner, UserView, "user.json")
@@ -95,6 +99,7 @@ defmodule DailyployWeb.TaskView do
       name: task.name,
       start_datetime: task.start_datetime,
       end_datetime: task.end_datetime,
+      estimate: task.estimate,
       comments: task.comments,
       status: render_one(task.task_status, TaskStatusView, "status.json"),
       priority: task.priority,
@@ -120,6 +125,7 @@ defmodule DailyployWeb.TaskView do
       start_datetime: task.start_datetime,
       end_datetime: task.end_datetime,
       comments: task.comments,
+      estimate: task.estimate,
       status: render_one(task.task_status, TaskStatusView, "status.json"),
       priority: task.priority,
       members: render_many(task.members, UserView, "user.json"),
@@ -145,6 +151,7 @@ defmodule DailyployWeb.TaskView do
       name: task.name,
       start_datetime: task.start_datetime,
       end_datetime: task.end_datetime,
+      estimate: task.estimate,
       comments: task.comments,
       status: render_one(task.task_status, TaskStatusView, "status.json"),
       priority: task.priority,
@@ -169,6 +176,7 @@ defmodule DailyployWeb.TaskView do
       name: task.name,
       start_datetime: task.start_datetime,
       end_datetime: task.end_datetime,
+      estimate: task.estimate,
       status: render_one(task.task_status, TaskStatusView, "status.json"),
       priority: task.priority,
       duration: task.duration,
@@ -203,6 +211,7 @@ defmodule DailyployWeb.TaskView do
       start_datetime: task.start_datetime,
       end_datetime: task.end_datetime,
       comments: task.comments,
+      estimate: task.estimate,
       status: render_one(task.task_status, TaskStatusView, "status.json"),
       priority: task.priority,
       duration: task.duration,
