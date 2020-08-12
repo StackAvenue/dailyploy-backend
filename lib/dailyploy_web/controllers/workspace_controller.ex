@@ -8,11 +8,13 @@ defmodule DailyployWeb.WorkspaceController do
   alias Dailyploy.Model.Task, as: TaskModel
   alias Dailyploy.Model.User, as: UserModel
   alias Dailyploy.Model.Project, as: PModel
+  alias Dailyploy.Model.TaskStatus, as: TSModel
   alias Dailyploy.Model.UserWorkspace
 
   alias Dailyploy.Schema.Task
   alias Dailyploy.Schema.Project
   alias Dailyploy.Schema.TimeTracking
+  alias Dailyploy.Schema.TaskStatus
 
   @minute 60
   @hour @minute * 60
@@ -49,8 +51,10 @@ defmodule DailyployWeb.WorkspaceController do
     {start_date, end_date} = select_dates(start_date, frequency)
     # project ids are extracted
     project_ids = get_project_ids(conn.query_params, workspace_id)
+    # status ids extraction
+    status_ids = get_status_ids(conn.query_params, workspace_id)
     # based on start date and end date query is made to extract out task in the given dashboard
-    query = create_query(project_ids, workspace_id, start_date, end_date)
+    query = create_query(status_ids, project_ids, workspace_id, start_date, end_date)
 
     # here the above query is being preloaded for each and every user
     users = get_users(query_params, query, workspace_id)
@@ -294,14 +298,35 @@ defmodule DailyployWeb.WorkspaceController do
     end
   end
 
+  defp get_status_ids(query_params, workspace_id) do
+    case is_nil(String.first(query_params["status_ids"])) do
+      true ->
+        fetch_status_ids(workspace_id)
+
+      false ->
+        status_ids =
+          Enum.map(String.split(query_params["status_ids"], ","), fn x ->
+            String.to_integer(x)
+          end)
+
+        [0 | status_ids]
+    end
+  end
+
   defp fetch_project_ids(workspace_id) do
     PModel.get_project_ids_in_workspace!(workspace_id) ++ [0]
   end
 
-  defp create_query(project_ids, workspace_id, start_date, end_date) do
+  defp fetch_status_ids(workspace_id) do
+    TSModel.get_status_ids_in_workspace!(workspace_id) ++ [0]
+  end
+
+  defp create_query(status_ids, project_ids, workspace_id, start_date, end_date) do
     from task in Task,
       join: project in Project,
       on: task.project_id == project.id and task.project_id in ^project_ids,
+      join: status in TaskStatus,
+      on: task.task_status_id == status.id and task.task_status_id in ^status_ids,
       left_join: time_track in TimeTracking,
       on: time_track.task_id == task.id,
       where:
