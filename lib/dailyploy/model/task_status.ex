@@ -12,14 +12,14 @@ defmodule Dailyploy.Model.TaskStatus do
   def update(task_status, params) do
     changeset = TaskStatus.changeset(task_status, params)
 
-    changeset =
-      case task_status.name == "not_started" do
-        true ->
-          Ecto.Changeset.add_error(changeset, :default_status, "Default status cannot be updated")
+    # changeset =
+    #   case task_status.name == "not_started" do
+    #     true ->
+    #       Ecto.Changeset.add_error(changeset, :default_status, "Default status cannot be updated")
 
-        false ->
-          changeset
-      end
+    #     false ->
+    #       changeset
+    #   end
 
     Repo.update(changeset)
   end
