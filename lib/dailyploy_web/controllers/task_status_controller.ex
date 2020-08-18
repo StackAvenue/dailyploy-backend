@@ -33,7 +33,7 @@ defmodule DailyployWeb.TaskStatusController do
              {:create, {:ok, task_status}} <- {:create, TaskStatus.create(data)} do
           conn
           |> put_status(200)
-          |> render("task_status.json", %{task_status: task_status})
+          |> render("status.json", %{task_status: task_status})
         else
           {:extract, {:error, error}} ->
             send_error(conn, 400, error)
@@ -70,10 +70,10 @@ defmodule DailyployWeb.TaskStatusController do
     case conn.status do
       nil ->
         case TaskStatus.update(conn.assigns.task_status, params) do
-          {:ok, task_status} ->
+          {:ok, _task_status} ->
             conn
             |> put_status(200)
-            |> render("task_status.json", %{task_status: task_status})
+            |> json(%{success: true})
 
           {:error, task_status} ->
             error = extract_changeset_error(task_status)
@@ -92,6 +92,28 @@ defmodule DailyployWeb.TaskStatusController do
     case conn.status do
       nil ->
         case TaskStatus.delete(conn.assigns.task_status) do
+          {:ok, task_status} ->
+            conn
+            |> put_status(200)
+            |> render("task_status.json", %{task_status: task_status})
+
+          {:error, task_status} ->
+            error = extract_changeset_error(task_status)
+
+            conn
+            |> send_error(400, error)
+        end
+
+      404 ->
+        conn
+        |> send_error(404, "Resource Not Found")
+    end
+  end
+
+  def update_sequence(conn, params) do
+    case conn.status do
+      nil ->
+        case TaskStatus.update_sequence(conn.assigns.task_status, params["update_sequence_no"]) do
           {:ok, task_status} ->
             conn
             |> put_status(200)

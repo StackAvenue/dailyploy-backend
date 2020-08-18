@@ -5,7 +5,9 @@ defmodule DailyployWeb.Validators.TaskStatus do
     verify_task_status(%{
       project_id!: :integer,
       workspace_id!: :integer,
-      name!: :string
+      name!: :string,
+      is_default!: [field: :boolean, default: false],
+      sequence_no!: [field: :integer, default: 0]
     })
   )
 

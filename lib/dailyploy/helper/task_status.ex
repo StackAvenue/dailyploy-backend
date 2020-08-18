@@ -8,10 +8,17 @@ defmodule Dailyploy.Helper.TaskStatus do
   defdelegate delete(task_status), to: TSModel
   defdelegate get_all(data, preloads), to: TSModel
 
+  @doc """
+    For updating sequence redirecting to model function
+  """
+  defdelegate update_sequence(status, update_sequence_no), to: TSModel
+
   def create(params) do
     %{
       project_id: project_id,
       workspace_id: workspace_id,
+      is_default: is_default,
+      sequence_no: sequence_no,
       name: name
     } = params
 
@@ -19,6 +26,8 @@ defmodule Dailyploy.Helper.TaskStatus do
       TSModel.create(%{
         project_id: project_id,
         workspace_id: workspace_id,
+        is_default: is_default,
+        sequence_no: sequence_no,
         name: name
       })
     )
@@ -33,6 +42,8 @@ defmodule Dailyploy.Helper.TaskStatus do
        project_id: status.project_id,
        workspace_id: status.workspace_id,
        name: status.name,
+       is_default: status.is_default,
+       sequence_no: status.sequence_no,
        project: status.project,
        workspace: status.workspace,
        inserted_at: status.inserted_at

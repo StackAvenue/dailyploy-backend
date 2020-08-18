@@ -9,6 +9,10 @@ defmodule DailyployWeb.Plug.TaskStatus do
     load_task_status(conn, id)
   end
 
+  def call(%{params: %{"task_status_id" => id}} = conn, _params) do
+    load_task_status(conn, id)
+  end
+
   def call(
         %{params: %{"project_id" => project_id, "workspace_id" => workspace_id}} = conn,
         _params
