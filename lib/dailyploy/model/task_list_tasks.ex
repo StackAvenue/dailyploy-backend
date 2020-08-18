@@ -81,16 +81,46 @@ defmodule Dailyploy.Model.TaskListTasks do
     Repo.insert(changeset)
   end
 
-  def get_all(%{page_size: page_size, page_number: page_number}, preloads, task_lists_id) do
+  def get_all(%{page_size: page_size, page_number: page_number}, preloads, task_lists_id, filters) do
     query =
-      from task_list_task in TaskListTasks,
-        where: task_list_task.task_lists_id == ^task_lists_id
+      TaskListTasks
+      |> where([task_list_task], task_list_task.task_lists_id == ^task_lists_id)
+      |> where(^filter_where(filters))
 
     task_lists_data =
       query |> order_by(:id) |> Repo.paginate(page: page_number, page_size: page_size)
 
     task_lists_with_preloads = task_lists_data.entries |> Repo.preload(preloads)
     paginated_response(task_lists_with_preloads, task_lists_data)
+  end
+
+  defp filter_where(params) do
+    Enum.reduce(params, dynamic(true), fn
+      {"status_ids", status_ids}, dynamic_query ->
+        status_ids =
+          status_ids
+          |> String.split(",")
+          |> Enum.map(fn status_id -> String.trim(status_id) end)
+
+        dynamic(
+          [task_list_task],
+          ^dynamic_query and task_list_task.task_status_id in ^status_ids
+        )
+
+      {"member_ids", member_ids}, dynamic_query ->
+        member_ids =
+          member_ids
+          |> String.split(",")
+          |> Enum.map(fn member_id -> String.trim(member_id) end)
+
+        dynamic(
+          [task_list_task],
+          ^dynamic_query and task_list_task.owner_id in ^member_ids
+        )
+
+      {_, _}, dynamic_query ->
+        dynamic_query
+    end)
   end
 
   defp paginated_response(data, pagination_data) do
