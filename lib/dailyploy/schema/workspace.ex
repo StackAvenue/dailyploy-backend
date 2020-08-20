@@ -12,7 +12,7 @@ defmodule Dailyploy.Schema.Workspace do
   schema "workspaces" do
     field :name, :string
     field :type, WorkspaceTypeEnum
-
+    field :currency, :string
     belongs_to :company, Company
     has_many :invitation, Invitation
     has_many :user_workspaces, UserWorkspace, on_delete: :delete_all, on_replace: :delete
@@ -26,7 +26,7 @@ defmodule Dailyploy.Schema.Workspace do
   @doc false
   def changeset(workspace, attrs) do
     workspace
-    |> cast(attrs, [:name, :type, :company_id])
-    |> validate_required([:name, :type])
+    |> cast(attrs, [:name, :type, :currency, :company_id])
+    |> validate_required([:name, :type, :currency])
   end
 end

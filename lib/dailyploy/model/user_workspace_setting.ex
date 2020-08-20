@@ -22,27 +22,38 @@ defmodule Dailyploy.Model.UserWorkspaceSetting do
   end
 
   def update(%{"user" => user, "workspace_id" => workspace_id} = workspace_params) do
-    check_for_name_update(user, workspace_id)
+    check_for_update(user, workspace_id)
     # show_all_the_admins_in_current_workspace(workspace_id)
   end
 
-  defp check_for_name_update(user, workspace_id) do
+  defp check_for_update(user, workspace_id) do
     {:ok, current_name} = Map.fetch(user, "name")
+    {:ok, current_currency} = Map.fetch(user, "currency")
     workspace = WorkspaceModel.get_workspace!(workspace_id)
     {:ok, actual_name} = Map.fetch(workspace, :name)
+    {:ok, actual_currency} = Map.fetch(workspace, :currency)
 
     case workspace do
       nil ->
         :error
 
       _ ->
-        with current_name !== actual_name do
-          workspace_change = %{"name" => current_name}
+        cond do
+          current_name !== actual_name ->
+            workspace_change = %{"name" => current_name}
 
-          with {:ok, %Workspace{} = workspace} <-
-                 WorkspaceModel.update_workspace(workspace, workspace_change) do
-            workspace
-          end
+            with {:ok, %Workspace{} = workspace} <-
+              WorkspaceModel.update_workspace(workspace, workspace_change) do
+               workspace
+            end
+
+          current_currency !== actual_currency ->
+            workspace_change = %{"currency" => current_currency}
+
+            with {:ok, %Workspace{} = workspace} <-
+              WorkspaceModel.update_workspace(workspace, workspace_change) do
+               workspace
+            end
         end
     end
   end
