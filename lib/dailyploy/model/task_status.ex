@@ -115,5 +115,14 @@ defmodule Dailyploy.Model.TaskStatus do
         :no_reply
       end
     end
+
+  def get_status_ids_in_workspace!(workspace_id) do
+    query =
+      from task_status in TaskStatus,
+        where: task_status.workspace_id == ^workspace_id,
+        select: task_status.id,
+        distinct: true
+
+    Repo.all(query)
   end
 end
