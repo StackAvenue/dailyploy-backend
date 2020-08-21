@@ -115,6 +115,7 @@ defmodule Dailyploy.Model.TaskStatus do
         :no_reply
       end
     end
+  end
 
   def get_status_ids_in_workspace!(workspace_id) do
     query =
