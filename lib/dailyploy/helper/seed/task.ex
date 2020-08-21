@@ -46,4 +46,21 @@ defmodule Dailyploy.Helper.Seed.Task do
     params = %{task_status_id: task_status.id}
     TaskModel.update_task_status(task, params)
   end
+
+  def change_status() do
+    tasks = Repo.all(Task)
+    Enum.each(tasks, fn task ->
+      task = Repo.preload(task, [:project])
+      complete_status_id = TaskStatus.get_running_status(task.project_id, task.project.workspace_id, "completed")
+      case task.status do
+      "completed" -> TaskModel.update_task(task, %{is_complete: true})
+        _ ->
+          if complete_status_id == task.task_status_id do
+            TaskModel.update_task(task, %{is_complete: true})
+          else
+            :no_reply
+          end
+      end
+    end)
+  end
 end
