@@ -29,6 +29,7 @@ defmodule DailyployWeb.TaskView do
       estimation: task.estimation,
       start_datetime: task.start_datetime,
       end_datetime: task.end_datetime,
+      is_complete: task.is_complete,
       comments: task.comments
     }
   end
@@ -45,6 +46,7 @@ defmodule DailyployWeb.TaskView do
       status: render_one(task.task_status, TaskStatusView, "status.json"),
       priority: task.priority,
       estimation: task.estimation,
+      is_complete: task.is_complete,
       members: render_many(task.members, UserView, "user.json"),
       owner: render_one(task.owner, UserView, "user.json"),
       category: render_one(task.category, TaskCategoryView, "task_category.json"),
@@ -61,6 +63,7 @@ defmodule DailyployWeb.TaskView do
       start_datetime: task.start_datetime,
       end_datetime: task.end_datetime,
       estimation: task.estimation,
+      is_complete: task.is_complete,
       comments: task.comments,
       status: render_one(task.task_status, TaskStatusView, "status.json"),
       priority: task.priority
@@ -74,6 +77,7 @@ defmodule DailyployWeb.TaskView do
       id: task.id,
       name: task.name,
       estimation: task.estimation,
+      is_complete: task.is_complete,
       status: render_one(task.task_status, TaskStatusView, "status.json"),
       priority: task.priority,
       owner: render_one(task.owner, UserView, "user.json")
@@ -100,6 +104,7 @@ defmodule DailyployWeb.TaskView do
       start_datetime: task.start_datetime,
       end_datetime: task.end_datetime,
       estimation: task.estimation,
+      is_complete: task.is_complete,
       comments: task.comments,
       status: render_one(task.task_status, TaskStatusView, "status.json"),
       priority: task.priority,
@@ -126,6 +131,7 @@ defmodule DailyployWeb.TaskView do
       end_datetime: task.end_datetime,
       comments: task.comments,
       estimation: task.estimation,
+      is_complete: task.is_complete,
       status: render_one(task.task_status, TaskStatusView, "status.json"),
       priority: task.priority,
       members: render_many(task.members, UserView, "user.json"),
@@ -152,6 +158,7 @@ defmodule DailyployWeb.TaskView do
       start_datetime: task.start_datetime,
       end_datetime: task.end_datetime,
       estimation: task.estimation,
+      is_complete: task.is_complete,
       comments: task.comments,
       status: render_one(task.task_status, TaskStatusView, "status.json"),
       priority: task.priority,
@@ -177,6 +184,7 @@ defmodule DailyployWeb.TaskView do
       start_datetime: task.start_datetime,
       end_datetime: task.end_datetime,
       estimation: task.estimation,
+      is_complete: task.is_complete,
       status: render_one(task.task_status, TaskStatusView, "status.json"),
       priority: task.priority,
       duration: task.duration,
@@ -212,6 +220,7 @@ defmodule DailyployWeb.TaskView do
       end_datetime: task.end_datetime,
       comments: task.comments,
       estimation: task.estimation,
+      is_complete: task.is_complete,
       status: render_one(task.task_status, TaskStatusView, "status.json"),
       priority: task.priority,
       duration: task.duration,

@@ -58,4 +58,8 @@ defmodule DailyployWeb.TaskListsView do
       total_pages: task_lists.total_pages
     }
   end
+
+  def render("summary.json", %{summary: summary}) do
+    %{summary: summary}
+  end
 end

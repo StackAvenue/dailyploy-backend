@@ -519,6 +519,14 @@ defmodule Dailyploy.Model.Task do
           ^dynamic_query and task.project_id in ^project_ids
         )
 
+      {"status_ids", status_ids}, dynamic_query ->
+        status_ids = Enum.map(String.split(status_ids, ","), fn x -> String.to_integer(x) end)
+
+        dynamic(
+          [task, project, user_task, time_track],
+          ^dynamic_query and task.task_status_id in ^status_ids
+        )
+
       {"category_ids", category_ids}, dynamic_query ->
         category_ids = Enum.map(String.split(category_ids, ","), fn x -> String.to_integer(x) end)
 
