@@ -22,6 +22,7 @@ defmodule Dailyploy.Schema.Task do
     field :estimation, :integer
     field :status, :string, default: "not_started"
     field :priority, :string
+    field :is_complete, :boolean, default: false, null: false
 
     belongs_to :task_status, TaskStatus
     belongs_to :owner, User
@@ -57,7 +58,8 @@ defmodule Dailyploy.Schema.Task do
         :end_datetime,
         :project_id,
         :owner_id,
-        :task_status_id
+        :task_status_id,
+        :is_complete
       ])
       |> assoc_constraint(:owner)
       |> assoc_constraint(:project)
@@ -90,6 +92,7 @@ defmodule Dailyploy.Schema.Task do
         :project_id,
         :task_list_tasks_id,
         :owner_id,
+        :is_complete,
         :task_status_id
       ])
       |> assoc_constraint(:owner)
@@ -119,6 +122,7 @@ defmodule Dailyploy.Schema.Task do
         :owner_id,
         :category_id,
         :task_status_id,
+        :is_complete,
         :estimation,
         :priority
       ])
@@ -147,6 +151,7 @@ defmodule Dailyploy.Schema.Task do
         :owner_id,
         :category_id,
         :task_status_id,
+        :is_complete,
         :estimation,
         :priority
       ])

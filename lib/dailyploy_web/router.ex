@@ -85,15 +85,19 @@ defmodule DailyployWeb.Router do
       get "/category_summary_report", ReportController, :categories_summary_report
       get "/priority_summary_report", ReportController, :priorities_summary_report
 
+      # resources "/projects", ProjectController do
+
+      # end
       resources "/projects", ProjectController do
         resources "/task_status", TaskStatusController
-
+        put "/task_status/:task_status_id/update_sequence", TaskStatusController, :update_sequence
         resources "/tasks", TaskController, only: [:index, :create, :update, :delete]
         put "/make_as_complete/:id", TaskController, :task_completion
 
         resources "/task_lists", TaskListsController, except: [:new, :edit] do
           resources "/task_list_tasks", TaskListTasksController, except: [:new, :edit]
           post "/move/:id", TaskListTasksController, :move_task
+          get "/summary", TaskListsController, :summary
         end
 
         resources "/contact", ContactController, only: [:show, :create, :update, :delete, :index]

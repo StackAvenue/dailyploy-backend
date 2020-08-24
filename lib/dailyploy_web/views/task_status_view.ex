@@ -6,6 +6,8 @@ defmodule DailyployWeb.TaskStatusView do
     %{
       id: task_status.id,
       name: task_status.name,
+      is_default: task_status.is_default,
+      sequence_no: task_status.sequence_no,
       project: render_one(task_status.project, ProjectView, "show_project.json"),
       workspace: render_one(task_status.workspace, WorkspaceView, "workspace_task.json"),
       inserted_at: task_status.inserted_at
@@ -27,6 +29,12 @@ defmodule DailyployWeb.TaskStatusView do
       id: task_status.id,
       name: task_status.name,
       inserted_at: task_status.inserted_at
+    }
+  end
+
+  def render("update_sequence.json", %{task_status: task_status}) do
+    %{
+      task_status: render_many(task_status, TaskStatusView, "task_status.json")
     }
   end
 end

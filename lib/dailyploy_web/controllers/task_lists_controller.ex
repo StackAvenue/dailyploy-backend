@@ -5,7 +5,7 @@ defmodule DailyployWeb.TaskListsController do
   import DailyployWeb.Validators.TaskLists
   import DailyployWeb.Helpers
 
-  plug :load_task_list when action in [:update, :delete, :show]
+  plug :load_task_list when action in [:update, :delete, :show, :summary]
 
   def create(conn, params) do
     case conn.status do
@@ -24,6 +24,21 @@ defmodule DailyployWeb.TaskListsController do
           {:create, {:error, message}} ->
             send_error(conn, 400, message)
         end
+
+      404 ->
+        conn
+        |> send_error(404, "Resource Not Found")
+    end
+  end
+
+  def summary(conn, _params) do
+    case conn.status do
+      nil ->
+        summary = PTModel.summary(conn.assigns.task_list)
+
+        conn
+        |> put_status(200)
+        |> render("summary.json", %{summary: summary})
 
       404 ->
         conn
@@ -102,6 +117,19 @@ defmodule DailyployWeb.TaskListsController do
   end
 
   defp load_task_list(%{params: %{"id" => id}} = conn, _params) do
+    {id, _} = Integer.parse(id)
+
+    case PTModel.get(id) do
+      {:ok, task_list} ->
+        assign(conn, :task_list, task_list)
+
+      {:error, _message} ->
+        conn
+        |> put_status(404)
+    end
+  end
+
+  defp load_task_list(%{params: %{"task_lists_id" => id}} = conn, _params) do
     {id, _} = Integer.parse(id)
 
     case PTModel.get(id) do
