@@ -27,6 +27,6 @@ defmodule Dailyploy.Schema.Workspace do
   def changeset(workspace, attrs) do
     workspace
     |> cast(attrs, [:name, :type, :currency, :company_id])
-    |> validate_required([:name, :type, :currency])
+    |> validate_required([:name, :type])
   end
 end

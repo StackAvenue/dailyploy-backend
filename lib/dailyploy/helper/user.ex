@@ -214,6 +214,7 @@ defmodule Dailyploy.Helper.User do
     %{
       "name" => name,
       "working_hours" => working_hours,
+      "hourly_expense" => hourly_expense,
       "role_id" => role_id,
       "project_id" => project_id,
       "workspace_id" => workspace_id
@@ -225,6 +226,7 @@ defmodule Dailyploy.Helper.User do
       "workspace_id" => workspace_id,
       "name" => name,
       "working_hours" => working_hours,
+      "hourly_expense" => hourly_expense,
       "role_id" => role_id
     }
 
@@ -242,12 +244,13 @@ defmodule Dailyploy.Helper.User do
           nil ->
             %User{id: id} = user
 
-            # add_existing_or_non_existing_user_to_member_for_invite(
-            #   id,
-            #   workspace_id,
-            #   working_hours,
-            #   role_id
-            # )
+            add_existing_or_non_existing_user_to_member_for_invite(
+              id,
+              workspace_id,
+              working_hours,
+              hourly_expense,
+              role_id
+            )
 
             invitation_details = InvitationModel.pass_user_details(id, workspace_id)
             %User{id: sender_id, name: sender_name} = UserModel.get_user!(id)
@@ -273,13 +276,14 @@ defmodule Dailyploy.Helper.User do
           _ ->
             %User{id: id} = user
 
-            # add_existing_or_non_existing_user_to_member(
-            #   id,
-            #   workspace_id,
-            #   project_id,
-            #   working_hours,
-            #   role_id
-            # )
+            add_existing_or_non_existing_user_to_member(
+              id,
+              workspace_id,
+              project_id,
+              working_hours,
+              hourly_expense,
+              role_id
+            )
 
             invitation_details = InvitationModel.pass_user_details(id, project_id, workspace_id)
             %User{id: sender_id, name: sender_name} = UserModel.get_user!(id)

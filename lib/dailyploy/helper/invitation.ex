@@ -11,8 +11,7 @@ defmodule Dailyploy.Helper.Invitation do
     |> get_dep_params
     |> InvitationModel.create_invitation()
     |> get_created_invite(invitation_details)
-
-    # |> send_invite_email
+    |> send_invite_email
   end
 
   def create_invite_without_project(invite_attrs, invitation_details) do
@@ -20,8 +19,7 @@ defmodule Dailyploy.Helper.Invitation do
     |> get_dep_params_without_project
     |> InvitationModel.create_invitation()
     |> get_created_invite(invitation_details)
-
-    # |> send_invite_email_without_project
+    |> send_invite_email_without_project
   end
 
   def create_confirmation(invite_attrs, invitation_details) do
@@ -29,8 +27,7 @@ defmodule Dailyploy.Helper.Invitation do
     |> get_dep_params_for_already_registered
     |> InvitationModel.create_invitation()
     |> get_created_invite(invitation_details)
-
-    # |> send_confirmation_email
+    |> send_confirmation_email
   end
 
   def create_confirmation_without_project(invite_attrs, invitation_details) do
@@ -38,8 +35,7 @@ defmodule Dailyploy.Helper.Invitation do
     |> get_dep_params_for_already_registered_without_project
     |> InvitationModel.create_invitation()
     |> get_created_invite(invitation_details)
-
-    # |> send_confirmation_email_without_project
+    |> send_confirmation_email_without_project
   end
 
   def send_confirmation_email(invitation_details) do
