@@ -18,7 +18,13 @@ defmodule Dailyploy.Helper.Seed.Status do
   end
 
   defp insert_status(task_status, project) do
-    params = %{name: task_status, project_id: project.id, workspace_id: project.workspace_id}
+    params = %{
+      name: task_status,
+      project_id: project.id,
+      workspace_id: project.workspace_id,
+      sequence_no: 1,
+      is_default: true
+    }
 
     case TaskStatus.create(params) do
       {:ok, _task_status} -> :ok

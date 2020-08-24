@@ -31,4 +31,10 @@ defmodule DailyployWeb.TaskStatusView do
       inserted_at: task_status.inserted_at
     }
   end
+
+  def render("update_sequence.json", %{task_status: task_status}) do
+    %{
+      task_status: render_many(task_status, TaskStatusView, "task_status.json")
+    }
+  end
 end

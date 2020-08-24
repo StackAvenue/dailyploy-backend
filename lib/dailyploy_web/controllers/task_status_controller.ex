@@ -113,11 +113,15 @@ defmodule DailyployWeb.TaskStatusController do
   def update_sequence(conn, params) do
     case conn.status do
       nil ->
-        case TaskStatus.update_sequence(conn.assigns.task_status, params["update_sequence_no"]) do
+        case TaskStatus.update_sequence(
+               conn.assigns.task_status,
+               params["update_sequence_no"],
+               params
+             ) do
           {:ok, task_status} ->
             conn
             |> put_status(200)
-            |> render("task_status.json", %{task_status: task_status})
+            |> render("update_sequence.json", %{task_status: task_status})
 
           {:error, task_status} ->
             error = extract_changeset_error(task_status)

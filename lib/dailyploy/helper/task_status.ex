@@ -11,7 +11,7 @@ defmodule Dailyploy.Helper.TaskStatus do
   @doc """
     For updating sequence redirecting to model function
   """
-  defdelegate update_sequence(status, update_sequence_no), to: TSModel
+  defdelegate update_sequence(status, update_sequence_no, params), to: TSModel
 
   def create(params) do
     %{

@@ -12,13 +12,6 @@ defmodule Dailyploy.Model.TaskStatus do
 
   def update(task_status, params) do
     changeset = TaskStatus.changeset(task_status, params)
-    # changeset =
-    #   case task_status.name == "not_started" do
-    #     true ->
-    #       Ecto.Changeset.add_error(changeset, :default_status, "Default status cannot be updated")
-    #     false ->
-    #       changeset
-    #   end
     Repo.update(changeset)
   end
 
@@ -31,6 +24,7 @@ defmodule Dailyploy.Model.TaskStatus do
          Ecto.Changeset.add_error(changeset, :default_status, "Default status cannot be updated")}
 
       false ->
+        update_sequence_when_deleted(task_status)
         Repo.delete(task_status)
     end
   end
@@ -87,7 +81,7 @@ defmodule Dailyploy.Model.TaskStatus do
     }
   end
 
-  def update_sequence(update_status, updated) do
+  def update_sequence(update_status, updated, params) do
     previous = update_status.sequence_no
 
     if updated > previous do
@@ -115,6 +109,19 @@ defmodule Dailyploy.Model.TaskStatus do
         :no_reply
       end
     end
+
+    query =
+      from task_status in TaskStatus,
+        join: project in Project,
+        on:
+          project.id == ^params["project_id"] and project.workspace_id == ^params["workspace_id"],
+        where:
+          task_status.project_id == ^params["project_id"] and
+            task_status.workspace_id == ^params["workspace_id"],
+        order_by: task_status.sequence_no
+
+    task_status = Repo.all(query) |> Repo.preload([:project, :workspace])
+    {:ok, task_status}
   end
 
   def get_status_ids_in_workspace!(workspace_id) do
@@ -125,5 +132,16 @@ defmodule Dailyploy.Model.TaskStatus do
         distinct: true
 
     Repo.all(query)
+  end
+
+  def update_sequence_when_deleted(task_status) do
+    query =
+      from status in TaskStatus,
+        where:
+          status.project_id == ^task_status.project_id and
+            status.workspace_id == ^task_status.workspace_id and
+            fragment("sequence_no > ? ", ^task_status.sequence_no)
+
+    Repo.update_all(query, inc: [sequence_no: -1])
   end
 end
