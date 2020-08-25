@@ -24,4 +24,13 @@ defmodule Dailyploy.Schema.TaskStatus do
     |> assoc_constraint(:project)
     |> unique_constraint(:name, name: :unique_status_index)
   end
+
+  def delete_changeset(%__MODULE__{} = task_list) do
+    task_list
+    |> cast(%{}, [])
+    |> foreign_key_constraint(:tasks,
+      name: :tasks_task_status_id_fkey,
+      message: "status are attached to a task"
+    )
+  end
 end

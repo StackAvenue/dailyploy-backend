@@ -24,8 +24,16 @@ defmodule Dailyploy.Model.TaskStatus do
          Ecto.Changeset.add_error(changeset, :default_status, "Default status cannot be updated")}
 
       false ->
-        update_sequence_when_deleted(task_status)
-        Repo.delete(task_status)
+        changeset = TaskStatus.delete_changeset(task_status)
+
+        case Repo.delete(changeset) do
+          {:ok, task_status} ->
+            update_sequence_when_deleted(task_status)
+            {:ok, task_status}
+
+          {:error, error} ->
+            {:error, error}
+        end
     end
   end
 
