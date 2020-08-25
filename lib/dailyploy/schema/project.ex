@@ -17,6 +17,7 @@ defmodule Dailyploy.Schema.Project do
     field :end_date, :date
     field :description, :string
     field :color_code, :string
+    field :monthly_budget, :float
 
     belongs_to :workspace, Workspace
     belongs_to :owner, User
@@ -38,7 +39,8 @@ defmodule Dailyploy.Schema.Project do
       :description,
       :color_code,
       :owner_id,
-      :workspace_id
+      :workspace_id,
+      :monthly_budget
     ])
     |> validate_required([:name, :start_date])
     |> format_start_date(attrs)
@@ -53,7 +55,7 @@ defmodule Dailyploy.Schema.Project do
   def update_changeset(project, attrs) do
     project
     |> Repo.preload([:members])
-    |> cast(attrs, [:name, :start_date, :end_date, :description, :color_code])
+    |> cast(attrs, [:name, :start_date, :end_date, :description, :color_code, :monthly_budget])
     |> format_start_date(attrs)
     |> unique_constraint(:project_name_workspace_uniqueness,
       name: :unique_index_for_project_name_and_workspace_id_in_project
