@@ -225,9 +225,8 @@ defmodule DailyployWeb.TaskView do
       priority: task.priority,
       duration: task.duration,
       duration_in_string: task.duration_in_string,
-      owner: render_one(task.owner, UserView, "user.json"),
       category: render_one(task.category, TaskCategoryView, "task_category.json"),
-      project: render_one(task.project, ProjectView, "project_for_listing.json"),
+      project: render_one(task.project, ProjectView, "project_for_report.json"),
       time_tracked: render_many(task.time_tracks, TimeTrackingView, "task_with_track_time.json"),
       created_at: task.inserted_at,
       date_formatted_time_tracks:

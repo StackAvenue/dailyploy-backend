@@ -90,6 +90,13 @@ defmodule DailyployWeb.ProjectView do
     }
   end
 
+  def render("project_for_report.json", %{project: project}) do
+    %{
+      id: project.id,
+      name: project.name
+    }
+  end
+
   def render("changeset_error.json", %{errors: errors}) do
     %{errors: ErrorHelpers.changeset_error_to_map(errors)}
   end
