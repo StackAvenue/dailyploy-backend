@@ -100,6 +100,7 @@ defmodule DailyployWeb.Router do
           get "/summary", TaskListsController, :summary
         end
 
+        resources "/milestone", MilestoneController
         resources "/contact", ContactController, only: [:show, :create, :update, :delete, :index]
       end
 
