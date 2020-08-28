@@ -208,6 +208,14 @@ defmodule Dailyploy.Model.Task do
     end
   end
 
+  # or
+  #                  fragment(
+  #                    "?::date BETWEEN ? AND ?",
+  #                    tracked_time.end_time,
+  #                    ^start_date,
+  #                    ^end_date
+  #                  )
+
   def tracked_time(task_id, start_date, end_date) do
     case TaskModel.get(task_id) do
       {:error, _message} ->
@@ -224,12 +232,6 @@ defmodule Dailyploy.Model.Task do
                    ^start_date,
                    ^end_date
                  ) or
-                   fragment(
-                     "?::date BETWEEN ? AND ?",
-                     tracked_time.end_time,
-                     ^start_date,
-                     ^end_date
-                   ) or
                    fragment(
                      "?::date <= ? AND ?::date >= ?",
                      tracked_time.start_time,
