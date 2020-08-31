@@ -2,10 +2,10 @@ use Mix.Config
 
 # Configure your database
 config :dailyploy, Dailyploy.Repo,
-  username: "postgres",
-  password: "postgres",
-  database: "dailyploy_test",
-  hostname: "localhost",
+  username: System.get_env("POSTGRES_USER") || "postgres",
+  password: System.get_env("POSTGRES_PASSWORD") || "postgres",
+  database: System.get_env("POSTGRES_DB") || "dailyploy_test",
+  hostname: System.get_env("POSTGRES_HOST") || "localhost",
   pool: Ecto.Adapters.SQL.Sandbox
 
 # We don't run a server during test. If one is required,
