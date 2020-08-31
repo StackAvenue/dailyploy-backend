@@ -43,16 +43,16 @@ defmodule Dailyploy.Model.UserWorkspaceSetting do
             workspace_change = %{"name" => current_name}
 
             with {:ok, %Workspace{} = workspace} <-
-              WorkspaceModel.update_workspace(workspace, workspace_change) do
-               workspace
+                   WorkspaceModel.update_workspace(workspace, workspace_change) do
+              workspace
             end
 
           current_currency !== actual_currency ->
             workspace_change = %{"currency" => current_currency}
 
             with {:ok, %Workspace{} = workspace} <-
-              WorkspaceModel.update_workspace(workspace, workspace_change) do
-               workspace
+                   WorkspaceModel.update_workspace(workspace, workspace_change) do
+              workspace
             end
         end
     end
