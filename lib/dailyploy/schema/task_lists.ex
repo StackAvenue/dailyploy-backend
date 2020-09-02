@@ -1,6 +1,6 @@
 defmodule Dailyploy.Schema.TaskLists do
   use Ecto.Schema
-  alias Dailyploy.Schema.{Workspace, Project, User, TaskListTasks}
+  alias Dailyploy.Schema.{Workspace, Project, User, TaskListTasks, TaskStatus}
   import Ecto.Changeset
 
   schema "task_lists" do
@@ -10,6 +10,7 @@ defmodule Dailyploy.Schema.TaskLists do
     field :description, :string
     field :color_code, :string
 
+    belongs_to :task_status, TaskStatus
     belongs_to :workspace, Workspace
     belongs_to :creator, User
     belongs_to :project, Project
@@ -19,7 +20,7 @@ defmodule Dailyploy.Schema.TaskLists do
   end
 
   @required_params ~w(name workspace_id creator_id project_id)a
-  @optional_params ~w(description end_date start_date color_code)a
+  @optional_params ~w(description end_date start_date task_status_id color_code)a
 
   @permitted_params @required_params ++ @optional_params
 
@@ -30,6 +31,7 @@ defmodule Dailyploy.Schema.TaskLists do
     |> assoc_constraint(:workspace)
     |> assoc_constraint(:creator)
     |> assoc_constraint(:project)
+    |> assoc_constraint(:task_status)
     |> unique_constraint(:project, name: :unique_name_per_project)
   end
 end
