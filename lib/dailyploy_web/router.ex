@@ -98,6 +98,7 @@ defmodule DailyployWeb.Router do
           resources "/task_list_tasks", TaskListTasksController, except: [:new, :edit]
           post "/move/:id", TaskListTasksController, :move_task
           get "/summary", TaskListsController, :summary
+          resources "/checklists", RoadmapChecklistController, except: [:new, :edit]
         end
 
         resources "/contact", ContactController, only: [:show, :create, :update, :delete, :index]
