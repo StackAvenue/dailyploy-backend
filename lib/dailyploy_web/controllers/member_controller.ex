@@ -48,7 +48,8 @@ defmodule DailyployWeb.MemberController do
           "id" => user_id,
           "role_id" => role_id,
           "working_hours" => working_hours,
-          "workspace_id" => workspace_id
+          "workspace_id" => workspace_id,
+          "hourly_expense" => hourly_expense
         } = attrs
       ) do
     user_workspace =
@@ -69,7 +70,8 @@ defmodule DailyployWeb.MemberController do
         case UserWorkspaceSettingsModel.update_user_workspace_settings(user_workspace_settings, %{
                user_id: user_id,
                workspace_id: workspace_id,
-               working_hours: working_hours
+               working_hours: working_hours,
+               hourly_expense: hourly_expense
              }) do
           {:ok, _} ->
             conn
@@ -77,7 +79,8 @@ defmodule DailyployWeb.MemberController do
               "user_id" => user_id,
               "role_id" => role_id,
               "working_hours" => working_hours,
-              "workspace_id" => workspace_id
+              "workspace_id" => workspace_id,
+              "hourly_expense" => hourly_expense
             })
 
           {:error, _} ->

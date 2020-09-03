@@ -18,6 +18,7 @@ defmodule DailyployWeb.WorkspaceView do
       id: workspace.id,
       name: workspace.name,
       type: workspace.type,
+      currency: workspace.currency,
       company: CompanyView.render("company.json", %{company: workspace.company}),
       owner: UserView.render("user.json", %{user: workspace.users |> List.first()})
     }

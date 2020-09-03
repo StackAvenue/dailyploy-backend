@@ -58,6 +58,7 @@ defmodule Dailyploy.Model.Invitation do
       working_hours: working_hours,
       role_id: role_id,
       workspace_id: workspace_id,
+      hourly_expense: hourly_expense,
       email: email,
       project_id: project_id
     } = List.first(Repo.all(query))
@@ -72,6 +73,7 @@ defmodule Dailyploy.Model.Invitation do
       "name" => name,
       "email" => email,
       "working_hours" => working_hours,
+      "hourly_expense" => hourly_expense,
       "role_id" => role_id,
       "workspace_id" => workspace_id,
       "workspace_name" => workspace_name,

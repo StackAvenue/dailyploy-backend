@@ -54,7 +54,8 @@ defmodule DailyployWeb.TaskListsController do
         {:extract, {:ok, data}} = {:extract, extract_changeset_data(changeset)}
 
         {:list, task_lists} =
-          {:list, PTModel.get_all(data, [:workspace, :creator, :project], data.project_id)}
+          {:list,
+           PTModel.get_all(data, [:workspace, :creator, :project, :task_status], data.project_id)}
 
         conn
         |> put_status(200)

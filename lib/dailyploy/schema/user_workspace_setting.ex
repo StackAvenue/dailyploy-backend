@@ -9,13 +9,14 @@ defmodule Dailyploy.Schema.UserWorkspaceSetting do
     belongs_to :user, User
     belongs_to :workspace, Workspace
     field :working_hours, :integer, default: 8
+    field :hourly_expense, :float
 
     timestamps()
   end
 
   def changeset(user_workspace_settings, attrs) do
     user_workspace_settings
-    |> cast(attrs, [:workspace_id, :user_id, :working_hours])
+    |> cast(attrs, [:workspace_id, :user_id, :working_hours, :hourly_expense])
     |> validate_required([:workspace_id, :user_id])
   end
 end

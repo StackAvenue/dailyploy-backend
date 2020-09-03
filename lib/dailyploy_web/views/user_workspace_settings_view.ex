@@ -4,7 +4,7 @@ defmodule DailyployWeb.UserWorkspaceSettingsView do
   alias DailyployWeb.ErrorHelpers
 
   def render("show.json", %{workspace: workspace}) do
-    %{workspace_id: workspace.id, workspace_role: workspace.name}
+    %{workspace_id: workspace.id, workspace_role: workspace.name, currency: workspace.currency}
   end
 
   def render("show_something.json", %{workspace: workspace}) do

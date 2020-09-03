@@ -39,6 +39,7 @@ defmodule DailyployWeb.MemberView do
       role: user.role,
       created_at: user.inserted_at,
       working_hours: Map.get(user_workspace_setting, :working_hours),
+      hourly_expense: Map.get(user_workspace_setting, :hourly_expense),
       is_invited: false,
       projects: render_many(user.projects, ProjectView, "show_project.json")
     }

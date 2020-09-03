@@ -24,7 +24,8 @@ defmodule DailyployWeb.ProjectView do
       start_date: project.start_date,
       end_date: project.end_date,
       description: project.description,
-      color_code: project.color_code
+      color_code: project.color_code,
+      monthly_budget: project.monthly_budget
     }
   end
 
@@ -37,6 +38,7 @@ defmodule DailyployWeb.ProjectView do
       description: project.description,
       color_code: project.color_code,
       created_at: project.inserted_at,
+      monthly_budget: project.monthly_budget,
       contacts: render_many(project.contacts, ContactView, "contact.json"),
       members: render_many(project.members, UserView, "user.json")
     }
@@ -51,6 +53,7 @@ defmodule DailyployWeb.ProjectView do
       description: project.description,
       color_code: project.color_code,
       created_at: project.inserted_at,
+      monthly_budget: project.monthly_budget,
       members: render_many(project.members, UserView, "user.json")
     }
   end
@@ -71,6 +74,7 @@ defmodule DailyployWeb.ProjectView do
       end_date: project.end_date,
       description: project.description,
       color_code: project.color_code,
+      monthly_budget: project.monthly_budget,
       contacts: render_many(project.contacts, ContactView, "contact.json"),
       created_at: project.inserted_at
     }
@@ -85,6 +89,7 @@ defmodule DailyployWeb.ProjectView do
       description: project.description,
       color_code: project.color_code,
       created_at: project.inserted_at,
+      monthly_budget: project.monthly_budget,
       members: render_many(project.members, UserView, "user.json"),
       owner: render_one(project.owner, UserView, "user.json")
     }

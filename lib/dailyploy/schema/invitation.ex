@@ -11,6 +11,7 @@ defmodule Dailyploy.Schema.Invitation do
     field :token, :string
     field :name, :string
     field :working_hours, :integer
+    field :hourly_expense, :float
     field :status, InviteStatusTypeEnum
     belongs_to :role, Role
     belongs_to :workspace, Workspace
@@ -22,7 +23,7 @@ defmodule Dailyploy.Schema.Invitation do
 
   def changeset(invitation, attrs) do
     invitation
-    |> cast(attrs, [:email, :status, :token, :name, :working_hours])
+    |> cast(attrs, [:email, :status, :token, :name, :working_hours, :hourly_expense])
     |> validate_required([:email, :status])
     |> validate_format(:email, ~r/^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,})$/)
     |> genToken(attrs)

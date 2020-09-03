@@ -72,7 +72,8 @@ defmodule DailyployWeb.InvitationController do
               invited_user.id,
               invited_workspace_id,
               invite_attrs["working_hours"],
-              invite_attrs["role_id"]
+              invite_attrs["role_id"],
+              invite_attrs["hourly_expense"]
             )
 
             case InvitationHelper.create_confirmation_without_project(
@@ -105,7 +106,8 @@ defmodule DailyployWeb.InvitationController do
               invited_workspace_id,
               invite_attrs["project_id"],
               invite_attrs["working_hours"],
-              invite_attrs["role_id"]
+              invite_attrs["role_id"],
+              invite_attrs["hourly_expense"]
             )
 
             case InvitationHelper.create_confirmation(invite_attrs, invitation_details) do
