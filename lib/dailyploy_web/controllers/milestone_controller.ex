@@ -7,8 +7,12 @@ defmodule DailyployWeb.MilestoneController do
 
   plug Auth.Pipeline
 
-  def index(conn, %{"project_id" => project_id}) do
-    milestones = MilestoneModel.get_milestones(project_id)
+  def index(conn, %{
+        "project_id" => project_id,
+        "start_date" => start_date,
+        "end_date" => end_date
+      }) do
+    milestones = MilestoneModel.get_milestones(project_id, start_date, end_date)
     render(conn, "show.json", milestones: milestones)
   end
 
@@ -16,7 +20,7 @@ defmodule DailyployWeb.MilestoneController do
     case conn.status do
       404 ->
         conn
-        |> send_resp(404, "ajsnkajsn")
+        |> send_resp(404, "not_found")
 
       nil ->
         milestone =
@@ -39,12 +43,12 @@ defmodule DailyployWeb.MilestoneController do
 
   def update(conn, %{"id" => id, "milestone" => milestone_params}) do
     milestone = MilestoneModel.get_milestone!(id)
+
     case MilestoneModel.update_milestone(milestone, milestone_params) do
       {:ok, %Milestone{} = milestone} ->
         conn
         |> put_status(200)
         |> render("milestone.json", %{milestone: milestone})
-
 
       {:error, milestone} ->
         conn

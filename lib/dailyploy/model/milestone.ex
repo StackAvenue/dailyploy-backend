@@ -3,16 +3,21 @@ defmodule Dailyploy.Model.Milestone do
   alias Dailyploy.Schema.Milestone
 
   import Ecto.Query
+
   def create_milestone(attrs \\ %{}) do
     %Milestone{}
     |> Milestone.changeset(attrs)
     |> Repo.insert()
   end
 
-  def get_milestones(project_id) do
+  def get_milestones(project_id, start_date, end_date) do
     query =
       from milestone in Milestone,
-        where: milestone.project_id == ^project_id
+        where:
+          milestone.project_id == ^project_id and
+            milestone.due_date >= ^start_date and
+            milestone.due_date <= ^end_date,
+        order_by: [desc: milestone.due_date]
 
     Repo.all(query)
   end
@@ -28,5 +33,4 @@ defmodule Dailyploy.Model.Milestone do
   def delete_milestone(%Milestone{} = milestone) do
     Repo.delete(milestone)
   end
-
 end

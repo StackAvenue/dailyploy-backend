@@ -11,17 +11,18 @@ defmodule Dailyploy.Schema.Milestone do
     field :status, MilestoneTypeEnum
 
     belongs_to :project, Project
+    timestamps()
+  end
 
-    def changeset(milestone, attrs) do
-      milestone
-      |> cast(attrs, [:name, :description, :due_date, :status, :project_id])
-      |> validate_required([:name, :due_date])
-      |> assoc_constraint(:project)
-    end
+  def changeset(milestone, attrs) do
+    milestone
+    |> cast(attrs, [:name, :description, :due_date, :status, :project_id])
+    |> validate_required([:name, :due_date])
+    |> assoc_constraint(:project)
+  end
 
-    def update_changeset(milestone, attrs) do
-      milestone
-      |> cast(attrs, [:name, :description, :due_date, :status])
-    end
+  def update_changeset(milestone, attrs) do
+    milestone
+    |> cast(attrs, [:name, :description, :due_date, :status])
   end
 end
