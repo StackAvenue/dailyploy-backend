@@ -101,6 +101,7 @@ defmodule DailyployWeb.Router do
           resources "/checklists", RoadmapChecklistController, except: [:new, :edit]
         end
 
+        resources "/milestone", MilestoneController
         resources "/contact", ContactController, only: [:show, :create, :update, :delete, :index]
       end
 

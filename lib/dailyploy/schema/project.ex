@@ -10,6 +10,7 @@ defmodule Dailyploy.Schema.Project do
   alias Dailyploy.Schema.Workspace
   alias Dailyploy.Schema.UserProject
   alias Dailyploy.Schema.Contact
+  alias Dailyploy.Schema.Milestone
 
   schema "projects" do
     field :name, :string
@@ -24,6 +25,7 @@ defmodule Dailyploy.Schema.Project do
     has_many :invitation, Invitation
     has_many :tasks, Task
     has_many :contacts, Contact
+    has_many :milestones, Milestone
     many_to_many :members, User, join_through: UserProject, on_replace: :delete
 
     timestamps()
