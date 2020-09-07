@@ -1,6 +1,6 @@
 defmodule Dailyploy.Schema.TaskLists do
   use Ecto.Schema
-  alias Dailyploy.Schema.{Workspace, Project, User, TaskListTasks, TaskStatus}
+  alias Dailyploy.Schema.{Workspace, Project, User, TaskListTasks, TaskStatus, RoadmapChecklist}
   import Ecto.Changeset
 
   schema "task_lists" do
@@ -16,6 +16,7 @@ defmodule Dailyploy.Schema.TaskLists do
     belongs_to :project, Project
 
     has_many :task_list_tasks, TaskListTasks
+    has_many :checklists, RoadmapChecklist
     timestamps()
   end
 
