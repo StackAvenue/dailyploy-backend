@@ -26,6 +26,56 @@ defmodule DailyployWeb.TaskController do
     render(conn, "index.json", tasks: tasks)
   end
 
+  def copy_task(conn, %{"id" => id}) do
+    task = TaskModel.get_task!(id) |> Repo.preload(:members)
+    params = params_extraction(task)
+
+    case TaskModel.create_task(params) do
+      {:ok, task} ->
+        task =
+          task
+          |> Repo.preload([:members, :project, :owner, :category, :time_tracks, :task_status])
+
+        date_formatted_time_tracks = date_wise_orientation(task.time_tracks)
+        task = Map.put(task, :date_formatted_time_tracks, date_formatted_time_tracks)
+        render(conn, "show.json", task: task)
+
+      {:error, task} ->
+        conn
+        |> put_status(422)
+        |> render("changeset_error.json", %{errors: task.errors})
+    end
+  end
+
+  defp params_extraction(params) do
+    member_ids =
+      Enum.reduce(params.members, [], fn members, acc ->
+        acc ++ [members.id]
+      end)
+
+    Map.from_struct(params)
+    |> Map.put_new(:member_ids, member_ids)
+    |> Map.drop([
+      :_id,
+      :__meta__,
+      :category,
+      :comments,
+      :inserted_at,
+      :updated_at,
+      :time_tracks,
+      :task_status,
+      :task_list_tasks,
+      :task_comments,
+      :project,
+      :owner
+    ])
+    |> map_to_atom()
+  end
+
+  defp map_to_atom(params) do
+    for {key, value} <- params, into: %{}, do: {Atom.to_string(key), value}
+  end
+
   def create(conn, %{"project_id" => project_id, "task" => task_params}) do
     user = Guardian.Plug.current_resource(conn)
 
