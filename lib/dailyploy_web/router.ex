@@ -106,7 +106,7 @@ defmodule DailyployWeb.Router do
       end
 
       get "/project_member", ResourceController, :index
-      resources "/resource_allocation", AllocationController
+      resources "/resource_allocation", ResourceAllocationController
       delete "/projects", ProjectController, :delete
     end
 
