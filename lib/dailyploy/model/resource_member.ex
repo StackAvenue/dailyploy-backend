@@ -1,22 +1,10 @@
-defmodule Dailyploy.Model.Resource do
+defmodule Dailyploy.Model.ResourceMember do
   alias Dailyploy.Repo
-  alias Dailyploy.Schema.Project
-  alias Dailyploy.Model.Project, as: ProjectModel
   alias Dailyploy.Model.User, as: UserModel
-  alias Dailyploy.Schema.UserWorkspaceSetting
   alias Dailyploy.Schema.UserWorkspace
   alias Dailyploy.Schema.User
 
   import Ecto.Query
-
-  def fetch_projects(workspace_id) do
-    query =
-      from project in Project,
-        where: project.workspace_id == ^workspace_id,
-        order_by: project.name
-
-    Repo.all(query)
-  end
 
   def fetch_members(workspace_id) do
     params = %{"workspace_id" => workspace_id}

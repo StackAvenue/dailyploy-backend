@@ -7,9 +7,9 @@ defmodule Dailyploy.Model.ResourceAllocation do
   alias Dailyploy.Schema.UserWorkspace
   alias Dailyploy.Schema.User
   alias Dailyploy.Schema.UserProject
+  alias Dailyploy.Model.UserProject, as: UserProjectModel
 
   import Ecto.Query
-
   def fetch_project_members(workspace_id) do
     params = %{"workspace_id" => workspace_id}
     query_params = map_to_atom(params)
@@ -31,6 +31,16 @@ defmodule Dailyploy.Model.ResourceAllocation do
       end)
 
     member_projects(member_results)
+  end
+
+  def delete_user_project(user_id, project_id) do
+    query =
+      from projectuser in UserProject,
+        where: projectuser.user_id == ^user_id and projectuser.project_id == ^project_id
+
+    user_project = List.first(Repo.all(query))
+
+    UserProjectModel.delete_user_project(user_project)
   end
 
   defp member_projects(member_results) do
