@@ -4,7 +4,11 @@ defmodule DailyployWeb.ResourceProjectView do
 
   def render("show.json", %{projects: projects}) do
     %{
-      projects: render_many(projects, ResourceProjectView, "projects.json")
+      projects: render_many(projects.entries, ResourceProjectView, "projects.json"),
+      page_number: projects.page_number,
+      page_size: projects.page_size,
+      total_entries: projects.total_entries,
+      total_pages: projects.total_pages
     }
   end
 

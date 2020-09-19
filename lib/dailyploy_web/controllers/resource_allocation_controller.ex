@@ -35,9 +35,9 @@ defmodule DailyployWeb.ResourceAllocationController do
         conn
         |> put_status(200)
         |> json(%{"message" => "Deleted"})
-      nil ->
+
+      404 ->
         conn
-        |> put_status(404)
         |> json("error")
      end
   end

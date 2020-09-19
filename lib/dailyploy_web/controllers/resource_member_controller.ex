@@ -4,8 +4,9 @@ defmodule DailyployWeb.ResourceMemberController do
 
   alias Dailyploy.Model.ResourceMember
 
-  def index(conn, %{"workspace_id" => workspace_id}) do
-    members = ResourceMember.fetch_members(workspace_id)
+  def index(conn, params) do
+    # members = ResourceMember.fetch_members(workspace_id)
+    members = ResourceMember.get_all(params)
 
     render(conn, "show.json", members: members)
   end

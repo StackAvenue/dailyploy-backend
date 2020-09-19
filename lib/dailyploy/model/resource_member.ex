@@ -1,40 +1,39 @@
 defmodule Dailyploy.Model.ResourceMember do
   alias Dailyploy.Repo
-  alias Dailyploy.Model.User, as: UserModel
+
   alias Dailyploy.Schema.UserWorkspace
   alias Dailyploy.Schema.User
 
   import Ecto.Query
 
-  def fetch_members(workspace_id) do
-    params = %{"workspace_id" => workspace_id}
-    query_params = map_to_atom(params)
-    members = filter_users(query_params)
+  def get_all(params) do
+    %{
+      "page_size" => page_size,
+      "page_number" => page_number,
+      "workspace_id" => workspace_id
+    } = params
 
-    member_results =
-      Enum.map(members, fn member ->
-        user_workspace_setting =
-          UserModel.list_user_workspace_setting(member.id, query_params.workspace_id)
-
-        %{member: member}
-      end)
-  end
-
-  defp map_to_atom(params) do
-    for {key, value} <- params, into: %{}, do: {String.to_atom(key), value}
-  end
-
-  defp filter_users(params) do
     query =
       from(user in User,
         join: user_workspace in UserWorkspace,
         on:
           user_workspace.user_id == user.id and
-            user_workspace.workspace_id == ^params.workspace_id,
+            user_workspace.workspace_id == ^workspace_id,
         distinct: true,
-        order_by: user.name,
+        order_by: user.name
       )
 
-    Repo.all(query)
+    paginated_project_data = Repo.paginate(query, page: page_number, page_size: page_size)
+    paginated_response(paginated_project_data)
+  end
+
+  defp paginated_response(pagination_data) do
+    %{
+      entries: pagination_data.entries,
+      page_number: pagination_data.page_number,
+      page_size: pagination_data.page_size,
+      total_entries: pagination_data.total_entries,
+      total_pages: pagination_data.total_pages
+    }
   end
 end
