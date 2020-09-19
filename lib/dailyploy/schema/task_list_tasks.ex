@@ -1,6 +1,6 @@
 defmodule Dailyploy.Schema.TaskListTasks do
   use Ecto.Schema
-  alias Dailyploy.Schema.{TaskCategory, User, TaskLists, Task, TaskStatus}
+  alias Dailyploy.Schema.{TaskCategory, User, TaskLists, Task, TaskStatus, UserStories}
 
   import Ecto.Changeset
 
@@ -19,12 +19,13 @@ defmodule Dailyploy.Schema.TaskListTasks do
     belongs_to :category, TaskCategory
     belongs_to :task_lists, TaskLists
     belongs_to :task, Task
+    belongs_to :user_stories, UserStories
 
     timestamps()
   end
 
-  @required_params ~w(name task_lists_id)a
-  @optional_params ~w(description owner_id estimation status priority category_id task_status_id task_id)a
+  @required_params ~w(name)a
+  @optional_params ~w(description task_lists_id user_stories_id owner_id estimation status priority category_id task_status_id task_id)a
 
   @permitted_params @required_params ++ @optional_params
 
@@ -36,6 +37,7 @@ defmodule Dailyploy.Schema.TaskListTasks do
     |> assoc_constraint(:task_lists)
     |> assoc_constraint(:task)
     |> assoc_constraint(:category)
+    |> assoc_constraint(:user_stories)
     |> assoc_constraint(:task_status)
     |> validate_inclusion(:status, @task_status)
     |> validate_inclusion(:priority, @task_priority)
