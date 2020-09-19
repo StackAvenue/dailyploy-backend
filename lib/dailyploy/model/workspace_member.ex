@@ -1,4 +1,4 @@
-defmodule Dailyploy.Model.ResourceMember do
+defmodule Dailyploy.Model.WorkspaceMember do
   alias Dailyploy.Repo
 
   alias Dailyploy.Schema.UserWorkspace
@@ -23,8 +23,8 @@ defmodule Dailyploy.Model.ResourceMember do
         order_by: user.name
       )
 
-    paginated_project_data = Repo.paginate(query, page: page_number, page_size: page_size)
-    paginated_response(paginated_project_data)
+    paginated_member_data = Repo.paginate(query, page: page_number, page_size: page_size)
+    paginated_response(paginated_member_data)
   end
 
   defp paginated_response(pagination_data) do

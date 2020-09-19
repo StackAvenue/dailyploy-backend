@@ -1,4 +1,4 @@
-defmodule Dailyploy.Model.ResourceProject do
+defmodule Dailyploy.Model.WorkspaceProject do
   alias Dailyploy.Repo
   alias Dailyploy.Schema.Project
   import Ecto.Query
