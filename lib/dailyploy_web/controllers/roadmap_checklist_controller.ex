@@ -39,7 +39,8 @@ defmodule DailyployWeb.RoadmapChecklistController do
       nil ->
         {:extract, {:ok, data}} = {:extract, extract_changeset_data(changeset)}
 
-        {:list, checklists} = {:list, RoadmapChecklist.get_all(data, [], data.task_lists_id)}
+        {:list, checklists} =
+          {:list, RoadmapChecklist.get_all(data, [], data.task_lists_id, data.user_stories_id)}
 
         conn
         |> put_status(200)

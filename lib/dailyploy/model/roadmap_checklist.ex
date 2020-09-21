@@ -30,10 +30,17 @@ defmodule Dailyploy.Model.RoadmapChecklist do
     end
   end
 
-  def get_all(%{page_size: page_size, page_number: page_number}, preloads, task_lists_id) do
+  def get_all(
+        %{page_size: page_size, page_number: page_number},
+        preloads,
+        task_lists_id,
+        user_stories_id
+      ) do
     query =
       from checklist in RoadmapChecklist,
-        where: checklist.task_lists_id == ^task_lists_id
+        where:
+          checklist.task_lists_id == ^task_lists_id or
+            checklist.user_stories_id == ^user_stories_id
 
     checklist_data =
       query |> order_by(:id) |> Repo.paginate(page: page_number, page_size: page_size)

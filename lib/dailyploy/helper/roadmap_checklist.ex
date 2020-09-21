@@ -2,7 +2,7 @@ defmodule Dailyploy.Helper.RoadmapChecklist do
   alias Dailyploy.Model.RoadmapChecklist, as: RCModel
   import DailyployWeb.Helpers
 
-  defdelegate get_all(data, preloads, task_lists_id), to: RCModel
+  defdelegate get_all(data, preloads, task_lists_id, user_stories_id), to: RCModel
   defdelegate update(checklist, params), to: RCModel
   defdelegate delete(checklist), to: RCModel
 

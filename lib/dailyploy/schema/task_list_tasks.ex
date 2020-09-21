@@ -1,6 +1,15 @@
 defmodule Dailyploy.Schema.TaskListTasks do
   use Ecto.Schema
-  alias Dailyploy.Schema.{TaskCategory, User, TaskLists, Task, TaskStatus, UserStories}
+
+  alias Dailyploy.Schema.{
+    TaskCategory,
+    User,
+    TaskLists,
+    Task,
+    TaskStatus,
+    UserStories,
+    RoadmapChecklist
+  }
 
   import Ecto.Changeset
 
@@ -20,6 +29,8 @@ defmodule Dailyploy.Schema.TaskListTasks do
     belongs_to :task_lists, TaskLists
     belongs_to :task, Task
     belongs_to :user_stories, UserStories
+
+    has_many :checklist, RoadmapChecklist
 
     timestamps()
   end

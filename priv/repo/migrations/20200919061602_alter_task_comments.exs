@@ -8,7 +8,7 @@ defmodule Dailyploy.Repo.Migrations.AlterTaskComments do
   end
 
   def down do
-    drop constraint(:task_comments, "task_comments_story_id_fkey")
+    drop constraint(:task_comments, "task_comments_user_stories_id_fkey")
 
     alter table(:task_comments) do
       remove :user_stories_id

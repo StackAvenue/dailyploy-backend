@@ -1,7 +1,7 @@
 defmodule Dailyploy.Schema.UserStories do
   use Ecto.Schema
   import Ecto.Changeset
-  alias Dailyploy.Schema.{User, TaskListTasks, TaskLists, TaskComment}
+  alias Dailyploy.Schema.{User, TaskListTasks, TaskLists, TaskComment, RoadmapChecklist}
 
   @task_status ~w(completed running not_started)s
 
@@ -16,6 +16,7 @@ defmodule Dailyploy.Schema.UserStories do
     has_many :comments, TaskComment
     has_many :attachments, StoriesAttachments
     has_many :task_lists_tasks, TaskListTasks
+    has_many :roadmap_checklist, RoadmapChecklist
   end
 
   @required_params ~w(name status is_completed owner_id task_lists_id)a

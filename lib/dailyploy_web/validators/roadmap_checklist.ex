@@ -13,7 +13,8 @@ defmodule DailyployWeb.Validators.RoadmapChecklist do
     verify_index_params(%{
       page_size: :integer,
       page_number: :integer,
-      task_lists_id!: :integer
+      task_lists_id: :integer,
+      user_stories_id: :integer
     })
   )
 end

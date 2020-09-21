@@ -13,7 +13,8 @@ defmodule Dailyploy.Helper.TaskListTasks do
       owner_id: owner_id,
       task_status_id: task_status_id,
       category_id: category_id,
-      task_lists_id: task_lists_id
+      task_lists_id: task_lists_id,
+      user_stories_id: user_stories_id
     } = params
 
     verify_create(
@@ -22,6 +23,7 @@ defmodule Dailyploy.Helper.TaskListTasks do
         description: description,
         estimation: estimation,
         status: status,
+        user_stories_id: user_stories_id,
         priority: priority,
         task_status_id: task_status_id,
         owner_id: owner_id,

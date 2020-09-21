@@ -12,7 +12,8 @@ defmodule DailyployWeb.Validators.TaskListTasks do
       owner_id: :integer,
       task_status_id: :integer,
       category_id: :integer,
-      task_lists_id!: :integer
+      task_lists_id: :integer,
+      user_stories_id: :integer
     })
   )
 
@@ -20,7 +21,8 @@ defmodule DailyployWeb.Validators.TaskListTasks do
     verify_index_params(%{
       page_size: :integer,
       page_number: :integer,
-      task_lists_id!: :integer
+      task_lists_id: :integer,
+      user_stories_id: :integer
     })
   )
 end
