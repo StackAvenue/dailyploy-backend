@@ -8,7 +8,7 @@ defmodule DailyployWeb.TimeTrackingController do
   import DailyployWeb.Validators.TimeTracking
   import DailyployWeb.Helpers
 
-  plug :load_task when action in [:start_tracking]
+  plug :load_task when action in [:start_tracking, :logg_time]
   plug :load_tracked_task when action in [:stop_tracking]
   plug :load_time_tracked when action in [:edit_tracked_time, :delete]
 
@@ -126,6 +126,40 @@ defmodule DailyployWeb.TimeTrackingController do
             |> json(%{errors: message})
         end
     end
+  end
+
+  def logg_time(conn, params) do
+    case conn.status do
+      nil ->
+        params = create_params(params)
+
+        with {:ok, task_stopped} <- TTModel.create(params) do
+          conn
+          |> put_status(200)
+          |> render("task_stopped.json", %{task_stopped: task_stopped})
+        else
+          {:error, message} ->
+            conn
+            |> put_status(400)
+            |> json(%{errors: message})
+        end
+
+      404 ->
+        conn
+        |> send_error(404, "Task Not Found")
+    end
+  end
+
+  defp create_params(params) do
+    start_time = Timex.beginning_of_day(DateTime.utc_now())
+    in_second = params["logged_time"] * 60 * 60
+    end_time = DateTime.add(start_time, in_second, :second)
+
+    params =
+      Map.put_new(params, "start_time", start_time)
+      |> Map.put_new("end_time", end_time)
+      |> Map.put_new("duration", in_second)
+      |> Map.put_new("time_log", true)
   end
 
   defp load_task(%{params: %{"task_id" => task_id}} = conn, _params) do

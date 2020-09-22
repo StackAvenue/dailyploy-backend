@@ -28,8 +28,10 @@ defmodule DailyployWeb.Router do
 
     post "/add_workspace", NewWorkspaceController, :add_user_workspace
     get "/tasks/:id", TaskController, :show
+    post "/tasks/:id/copy", TaskController, :copy_task
     post "/tasks/:task_id/start-tracking", TimeTrackingController, :start_tracking
     put "/tasks/:task_id/stop-tracking", TimeTrackingController, :stop_tracking
+    post "/tasks/:task_id/logg_time", TimeTrackingController, :logg_time
     resources "/comment", TaskCommentController
     put "/tasks/:task_id/edit_tracked_time/:id", TimeTrackingController, :edit_tracked_time
     delete "/tasks/:task_id/delete/:id", TimeTrackingController, :delete

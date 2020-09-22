@@ -183,14 +183,19 @@ defmodule Dailyploy.Helper.User do
 
   defp add_user_workspace(user_attrs) do
     Map.put(user_attrs, "workspaces", [
-      %{"name" => "#{user_attrs["name"]}", "type" => "individual"}
+      %{
+        "name" => "#{user_attrs["name"]}",
+        "type" => "individual",
+        "timetrack_enabled" => "#{user_attrs["timetrack_enabled"]}"
+      }
     ])
   end
 
   defp add_company_workspace(company_attrs) do
     Map.put(company_attrs, "workspace", %{
       "name" => "#{company_attrs["name"]}",
-      "type" => "company"
+      "type" => "company",
+      "timetrack_enabled" => "#{company_attrs["timetrack_enabled"]}"
     })
   end
 
