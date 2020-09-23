@@ -10,6 +10,9 @@ defmodule Dailyploy.Model.ProjectMember do
         where: projectuser.user_id in ^user_ids and projectuser.project_id in ^project_ids
 
     project_member_list = Repo.all(query)
-    Enum.map(project_member_list, fn project_member -> %{project_member.user_id => project_member.project_id} end)
+
+    project_member_list
+    |> Enum.group_by(&(&1.user_id))
+    |> Enum.map(fn {key, value} -> %{key => value |> Enum.map(fn z -> z.project_id end)} end)
   end
 end
