@@ -15,7 +15,8 @@ defmodule DailyployWeb.WorkspaceProjectView do
   def render("projects.json", %{workspace_project: workspace_project}) do
     %{
       id: workspace_project.id,
-      name: workspace_project.name
+      name: workspace_project.name,
+      project_color: workspace_project.color_code
     }
   end
 end
