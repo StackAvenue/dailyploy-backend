@@ -1,7 +1,14 @@
 defmodule DailyployWeb.TaskListsView do
   use DailyployWeb, :view
   # alias DailyployWeb.ProjectTaskListView
-  alias DailyployWeb.{UserView, WorkspaceView, ProjectView, TaskListsView, TaskStatusView}
+  alias DailyployWeb.{
+    UserView,
+    WorkspaceView,
+    ProjectView,
+    TaskListsView,
+    TaskStatusView,
+    UserStoriesView
+  }
 
   def render("show.json", %{project_task_list: project_task_list}) do
     %{
@@ -47,7 +54,8 @@ defmodule DailyployWeb.TaskListsView do
       project_id: task_lists.project_id,
       project: render_one(task_lists.project, ProjectView, "show_project.json"),
       workspace: render_one(task_lists.workspace, WorkspaceView, "workspace_task.json"),
-      creator: render_one(task_lists.creator, UserView, "user.json")
+      creator: render_one(task_lists.creator, UserView, "user.json"),
+      user_stories: render_many(task_lists.user_stories, UserStoriesView, "task_list_view.json")
     }
   end
 

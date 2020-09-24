@@ -55,7 +55,17 @@ defmodule DailyployWeb.TaskListsController do
 
         {:list, task_lists} =
           {:list,
-           PTModel.get_all(data, [:workspace, :creator, :project, :task_status], data.project_id)}
+           PTModel.get_all(
+             data,
+             [
+               :workspace,
+               :creator,
+               :project,
+               :task_status,
+               user_stories: [:task_lists_tasks, :owner, :task_status]
+             ],
+             data.project_id
+           )}
 
         conn
         |> put_status(200)
