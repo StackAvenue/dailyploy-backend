@@ -8,7 +8,9 @@ defmodule DailyployWeb.Validators.UserStories do
       task_status_id!: :integer,
       is_completed!: [field: :string, default: false],
       owner_id: :integer,
-      task_lists_id!: :integer
+      task_lists_id!: :integer,
+      priority: :string,
+      due_date: :utc_datetime
     })
   )
 

@@ -10,8 +10,8 @@ defmodule Dailyploy.Helper.UserStories do
     verify_user_stories(UserStories.create(params))
   end
 
-  def verify_user_stories({:ok, alert_rules}) do
-    {:ok, alert_rules}
+  def verify_user_stories({:ok, user_stories}) do
+    {:ok, user_stories}
   end
 
   def verify_user_stories({:error, message}) do

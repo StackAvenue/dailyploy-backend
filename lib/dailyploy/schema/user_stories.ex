@@ -12,10 +12,14 @@ defmodule Dailyploy.Schema.UserStories do
     TaskStatus
   }
 
+  @task_priority ~w(low medium high no_priority)s
+
   schema "user_stories" do
     field :name, :string
     field :description, :string
     field :is_completed, :boolean, default: false, null: false
+    field :priority, :string
+    field :due_date, :utc_datetime
     # associations
     belongs_to :task_status, TaskStatus
     belongs_to :owner, User
@@ -28,7 +32,7 @@ defmodule Dailyploy.Schema.UserStories do
   end
 
   @required_params ~w(name task_status_id is_completed task_lists_id)a
-  @optional_params ~w(description owner_id)a
+  @optional_params ~w(description owner_id priority due_date)a
 
   @permitted_params @required_params ++ @optional_params
 
@@ -39,5 +43,10 @@ defmodule Dailyploy.Schema.UserStories do
     |> assoc_constraint(:owner)
     |> assoc_constraint(:task_lists)
     |> assoc_constraint(:task_status)
+    |> validate_inclusion(:priority, @task_priority)
+  end
+
+  def task_priority() do
+    @task_priority
   end
 end
