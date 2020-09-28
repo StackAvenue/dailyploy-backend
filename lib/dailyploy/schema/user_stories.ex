@@ -24,6 +24,7 @@ defmodule Dailyploy.Schema.UserStories do
     belongs_to :task_status, TaskStatus
     belongs_to :owner, User
     belongs_to :task_lists, TaskLists
+
     has_many :comments, TaskComment
     has_many :attachments, StoriesAttachments
     has_many :task_lists_tasks, TaskListTasks

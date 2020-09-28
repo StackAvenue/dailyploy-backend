@@ -9,6 +9,7 @@ defmodule Dailyploy.Helper.TaskComment do
       task_id: task_id,
       user_stories_id: user_stories_id,
       user_id: user_id,
+      task_list_tasks_id: task_list_tasks_id,
       comments: comments
     } = params
 
@@ -17,6 +18,7 @@ defmodule Dailyploy.Helper.TaskComment do
         task_id: task_id,
         user_id: user_id,
         user_stories_id: user_stories_id,
+        task_list_tasks_id: task_list_tasks_id,
         comments: comments
       })
     )
@@ -24,7 +26,14 @@ defmodule Dailyploy.Helper.TaskComment do
 
   defp verify_create({:ok, comment}) do
     comment =
-      comment |> Dailyploy.Repo.preload([:user, :user_stories, :task, task: [:members, :owner]])
+      comment
+      |> Dailyploy.Repo.preload([
+        :user,
+        :task_list_tasks,
+        :user_stories,
+        :task,
+        task: [:members, :owner]
+      ])
 
     {:ok,
      %{

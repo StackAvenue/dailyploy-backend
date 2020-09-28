@@ -11,6 +11,13 @@ defmodule DailyployWeb.Plug.UserStories do
     load_user_stories(conn, id)
   end
 
+  def call(
+        %{params: %{"id" => id}} = conn,
+        _params
+      ) do
+    load_user_stories(conn, id)
+  end
+
   defp load_user_stories(conn, id) do
     {id, _} = Integer.parse(id)
 

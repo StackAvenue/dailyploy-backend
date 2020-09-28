@@ -6,7 +6,8 @@ defmodule DailyployWeb.TaskListTasksView do
     TaskListTasksView,
     TaskListsView,
     TaskCategoryView,
-    TaskStatusView
+    TaskStatusView,
+    RoadmapChecklistView
   }
 
   def render("show.json", %{task_list_tasks: task_list_tasks}) do
@@ -23,6 +24,7 @@ defmodule DailyployWeb.TaskListTasksView do
       category_id: task_list_tasks.category_id,
       task_lists_id: task_list_tasks.task_lists_id,
       owner: render_one(task_list_tasks.owner, UserView, "user.json"),
+      checklist: render_many(task_list_tasks.checklist, RoadmapChecklistView, "user_show.json"),
       category: render_one(task_list_tasks.category, TaskCategoryView, "task_category.json"),
       task_lists: render_one(task_list_tasks.task_lists, TaskListsView, "show_project_list.json")
     }

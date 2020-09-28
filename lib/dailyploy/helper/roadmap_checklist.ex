@@ -10,6 +10,8 @@ defmodule Dailyploy.Helper.RoadmapChecklist do
     %{
       name: name,
       task_lists_id: task_lists_id,
+      user_stories_id: user_stories_id,
+      task_list_tasks_id: task_list_tasks_id,
       is_completed: is_completed
     } = params
 
@@ -17,6 +19,8 @@ defmodule Dailyploy.Helper.RoadmapChecklist do
       RCModel.create(%{
         name: name,
         task_lists_id: task_lists_id,
+        user_stories_id: user_stories_id,
+        task_list_tasks_id: task_list_tasks_id,
         is_completed: is_completed
       })
     )

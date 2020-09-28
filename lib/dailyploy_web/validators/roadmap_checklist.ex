@@ -4,8 +4,10 @@ defmodule DailyployWeb.Validators.RoadmapChecklist do
   defparams(
     verify_checklist(%{
       name!: :string,
-      task_lists_id!: :integer,
-      is_completed!: [field: :boolean, default: false]
+      task_lists_id: :integer,
+      is_completed!: [field: :boolean, default: false],
+      user_stories_id: :integer,
+      task_list_tasks_id: :integer
     })
   )
 

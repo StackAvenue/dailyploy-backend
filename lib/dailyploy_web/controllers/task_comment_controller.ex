@@ -10,6 +10,7 @@ defmodule DailyployWeb.TaskCommentController do
   alias Dailyploy.Model.User, as: UserModel
   alias Dailyploy.Model.UserStories, as: USModel
   alias Dailyploy.Model.TaskComment, as: TCModel
+  alias Dailyploy.Model.TaskListTasks, as: TLModel
   alias Dailyploy.Model.CommentsAttachment, as: CAModel
   alias Dailyploy.Model.Notification, as: NotificationModel
   alias Dailyploy.Avatar
@@ -149,6 +150,30 @@ defmodule DailyployWeb.TaskCommentController do
         case UserModel.get(user_id) do
           {:ok, _user} ->
             assign(conn, :user_stories, user_stories)
+
+          {:error, _message} ->
+            conn
+            |> put_status(404)
+        end
+
+      {:error, _message} ->
+        conn
+        |> put_status(404)
+    end
+  end
+
+  defp load_task_and_user(
+         %{params: %{"task_list_tasks_id" => task_list_tasks_id, "user_id" => user_id}} = conn,
+         _params
+       ) do
+    {task_list_tasks_id, _} = Integer.parse(task_list_tasks_id)
+    {user_id, _} = Integer.parse(user_id)
+
+    case TLModel.get(task_list_tasks_id) do
+      {:ok, task_list_tasks} ->
+        case UserModel.get(user_id) do
+          {:ok, _user} ->
+            assign(conn, :task_list_tasks, task_list_tasks)
 
           {:error, _message} ->
             conn

@@ -107,12 +107,18 @@ defmodule DailyployWeb.Router do
         scope "/task_lists/:task_lists_id" do
           resources "/user_stories", UserStoriesController, except: [:new, :edit] do
             post "/attachments", UserStoriesController, :add_attachments
-            resources "/checklists", RoadmapChecklistController, except: [:new, :edit]
           end
         end
 
         scope "/user_stories/:user_stories_id" do
           resources "/task_list_tasks", TaskListTasksController, except: [:new, :edit]
+          resources "/checklists", RoadmapChecklistController, except: [:new, :edit]
+          resources "/comment", TaskCommentController
+        end
+
+        scope "/roadmap_task/:task_list_tasks_id" do
+          resources "/checklists", RoadmapChecklistController, except: [:new, :edit]
+          resources "/comment", TaskCommentController
         end
 
         resources "/milestone", MilestoneController

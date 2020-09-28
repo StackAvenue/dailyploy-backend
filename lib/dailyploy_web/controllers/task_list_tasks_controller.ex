@@ -18,7 +18,7 @@ defmodule DailyployWeb.TaskListTasksController do
           {:list,
            TLModel.get_all(
              data,
-             [:owner, :category, :task_lists, :task_status],
+             [:owner, :category, :task_lists, :task_status, :checklist],
              data.task_lists_id,
              params
            )}

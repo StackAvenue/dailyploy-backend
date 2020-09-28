@@ -6,6 +6,7 @@ defmodule DailyployWeb.Validators.TaskComment do
       task_id: :integer,
       user_stories_id: :integer,
       user_id!: :integer,
+      task_list_tasks_id: :integer,
       comments: :string
     })
   )

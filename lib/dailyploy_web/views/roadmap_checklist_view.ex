@@ -18,6 +18,14 @@ defmodule DailyployWeb.RoadmapChecklistView do
     }
   end
 
+  def render("user_show.json", %{roadmap_checklist: roadmap_checklist}) do
+    %{
+      id: roadmap_checklist.id,
+      name: roadmap_checklist.name,
+      is_completed: roadmap_checklist.is_completed
+    }
+  end
+
   def render("index.json", %{checklists: checklists}) do
     %{
       entries: render_many(checklists.entries, RoadmapChecklistView, "index_show.json"),

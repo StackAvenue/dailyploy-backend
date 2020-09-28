@@ -15,7 +15,7 @@ defmodule Dailyploy.Repo.Migrations.AlterRoadmapTasks do
     drop constraint(:task_list_tasks, "task_list_tasks_user_stories_id_fkey")
 
     alter table(:task_list_tasks) do
-      modify :task_lists_id, references(:task_lists, on_delete: :delete_all), null: false
+      modify :task_lists_id, references(:task_lists, on_delete: :delete_all), null: true
       remove :user_stories_id
     end
   end

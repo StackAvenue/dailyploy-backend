@@ -13,7 +13,7 @@ defmodule Dailyploy.Schema.RoadmapChecklist do
   end
 
   @required ~w(name is_completed)a
-  @optional ~w(task_lists_id user_stories_id task_list_tasks_id)
+  @optional ~w(task_lists_id user_stories_id task_list_tasks_id)a
 
   @params @required ++ @optional
 
