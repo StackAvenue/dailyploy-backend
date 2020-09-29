@@ -5,18 +5,20 @@ defmodule Dailyploy.Schema.TaskComment do
   alias Dailyploy.Schema.UserStories
   alias Dailyploy.Schema.User
   alias Dailyploy.Schema.CommentsAttachment
+  alias Dailyploy.Schema.TaskListTasks
 
   schema("task_comments") do
     field(:comments, :string)
     belongs_to(:task, Task)
     belongs_to(:user, User)
     belongs_to(:user_stories, UserStories)
+    belongs_to(:task_list_tasks, TaskListTasks)
     has_many(:attachment, CommentsAttachment)
 
     timestamps()
   end
 
-  @optional ~w(comments task_id user_stories_id)a
+  @optional ~w(comments task_id user_stories_id task_list_tasks_id)a
   @required ~w(user_id)a
   @permitted @required ++ @optional
 

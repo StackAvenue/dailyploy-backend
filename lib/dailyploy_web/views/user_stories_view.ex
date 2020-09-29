@@ -35,7 +35,7 @@ defmodule DailyployWeb.UserStoriesView do
       task_status: render_one(user_stories.task_status, TaskStatusView, "status.json"),
       owner: render_one(user_stories.owner, UserView, "user.json"),
       roadmap_id: user_stories.task_lists_id,
-      task_lists: render_many(user_stories.task_lists_tasks, TaskListTasksView, "show.json"),
+      task_lists: render_many(user_stories.task_lists_tasks, TaskListTasksView, "user_show.json"),
       checklist:
         render_many(user_stories.roadmap_checklist, RoadmapChecklistView, "user_show.json")
     }

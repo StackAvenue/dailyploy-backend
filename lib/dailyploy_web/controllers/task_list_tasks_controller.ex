@@ -67,7 +67,7 @@ defmodule DailyployWeb.TaskListTasksController do
           |> render("show.json", %{
             task_list_tasks:
               task_list_tasks
-              |> Dailyploy.Repo.preload([:owner, :category, :task_lists, :task_status])
+              |> Dailyploy.Repo.preload([:owner, :category, :task_lists, :task_status, :checklist])
           })
         else
           {:delete, {:error, error}} ->

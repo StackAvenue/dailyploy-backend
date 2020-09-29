@@ -288,9 +288,9 @@ defmodule DailyployWeb.TaskCommentController do
       comment = Map.put_new(comment, :attachment, attachment)
 
       # Task.async(TaskComment.send_activity_mail(comment)) task notification should be send as mail to the one who is responsible for this
-      Task.async(fn ->
-        notification_create(comment, "commented")
-      end)
+      # Task.async(fn ->
+      #   notification_create(comment, "commented")
+      # end)
 
       conn
       |> put_status(200)

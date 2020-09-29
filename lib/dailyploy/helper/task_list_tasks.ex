@@ -35,7 +35,7 @@ defmodule Dailyploy.Helper.TaskListTasks do
 
   defp verify_create({:ok, task_list_tasks}) do
     task_list_tasks =
-      task_list_tasks |> Repo.preload([:owner, :category, :task_lists, :task_status])
+      task_list_tasks |> Repo.preload([:owner, :category, :task_lists, :task_status, :checklist])
 
     {:ok,
      %{
@@ -45,6 +45,7 @@ defmodule Dailyploy.Helper.TaskListTasks do
        estimation: task_list_tasks.estimation,
        status: task_list_tasks.status,
        task_status: task_list_tasks.task_status,
+       checklist: task_list_tasks.checklist,
        priority: task_list_tasks.priority,
        owner_id: task_list_tasks.owner_id,
        task_id: task_list_tasks.task_id,
