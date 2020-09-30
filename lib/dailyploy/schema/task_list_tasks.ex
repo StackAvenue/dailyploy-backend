@@ -8,7 +8,8 @@ defmodule Dailyploy.Schema.TaskListTasks do
     Task,
     TaskStatus,
     UserStories,
-    RoadmapChecklist
+    RoadmapChecklist,
+    TaskComment
   }
 
   import Ecto.Changeset
@@ -31,6 +32,7 @@ defmodule Dailyploy.Schema.TaskListTasks do
     belongs_to :user_stories, UserStories
 
     has_many :checklist, RoadmapChecklist
+    has_many :comments, TaskComment
 
     timestamps()
   end

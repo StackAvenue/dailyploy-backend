@@ -134,7 +134,14 @@ defmodule DailyployWeb.TaskListTasksController do
         |> render("show.json", %{
           task_list_tasks:
             conn.assigns.task_list_tasks
-            |> Dailyploy.Repo.preload([:owner, :category, :task_lists, :task_status])
+            |> Dailyploy.Repo.preload([
+              :owner,
+              :category,
+              :task_lists,
+              :task_status,
+              :comments,
+              :checklist
+            ])
         })
 
       404 ->

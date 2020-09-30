@@ -10,6 +10,8 @@ defmodule DailyployWeb.TaskListTasksView do
     RoadmapChecklistView
   }
 
+  alias Dailyploy.Repo
+
   def render("show.json", %{task_list_tasks: task_list_tasks}) do
     %{
       id: task_list_tasks.id,
@@ -23,6 +25,7 @@ defmodule DailyployWeb.TaskListTasksView do
       task_status: render_one(task_list_tasks.task_status, TaskStatusView, "status.json"),
       category_id: task_list_tasks.category_id,
       task_lists_id: task_list_tasks.task_lists_id,
+      comments: render_many(task_list_tasks.comments, TaskListTasksView, "comment.json"),
       owner: render_one(task_list_tasks.owner, UserView, "user.json"),
       checklist: render_many(task_list_tasks.checklist, RoadmapChecklistView, "user_show.json"),
       category: render_one(task_list_tasks.category, TaskCategoryView, "task_category.json"),
@@ -30,10 +33,29 @@ defmodule DailyployWeb.TaskListTasksView do
     }
   end
 
+  def render("comment.json", %{task_list_tasks: tlt}) do
+    tlt = Repo.preload(tlt, [:attachment, :user])
+
+    %{
+      comment: tlt.comments,
+      attachments: tlt.attachment,
+      user: tlt.user.id,
+      id: tlt.id,
+      user_name: tlt.user.name
+    }
+  end
+
   def render("user_show.json", %{task_list_tasks: task_list_tasks}) do
     task_list_tasks =
       task_list_tasks
-      |> Dailyploy.Repo.preload([:owner, :category, :task_lists, :task_status, :checklist])
+      |> Dailyploy.Repo.preload([
+        :owner,
+        :category,
+        :task_lists,
+        :task_status,
+        :checklist,
+        :comments
+      ])
 
     %{
       id: task_list_tasks.id,
