@@ -105,6 +105,10 @@ defmodule DailyployWeb.Router do
         resources "/contact", ContactController, only: [:show, :create, :update, :delete, :index]
       end
 
+      get "/workspace_projects", WorkspaceProjectController, :index
+      get "/workspace_members", WorkspaceMemberController, :index
+      post "/project_member", ProjectMemberController, :get_project_member
+      resources "/resource_allocation", ResourceAllocationController
       delete "/projects", ProjectController, :delete
     end
 
