@@ -13,12 +13,22 @@ defmodule DailyployWeb.TaskListTasksView do
   alias Dailyploy.Repo
 
   def render("show.json", %{task_list_tasks: task_list_tasks}) do
+    task_list_tasks = task_list_tasks |> Repo.preload([:task])
+
+    tracked_time =
+      case task_list_tasks.task_id do
+        nil -> 0
+        _ -> calculate_track_time(task_list_tasks)
+      end
+
     %{
       id: task_list_tasks.id,
       name: task_list_tasks.name,
+      task: render_one(task_list_tasks.task, TaskListTasksView, "task.json"),
       description: task_list_tasks.description,
       task_id: task_list_tasks.task_id,
       estimation: task_list_tasks.estimation,
+      tracked_time: tracked_time,
       status: task_list_tasks.status,
       priority: task_list_tasks.priority,
       owner_id: task_list_tasks.owner_id,
@@ -43,6 +53,27 @@ defmodule DailyployWeb.TaskListTasksView do
       id: tlt.id,
       user_name: tlt.user.name
     }
+  end
+
+  def render("task.json", %{task_list_tasks: tlt}) do
+    %{
+      id: tlt.id,
+      name: tlt.name,
+      start_datetime: tlt.start_datetime,
+      end_datetime: tlt.end_datetime,
+      estimation: tlt.estimation,
+      is_complete: tlt.is_complete,
+      comments: tlt.comments,
+      priority: tlt.priority
+    }
+  end
+
+  defp calculate_track_time(tlt) do
+    tlt = Repo.preload(tlt, task: :time_tracks)
+
+    Enum.reduce(tlt.task.time_tracks, 0, fn track, acc ->
+      acc + track.duration
+    end)
   end
 
   def render("user_show.json", %{task_list_tasks: task_list_tasks}) do

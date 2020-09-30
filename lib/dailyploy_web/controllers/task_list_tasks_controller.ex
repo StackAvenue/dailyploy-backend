@@ -18,7 +18,7 @@ defmodule DailyployWeb.TaskListTasksController do
           {:list,
            TLModel.get_all(
              data,
-             [:owner, :category, :task_lists, :task_status, :checklist],
+             [:owner, :category, :task_lists, :task_status, :checklist, :comments],
              data.task_lists_id,
              params
            )}
@@ -67,7 +67,14 @@ defmodule DailyployWeb.TaskListTasksController do
           |> render("show.json", %{
             task_list_tasks:
               task_list_tasks
-              |> Dailyploy.Repo.preload([:owner, :category, :task_lists, :task_status, :checklist])
+              |> Dailyploy.Repo.preload([
+                :owner,
+                :category,
+                :task_lists,
+                :task_status,
+                :comments,
+                :checklist
+              ])
           })
         else
           {:delete, {:error, error}} ->
@@ -90,7 +97,14 @@ defmodule DailyployWeb.TaskListTasksController do
           |> render("show.json", %{
             task_list_tasks:
               task_list_tasks
-              |> Dailyploy.Repo.preload([:owner, :category, :task_lists, :task_status])
+              |> Dailyploy.Repo.preload([
+                :owner,
+                :category,
+                :task_lists,
+                :task_status,
+                :comments,
+                :checklist
+              ])
           })
         else
           {:update, {:error, error}} ->
@@ -113,7 +127,14 @@ defmodule DailyployWeb.TaskListTasksController do
           |> render("show.json", %{
             task_list_tasks:
               conn.assigns.task_list_tasks
-              |> Dailyploy.Repo.preload([:owner, :category, :task_lists, :task_status])
+              |> Dailyploy.Repo.preload([
+                :owner,
+                :category,
+                :task_lists,
+                :task_status,
+                :comments,
+                :checklist
+              ])
           })
         else
           {:create, {:error, error}} ->

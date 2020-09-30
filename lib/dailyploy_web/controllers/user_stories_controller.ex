@@ -6,7 +6,7 @@ defmodule DailyployWeb.UserStoriesController do
   import DailyployWeb.Helpers
 
   plug DailyployWeb.Plug.TaskLists when action in [:create]
-  plug DailyployWeb.Plug.UserStories when action in [:update, :add_attachments]
+  plug DailyployWeb.Plug.UserStories when action in [:update, :add_attachments, :show]
 
   def create(conn, params) do
     case conn.status do
@@ -46,6 +46,30 @@ defmodule DailyployWeb.UserStoriesController do
           {:update, {:error, error}} ->
             send_error(conn, 400, extract_changeset_error(error))
         end
+
+      404 ->
+        conn
+        |> send_error(404, "Resource Not Found")
+    end
+  end
+
+  def show(conn, params) do
+    case conn.status do
+      nil ->
+        conn
+        |> put_status(200)
+        |> render("user_show.json", %{
+          user_stories:
+            conn.assigns.user_stories
+            |> Dailyploy.Repo.preload([
+              :owner,
+              :task_status,
+              :comments,
+              :task_lists_tasks,
+              :attachments,
+              :roadmap_checklist
+            ])
+        })
 
       404 ->
         conn
