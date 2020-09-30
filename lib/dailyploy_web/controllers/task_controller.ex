@@ -90,12 +90,12 @@ defmodule DailyployWeb.TaskController do
           task
           |> Repo.preload([:members, :project, :owner, :category, :time_tracks, :task_status])
 
-        Task.async(fn ->
-          Firebase.insert_operation(
-            Poison.encode(task),
-            "task_created/#{conn.params["workspace_id"]}/#{task.id}"
-          )
-        end)
+        # Task.async(fn ->
+        #   Firebase.insert_operation(
+        #     Poison.encode(task),
+        #     "task_created/#{conn.params["workspace_id"]}/#{task.id}"
+        #   )
+        # end)
 
         Task.async(fn ->
           notification_create(task, "created")
@@ -104,6 +104,8 @@ defmodule DailyployWeb.TaskController do
         params = %{
           task_id: task.id,
           user_id: user.id,
+          user_stories_id: nil,
+          task_list_tasks_id: nil,
           comments: "#{user.name} has created #{task.name} task."
         }
 
@@ -128,10 +130,10 @@ defmodule DailyployWeb.TaskController do
       {:ok, %TaskSchema{} = task} ->
         task = task |> Repo.preload([:members, :project, :owner, :category, :time_tracks])
 
-        Firebase.insert_operation(
-          Poison.encode(task),
-          "task_update/#{conn.params["workspace_id"]}/#{task.id}"
-        )
+        # Firebase.insert_operation(
+        #   Poison.encode(task),
+        #   "task_update/#{conn.params["workspace_id"]}/#{task.id}"
+        # )
 
         Task.async(fn ->
           notification_create(task, "updated")
@@ -154,10 +156,10 @@ defmodule DailyployWeb.TaskController do
 
     case TaskModel.mark_task_complete(task, task_params) do
       {:ok, %TaskSchema{} = task} ->
-        Firebase.insert_operation(
-          Poison.encode(task |> Repo.preload([:project, :owner, :category, :time_tracks])),
-          "task_completed/#{conn.params["workspace_id"]}/#{task.id}"
-        )
+        # Firebase.insert_operation(
+        #   Poison.encode(task |> Repo.preload([:project, :owner, :category, :time_tracks])),
+        #   "task_completed/#{conn.params["workspace_id"]}/#{task.id}"
+        # )
 
         with true <- Map.has_key?(task_params, "contact_ids"),
              do: fetch_contacts(task, task_params["contact_ids"])

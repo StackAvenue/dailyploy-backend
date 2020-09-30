@@ -42,7 +42,8 @@ defmodule Dailyploy.Model.TaskListTasks do
         {:error, "not found"}
 
       task_list_tasks ->
-        {:ok, task_list_tasks |> Repo.preload([:owner, :category, :task_lists, :task, :checklist])}
+        {:ok,
+         task_list_tasks |> Repo.preload([:owner, :category, :task_lists, :task, :checklist])}
     end
   end
 

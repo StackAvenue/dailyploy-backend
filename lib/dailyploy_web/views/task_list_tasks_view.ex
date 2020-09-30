@@ -31,7 +31,10 @@ defmodule DailyployWeb.TaskListTasksView do
   end
 
   def render("user_show.json", %{task_list_tasks: task_list_tasks}) do
-    task_list_tasks = task_list_tasks |> Dailyploy.Repo.preload([:owner, :category, :task_lists, :task_status, :checklist])
+    task_list_tasks =
+      task_list_tasks
+      |> Dailyploy.Repo.preload([:owner, :category, :task_lists, :task_status, :checklist])
+
     %{
       id: task_list_tasks.id,
       name: task_list_tasks.name,
