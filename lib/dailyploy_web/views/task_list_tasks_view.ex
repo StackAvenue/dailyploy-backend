@@ -13,7 +13,17 @@ defmodule DailyployWeb.TaskListTasksView do
   alias Dailyploy.Repo
 
   def render("show.json", %{task_list_tasks: task_list_tasks}) do
-    task_list_tasks = task_list_tasks |> Repo.preload([:task])
+    task =
+      case task_list_tasks.task_id do
+        nil ->
+          nil
+
+        _ ->
+          tlt = task_list_tasks |> Repo.preload([:task])
+          tlt.task
+      end
+
+    task_list_tasks = Map.put_new(task_list_tasks, :task, task)
 
     tracked_time =
       case task_list_tasks.task_id do

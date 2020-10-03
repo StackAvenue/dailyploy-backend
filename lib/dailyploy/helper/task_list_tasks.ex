@@ -61,7 +61,8 @@ defmodule Dailyploy.Helper.TaskListTasks do
        task_lists_id: task_list_tasks.task_lists_id,
        owner: task_list_tasks.owner,
        category: task_list_tasks.category,
-       task_lists: task_list_tasks.task_lists
+       task_lists: task_list_tasks.task_lists,
+       comments: task_list_tasks.comments
      }}
   end
 
