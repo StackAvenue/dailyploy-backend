@@ -62,7 +62,12 @@ defmodule DailyployWeb.TaskListsController do
                :creator,
                :project,
                :task_status,
-               user_stories: [:task_lists_tasks, :owner, :task_status, :roadmap_checklist]
+               user_stories: [
+                 :owner,
+                 :task_status,
+                 :roadmap_checklist,
+                 task_lists_tasks: :comments
+               ]
              ],
              data.project_id
            )}

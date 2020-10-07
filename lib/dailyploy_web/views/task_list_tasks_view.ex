@@ -58,10 +58,16 @@ defmodule DailyployWeb.TaskListTasksView do
 
     %{
       comment: tlt.comments,
-      attachments: tlt.attachment,
+      attachments: render_many(tlt.attachment, TaskListTasksView, "attachment.json"),
       user: tlt.user.id,
       id: tlt.id,
       user_name: tlt.user.name
+    }
+  end
+
+  def render("attachment.json", %{task_list_tasks: tlt}) do
+    %{
+      url: tlt.image_url
     }
   end
 
@@ -106,6 +112,7 @@ defmodule DailyployWeb.TaskListTasksView do
       estimation: task_list_tasks.estimation,
       status: task_list_tasks.status,
       priority: task_list_tasks.priority,
+      comments: render_many(task_list_tasks.comments, TaskListTasksView, "comment.json"),
       owner_id: task_list_tasks.owner_id,
       task_status: render_one(task_list_tasks.task_status, TaskStatusView, "status.json"),
       category_id: task_list_tasks.category_id,
