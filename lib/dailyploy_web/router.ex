@@ -110,6 +110,7 @@ defmodule DailyployWeb.Router do
         end
 
         scope "/user_stories/:user_stories_id" do
+          post "/move/:id", TaskListTasksController, :move_task
           resources "/task_list_tasks", TaskListTasksController, except: [:new, :edit]
           resources "/checklists", RoadmapChecklistController, except: [:new, :edit]
           # resources "/comment", TaskCommentController

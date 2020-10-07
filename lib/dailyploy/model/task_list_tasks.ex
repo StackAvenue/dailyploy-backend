@@ -66,7 +66,7 @@ defmodule Dailyploy.Model.TaskListTasks do
       start_datetime: dates["start_datetime"],
       end_datetime: dates["end_datetime"],
       task_list_tasks_id: params.id,
-      project_id: params.task_lists.project_id,
+      project_id: dates["project_id"],
       owner_id: params.owner_id,
       category_id: params.category_id,
       task_status_id: params.task_status_id,
