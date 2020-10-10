@@ -68,10 +68,16 @@ defmodule DailyployWeb.UserStoriesView do
 
     %{
       comment: tlt.comments,
-      attachments: tlt.attachment,
+      attachments: render_many(tlt.attachment, UserStoriesView, "attachment.json"),
       user: tlt.user.id,
       id: tlt.id,
       user_name: tlt.user.name
+    }
+  end
+
+  def render("attachment.json", %{user_stories: attachment}) do
+    %{
+      url: attachment.image_url
     }
   end
 end
