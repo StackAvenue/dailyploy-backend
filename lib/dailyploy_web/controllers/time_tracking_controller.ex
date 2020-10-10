@@ -151,7 +151,9 @@ defmodule DailyployWeb.TimeTrackingController do
   end
 
   defp create_params(params) do
-    start_time = Timex.beginning_of_day(DateTime.utc_now())
+    {:ok, date} = Date.from_iso8601(params["start_date"])
+    date = Timex.to_datetime(date)
+    start_time = Timex.beginning_of_day(date)
     in_second = params["logged_time"] * 60 * 60
     end_time = DateTime.add(start_time, in_second, :second)
 
