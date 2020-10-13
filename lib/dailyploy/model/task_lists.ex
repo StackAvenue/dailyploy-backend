@@ -8,8 +8,7 @@ defmodule Dailyploy.Model.TaskLists do
 
     case Repo.insert(changeset) do
       {:ok, task_lists} ->
-        {:ok,
-         task_lists |> Repo.preload([:project, :workspace, :creator, :category, :task_status])}
+        {:ok, task_lists |> Repo.preload([:project, :workspace, :creator, :category])}
 
       {:error, message} ->
         {:error, message}
@@ -19,8 +18,7 @@ defmodule Dailyploy.Model.TaskLists do
   def delete(task_lists) do
     case Repo.delete(task_lists) do
       {:ok, task_lists} ->
-        {:ok,
-         task_lists |> Repo.preload([:project, :workspace, :creator, :category, :task_status])}
+        {:ok, task_lists |> Repo.preload([:project, :workspace, :creator, :category])}
 
       {:error, message} ->
         {:error, message}
@@ -32,8 +30,7 @@ defmodule Dailyploy.Model.TaskLists do
 
     case Repo.update(changeset) do
       {:ok, task_lists} ->
-        {:ok,
-         task_lists |> Repo.preload([:project, :workspace, :creator, :category, :task_status])}
+        {:ok, task_lists |> Repo.preload([:project, :workspace, :creator, :category])}
 
       {:error, message} ->
         {:error, message}
@@ -48,8 +45,7 @@ defmodule Dailyploy.Model.TaskLists do
         {:error, "not found"}
 
       task_lists ->
-        task_lists =
-          task_lists |> Repo.preload([:project, :workspace, :creator, :category, :task_status])
+        task_lists = task_lists |> Repo.preload([:project, :workspace, :creator, :category])
 
         {:ok, task_lists}
     end
@@ -58,10 +54,10 @@ defmodule Dailyploy.Model.TaskLists do
   def get_all(%{page_size: page_size, page_number: page_number}, preloads, project_id) do
     query =
       from task_list in TaskLists,
-        where: task_list.project_id == ^project_id
+        where: task_list.project_id == ^project_id,
+        order_by: [desc: task_list.inserted_at]
 
-    task_lists_data =
-      query |> order_by(:id) |> Repo.paginate(page: page_number, page_size: page_size)
+    task_lists_data = query |> Repo.paginate(page: page_number, page_size: page_size)
 
     task_lists_with_preloads = task_lists_data.entries |> Repo.preload(preloads)
     paginated_response(task_lists_with_preloads, task_lists_data)

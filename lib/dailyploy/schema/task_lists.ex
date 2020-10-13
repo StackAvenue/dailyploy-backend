@@ -6,11 +6,12 @@ defmodule Dailyploy.Schema.TaskLists do
     Project,
     User,
     TaskListTasks,
-    TaskStatus,
     RoadmapChecklist,
     UserStories,
     TaskCategory
   }
+
+  @task_status ~w(Completed Running)s
 
   import Ecto.Changeset
 
@@ -19,9 +20,9 @@ defmodule Dailyploy.Schema.TaskLists do
     field :start_date, :date
     field :end_date, :date
     field :description, :string
+    field :status, :string, default: "Not Started"
     field :color_code, :string
 
-    belongs_to :task_status, TaskStatus
     belongs_to :workspace, Workspace
     belongs_to :creator, User
     belongs_to :project, Project
@@ -34,7 +35,7 @@ defmodule Dailyploy.Schema.TaskLists do
   end
 
   @required_params ~w(name workspace_id creator_id project_id)a
-  @optional_params ~w(description end_date start_date category_id task_status_id color_code)a
+  @optional_params ~w(description end_date start_date category_id status color_code)a
 
   @permitted_params @required_params ++ @optional_params
 
@@ -46,7 +47,11 @@ defmodule Dailyploy.Schema.TaskLists do
     |> assoc_constraint(:creator)
     |> assoc_constraint(:project)
     |> assoc_constraint(:category)
-    |> assoc_constraint(:task_status)
+    |> validate_inclusion(:status, @task_status)
     |> unique_constraint(:project, name: :unique_name_per_project)
+  end
+
+  def task_status() do
+    @task_status
   end
 end

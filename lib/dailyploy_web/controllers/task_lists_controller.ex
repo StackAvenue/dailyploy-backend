@@ -62,7 +62,6 @@ defmodule DailyployWeb.TaskListsController do
                :creator,
                :project,
                :category,
-               :task_status,
                user_stories: [
                  :owner,
                  :task_status,
