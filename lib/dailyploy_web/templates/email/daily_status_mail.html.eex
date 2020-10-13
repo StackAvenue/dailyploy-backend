@@ -1,54 +1,284 @@
-<section class="phx-hero">
-<div style="width:90%;display:block;margin-top:30px;margin-bottom:60px;border:1px solid #000;padding: 10px 0px 0px 0px;box-sizing: border-box; margin: 0 auto;">
-<div style="width:100%;padding: 10px 0px 0px 20px;box-sizing: border-box;">
-<img src="https://marketing-image-production.s3.amazonaws.com/uploads/cbbfe816d2c6196e996fdc7dd94a8ece3545dc5dd0bba250540dcb454f398dd714b171e7ca721b123c3d1da80639d8dd0ff85fe81ed65b1ca44178e51bdc1dc2.png" width="" height="6%"/>
-</div>
-<div style="width:100%;height:auto;margin-top:16px;margin-bottom:60px;background-color: #F6F6F7;box-sizing: border-box;display: flex;justify-content: center;align-items: center;">
-<div style="width:80%;margin: 0 auto;height:auto;box-sizing: border-box;text-align: justify;padding: 20px 0px 20px 0px">
-<label style="color:#28b458;font-size:40px;font-family: 'Muli', sans-serif;line-height:50px;"> Status Update</label>
-</div>
-</div>
-<div style="width:100%;">
-<div style="width:80%;margin: 0 auto;height:auto;box-sizing: border-box;">
-<label style="font-size:24px;font-family: 'Muli', sans-serif;line-height:42px;">
-   Hi all,<br>
-      <br>
-      Your team member <span><%= gettext "%{name}", name: @user.name %></span>
-      has worked one the following tasks today:-
-      <br>
-      <br>
-       <table style="border: 2px solid black">
-       <tbody>
-       <tr>
-            <th style="border: 2px solid black"> Task Name </th>
-            <th style="border: 2px solid black"> Duration </th>
-       </tr>
-       <%= for {key, value} <- @day_tasks do %>
-       <tr>
-            <td style="border: 2px solid black"> <%= key %></td>
-             <td style="border: 2px solid black"> <%= value = case String.length(value) do 0 -> "Not Worked"; _ -> value end%></td>
-        </tr>
-        <% end %>
-        </tbody>
-        </table>
-      <br>
-      Give your team a pat on the back for a job well done. <br/>
-      <br/>
-  Regards,<br/>
-  DailyPloy<br/>
-  Contact Us: +919665530611<br/>
-  Visit Us: www.dailyploy.com <br/>
-  Email Us: contact@stack-avenue.com
-</label>
-</div>
-</div>
-<div style="width:100%;margin-top:60px;">
-<div style="width:100%;height:12%;background-color: #F0EFEF;box-sizing: border-box;padding: 20px;display: flex;align-items: center;">
-<span style="width:16%;">Powered By StackAvenue</span>
-<img src="https://marketing-image-production.s3.amazonaws.com/uploads/57297c68b73778feb36648b00591bb75ba841bf254c37c1f17e868f8a1c82597a0ca10f196b060c5dcf0e3c15ce316ef5b88e33ab6d6784e382ab80602561274.png" width="auto" height="50%"/>
-<span style="width: 50%;padding-left: 36%;">DailyPloy &copy; 2020. All Rights Reserved</span>
-</div>
-</div>
-</div>
-</div>
-</section>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+    <style type="text/css">
+        body{
+            font-family: 'Open Sans',sans-serif;
+            font-weight: 400;
+            font-size: 15px;
+            color: #525659;
+            
+        }
+        *{
+            margin: 0px;
+        }
+        .container{
+            width: 100%;
+        }
+        .box{
+            width: 50%;
+            margin: auto;
+        }
+        .row-1{
+            width: 100%;
+            background-color: #6CC7F6;
+            padding: 20px 0px;
+            text-align: center;
+        }
+        .row-1 .brand-logo{
+
+        }
+        .subject-email{
+            padding-top: 20px;
+        }
+        .content-box{
+            /* padding: 50px 40px 40px; */
+            padding: 30px 0px 10px;
+        }
+        .row-4{
+            width: 100%;
+            /* padding: 30px 40px; */
+            padding: 30px 0px;
+        }
+
+        /* .table-head-data{
+            border: 1px solid;
+            border-collapse: collapse;
+        } */
+        /* .table-data{
+            border: 1px solid;
+            border-collapse: collapse;
+        } */
+        table, th, td{
+            border: 1px solid;
+            border-collapse: collapse;
+        }
+        .text-align{
+            text-align: center;
+        }
+        
+        .row-4 .images-row .manager-name{
+            margin-left: 20px;
+            /* margin-top: 15px; */
+            display: inline-block;
+            vertical-align: super;
+        }
+        .tasks-images-row{
+            background-color: #7bb8d8;
+            /* height: 100px; */
+            width: 100%;
+        }
+        .tasks-images-row .three-images img{
+            width: 100%;
+            height: 100%;
+        }
+        .tasks-images-row .images-text{
+            width: 100%;
+            display: block;
+            font-size: 17px;
+            font-weight: 600;
+            color: #fff;
+            padding-bottom: 20px;
+        }
+        .tasks-images-row .images-text .text{
+            width: 32%;
+            display: inline-block;
+            text-align: center;
+        }
+        .tasks-images-row .images-text .text .para-1{
+            width: 95%;
+            margin:auto;
+        }
+        .tasks-images-row .images-text .text .para-2{
+            white-space: pre-line;
+        }
+        .tasks-images-row .text-box{
+            text-align: center;
+            padding: 15px 0px 25px;
+        }
+        .tasks-images-row .text-box .text-red{
+            width: 50%;
+            margin: auto;
+            color: #b76447;
+            font-size: 17px;
+            font-weight: 600;
+        }
+        .tasks-images-row .text-box .text-white{
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 20px;
+        }
+        .footer-row{
+            width: 100%;
+        }
+        .footer-row .icons{
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .footer-row .icons .linkedin-icon{
+            display: inline-block;
+        }
+        .footer-row .footer-lines{
+            text-align: center;
+        }
+        .table-data-div{
+            overflow: auto;
+            height: 170px;
+        }
+        .table-data-div thead th{
+            position: sticky;
+            top: 0;
+            z-index: 20;
+        }
+        @media screen and (max-device-width: 767px),screen and (max-width: 767px){
+            body{
+               font-size: 14px !important; 
+            }
+            .container{
+                width: 100%;
+            }
+            .box{
+                width: 100% !important;
+            }
+            .row-4{
+                padding: 30px 0px !important;
+            }
+            .text-box .text-red{
+                width: 80% !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="box">
+            <div class="row-1">
+                <div class="brand-logo">
+                    <img src="http://img.mailinblue.com/2981587/images/5f1167c9cd83e_1594976201.png" alt="brand logo"/>
+                </div>
+            </div>
+<div class="content-box">
+
+                <p class="greetings-text">Hi Everyone,</p>
+                <br/>
+                <p class="">Your team member <strong><%= gettext "%{name}", name: @user.name %></strong> has worked <strong><%= gettext "%{name}", name: @total_duration %></strong> in total today.</p>
+                <br/>
+                <p class="">Here’s the breakdown of all his tasks.</p>
+                <br/>
+
+ </div>
+            <div class="table-data-div" style="height: 170px; max-height: 170px;">
+                <!-- <div class=""> -->
+                    <table style="border: 1px solid; width: 100%; height: 170px; max-height: 170px;">
+                        <thead style="height: auto;">
+                            <tr>
+                                <th class="table-head-data" style="width: 15%;">Projects</th>
+                                <th class="table-head-data" style="width: auto;">Task Name</th>
+                                <th class="table-head-data" style="width: 15%;">Task Status</th>
+                                <th class="table-head-data" style="width: 5%;">Time Tracked</th>
+                                <th class="table-head-data" style="width: 10%;">State</th>
+    
+                            </tr>
+                        </thead>
+                        <tbody style="height: auto; overflow-y: scroll;">
+                         <%= for {key, value} <- @day_tasks do %>
+                         <tr>
+                              <td class="table-data text-align"> <%= Enum.at(value, 1) %></td>
+                              <td class="table-data"><%= key %></td>
+                              <td class="table-data text-align"><%= Enum.at(value, 2) %></td>
+                              <td class="table-data text-align"><%= case String.length(Enum.at(value, 0)) do 0 -> "Not Worked"; _ -> Enum.at(value, 0) end %></td>
+                              <td class="table-data text-align"><%= case Enum.at(value, 3) do true -> "Completed"; _ -> "Incomplete" end %></td>
+                         </tr>
+                         <%= end%>
+                    </tbody>
+                    </table>
+                <!-- </div> -->
+            </div>
+            <!-- <div class="">
+                <p>Give your team a part on the back for a job well done.
+                </p>
+            </div> -->
+            
+            <div class="row-4">
+                <div class="manager-name">
+                    <p class="">Regards,</p>
+                    <p>Dailyploy</p>
+                    <p>Contact Us: +91-8390298453</p>
+                    <p>Visit Us:<a href="https://dailyploy.com/" target="_blank" style="text-decoration: none; "> www.dailyploy.com</a></p>
+                    <p>Email Us: contact@stack-avenue.com</p>
+                </div>
+                
+            </div>
+            <div class="tasks-images-row">
+                <div class="three-images">
+                    <img src="http://pyne.widgetweb.in/frontend/assets/files/customer/cb7806kfwnfa6/IMAGES/Untitled-design-%2822%29.png"/>
+                </div>
+                <div class="images-text">
+                    <div class="text"><p>Map strategic planning with roadmap</p></div>
+                    <div class="text">
+                        <p class="para-1">Manage project 
+                            execution</p>
+                    </div>
+                    <div class="text">
+                        <p class="para-2">Track 
+                        progress</p>
+                    </div>
+                </div>
+                <!-- <div class="">
+                    <div class="div-1">
+                        <div class="images">
+                            <img src="http://pyne.widgetweb.in/frontend/assets/files/customer/cb7806kfwnfa6/IMAGES/survey.png" alt="plan-roadmap"/>
+                        </div>
+                        <p>Map strategic planning with roadmap</p>
+                    </div>
+                    <div class="div-1">
+                        <div class="images">
+                            <img src="http://pyne.widgetweb.in/frontend/assets/files/customer/cb7806kfwnfa6/IMAGES/task.png" alt="manage project"/>
+                        </div>
+                        <p>Manage project execution</p>
+                    </div>
+                    <div class="div-1">
+                        <div class="images">
+                            <img src="http://pyne.widgetweb.in/frontend/assets/files/customer/cb7806kfwnfa6/IMAGES/calendar.png" alt="calendar"/>
+                        </div>
+                        <p>Track progress</p>
+                    </div>
+                </div> -->
+                <div class="text-box">
+                    <p class="text-red">Manage your business goals and strategic planning with Dailyploy</p>
+                    <p class="text-white">in 3 steps</p>
+                </div>
+            </div>
+            <div class="footer-row">
+                <div class="icons">
+                    <div class="linkedin-icon">
+                        <a href="https://www.linkedin.com/company/dailyploy/" target="_blank">
+                            <img src="http://img.mailinblue.com/2981587/images/5f1167b713f77_1594976183.png" alt="linkedin icon">
+                        </a>
+                    </div>
+                    <div class="linkedin-icon">
+                        <a href="https://www.facebook.com/dailyploy/" target="_blank">
+                            <img src="http://img.mailinblue.com/2981587/images/5f1167bc65a7c_1594976188.png" alt="facebook icon">
+                        </a>
+                    </div>
+                    <div class="linkedin-icon">
+                        <a href="https://twitter.com/daily_ploy/" target="_blank">
+                            <img src="http://img.mailinblue.com/2981587/images/5f1167c38949d_1594976195.png" alt="twitter icon">
+                        </a>
+                    </div>
+                </div>
+                <div class="footer-lines">
+                    <p>Follow us for latest updates</p>
+                    <p>#staysafe #stayhappy</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
