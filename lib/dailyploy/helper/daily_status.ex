@@ -10,6 +10,7 @@ defmodule Dailyploy.Helper.DailyStatus do
   # alias Dailyploy.Model.User, as: UserModel
   # alias Dailyploy.Model.Project, as: ProjectModel
   # alias Dailyploy.Model.Task, as: TaskModel
+  alias Dailyploy.Repo
   alias Dailyploy.Model.DailyStatusMailSetting, as: DailyStatusMailSettingsModel
   alias DailyployWeb.ReportController, as: RCModel
   # import Ecto.Query
@@ -77,6 +78,8 @@ defmodule Dailyploy.Helper.DailyStatus do
           case is_nil(tasks) do
             false ->
               Enum.reduce(tasks, %{}, fn task, acc ->
+                task = Repo.preload(task, [:task_status])
+
                 time_tracks =
                   Map.get(
                     task.date_formatted_time_tracks,
@@ -102,21 +105,36 @@ defmodule Dailyploy.Helper.DailyStatus do
                       )
                   end
 
-                Map.put_new(acc, "#{task.name}", sec_to_str(duration))
+                Map.put_new(acc, "#{task.name}", [
+                  sec_to_str(duration),
+                  task.project.name,
+                  task.task_status.name,
+                  task.is_complete,
+                  duration
+                ])
               end)
 
             true ->
               %{}
           end
 
+        todays_day = Timex.day_name(Date.day_of_week(Date.utc_today()))
+
+        total_duration =
+          Enum.reduce(day_tasks, 0, fn {key, value}, acc ->
+            acc + Enum.at(value, 4)
+          end)
+          |> sec_to_str
+
         email_build
         |> Email.put_from("contact@stack-avenue.com")
-        |> Email.put_subject("Status Update
+        |> Email.put_subject("#{todays_day} Status Update
         ")
         |> Email.put_phoenix_view(DailyployWeb.EmailView)
         |> Email.put_phoenix_template("daily_status_mail.html",
           day_tasks: day_tasks,
-          user: daily_status_mail.user
+          user: daily_status_mail.user,
+          total_duration: total_duration
         )
         |> Mail.send()
 
