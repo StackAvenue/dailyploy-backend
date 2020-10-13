@@ -14,7 +14,7 @@
    Hi all,<br>
       <br>
       Your team member <span><%= gettext "%{name}", name: @user.name %></span>
-      has worked one the following tasks today:-
+      has worked on the following tasks today:-
       <br>
       <br>
        <table style="border: 2px solid black">

@@ -7,6 +7,7 @@ defmodule DailyployWeb.TaskListsView do
     ProjectView,
     TaskListsView,
     TaskStatusView,
+    TaskCategoryView,
     UserStoriesView
   }
 
@@ -18,6 +19,7 @@ defmodule DailyployWeb.TaskListsView do
       end_date: project_task_list.end_date,
       description: project_task_list.description,
       color_code: project_task_list.color_code,
+      category: render_one(project_task_list.category, TaskCategoryView, "task_category.json"),
       workspace_id: project_task_list.workspace_id,
       task_status: render_one(project_task_list.task_status, TaskStatusView, "status.json"),
       creator_id: project_task_list.creator_id,
@@ -52,6 +54,7 @@ defmodule DailyployWeb.TaskListsView do
       workspace_id: task_lists.workspace_id,
       creator_id: task_lists.creator_id,
       project_id: task_lists.project_id,
+      category: render_one(task_lists.category, TaskCategoryView, "task_category.json"),
       project: render_one(task_lists.project, ProjectView, "show_project.json"),
       workspace: render_one(task_lists.workspace, WorkspaceView, "workspace_task.json"),
       creator: render_one(task_lists.creator, UserView, "user.json"),

@@ -8,6 +8,7 @@ defmodule Dailyploy.Helper.TaskLists do
       name: name,
       start_date: start_date,
       end_date: end_date,
+      category_id: category_id,
       description: description,
       color_code: color_code,
       task_status_id: task_status_id,
@@ -22,6 +23,7 @@ defmodule Dailyploy.Helper.TaskLists do
         start_date: start_date,
         end_date: end_date,
         description: description,
+        category_id: category_id,
         color_code: color_code,
         workspace_id: workspace_id,
         task_status_id: task_status_id,
@@ -33,7 +35,7 @@ defmodule Dailyploy.Helper.TaskLists do
 
   defp verify_create({:ok, project_task_list}) do
     project_task_list =
-      project_task_list |> Repo.preload([:project, :workspace, :creator, :task_status])
+      project_task_list |> Repo.preload([:project, :workspace, :category, :creator, :task_status])
 
     {:ok,
      %{
@@ -49,6 +51,7 @@ defmodule Dailyploy.Helper.TaskLists do
        project_id: project_task_list.project_id,
        project: project_task_list.project,
        workspace: project_task_list.workspace,
+       category: project_task_list.category,
        creator: project_task_list.creator
      }}
   end

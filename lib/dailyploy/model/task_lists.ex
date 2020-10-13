@@ -8,7 +8,8 @@ defmodule Dailyploy.Model.TaskLists do
 
     case Repo.insert(changeset) do
       {:ok, task_lists} ->
-        {:ok, task_lists |> Repo.preload([:project, :workspace, :creator, :task_status])}
+        {:ok,
+         task_lists |> Repo.preload([:project, :workspace, :creator, :category, :task_status])}
 
       {:error, message} ->
         {:error, message}
@@ -18,7 +19,8 @@ defmodule Dailyploy.Model.TaskLists do
   def delete(task_lists) do
     case Repo.delete(task_lists) do
       {:ok, task_lists} ->
-        {:ok, task_lists |> Repo.preload([:project, :workspace, :creator, :task_status])}
+        {:ok,
+         task_lists |> Repo.preload([:project, :workspace, :creator, :category, :task_status])}
 
       {:error, message} ->
         {:error, message}
@@ -30,7 +32,8 @@ defmodule Dailyploy.Model.TaskLists do
 
     case Repo.update(changeset) do
       {:ok, task_lists} ->
-        {:ok, task_lists |> Repo.preload([:project, :workspace, :creator, :task_status])}
+        {:ok,
+         task_lists |> Repo.preload([:project, :workspace, :creator, :category, :task_status])}
 
       {:error, message} ->
         {:error, message}
@@ -45,6 +48,9 @@ defmodule Dailyploy.Model.TaskLists do
         {:error, "not found"}
 
       task_lists ->
+        task_lists =
+          task_lists |> Repo.preload([:project, :workspace, :creator, :category, :task_status])
+
         {:ok, task_lists}
     end
   end

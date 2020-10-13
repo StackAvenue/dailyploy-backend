@@ -9,6 +9,7 @@ defmodule DailyployWeb.Validators.TaskLists do
       description: :string,
       color_code: :string,
       workspace_id!: :integer,
+      category_id: :integer,
       creator_id!: :integer,
       task_status_id: :integer,
       project_id!: :integer
