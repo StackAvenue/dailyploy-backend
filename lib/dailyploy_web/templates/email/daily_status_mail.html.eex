@@ -169,7 +169,7 @@
                 <br/>
                 <p class="">Your team member <strong><%= gettext "%{name}", name: @user.name %></strong> has worked <strong><%= gettext "%{name}", name: @total_duration %></strong> in total today.</p>
                 <br/>
-                <p class="">Here’s the breakdown of all his tasks.</p>
+                <p class="">Here’s the breakdown of all their tasks.</p>
                 <br/>
 
  </div>
