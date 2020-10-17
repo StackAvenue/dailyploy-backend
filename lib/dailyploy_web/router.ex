@@ -28,8 +28,10 @@ defmodule DailyployWeb.Router do
 
     post "/add_workspace", NewWorkspaceController, :add_user_workspace
     get "/tasks/:id", TaskController, :show
+    post "/tasks/:id/copy", TaskController, :copy_task
     post "/tasks/:task_id/start-tracking", TimeTrackingController, :start_tracking
     put "/tasks/:task_id/stop-tracking", TimeTrackingController, :stop_tracking
+    post "/tasks/:task_id/logg_time", TimeTrackingController, :logg_time
     resources "/comment", TaskCommentController
     put "/tasks/:task_id/edit_tracked_time/:id", TimeTrackingController, :edit_tracked_time
     delete "/tasks/:task_id/delete/:id", TimeTrackingController, :delete
@@ -95,10 +97,28 @@ defmodule DailyployWeb.Router do
         put "/make_as_complete/:id", TaskController, :task_completion
 
         resources "/task_lists", TaskListsController, except: [:new, :edit] do
-          resources "/task_list_tasks", TaskListTasksController, except: [:new, :edit]
           post "/move/:id", TaskListTasksController, :move_task
+          resources "/task_list_tasks", TaskListTasksController, except: [:new, :edit]
           get "/summary", TaskListsController, :summary
           resources "/checklists", RoadmapChecklistController, except: [:new, :edit]
+        end
+
+        scope "/task_lists/:task_lists_id" do
+          resources "/user_stories", UserStoriesController, except: [:new, :edit] do
+            post "/attachments", UserStoriesController, :add_attachments
+          end
+        end
+
+        scope "/user_stories/:user_stories_id" do
+          post "/move/:id", TaskListTasksController, :move_task
+          resources "/task_list_tasks", TaskListTasksController, except: [:new, :edit]
+          resources "/checklists", RoadmapChecklistController, except: [:new, :edit]
+          # resources "/comment", TaskCommentController
+        end
+
+        scope "/roadmap_task/:task_list_tasks_id" do
+          resources "/checklists", RoadmapChecklistController, except: [:new, :edit]
+          # resources "/comment", TaskCommentController
         end
 
         resources "/milestone", MilestoneController

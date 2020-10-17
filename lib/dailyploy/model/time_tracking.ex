@@ -10,6 +10,11 @@ defmodule Dailyploy.Model.TimeTracking do
     Repo.insert(changeset)
   end
 
+  def create(params) do
+    changeset = TimeTracking.running_changeset(%TimeTracking{}, params)
+    Repo.insert(changeset)
+  end
+
   def delete_time_track(time_track) do
     Repo.delete(time_track)
   end

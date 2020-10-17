@@ -2,7 +2,7 @@ defmodule Dailyploy.Helper.RoadmapChecklist do
   alias Dailyploy.Model.RoadmapChecklist, as: RCModel
   import DailyployWeb.Helpers
 
-  defdelegate get_all(data, preloads, task_lists_id), to: RCModel
+  defdelegate get_all(data, preloads, task_lists_id, user_stories_id), to: RCModel
   defdelegate update(checklist, params), to: RCModel
   defdelegate delete(checklist), to: RCModel
 
@@ -10,6 +10,8 @@ defmodule Dailyploy.Helper.RoadmapChecklist do
     %{
       name: name,
       task_lists_id: task_lists_id,
+      user_stories_id: user_stories_id,
+      task_list_tasks_id: task_list_tasks_id,
       is_completed: is_completed
     } = params
 
@@ -17,6 +19,8 @@ defmodule Dailyploy.Helper.RoadmapChecklist do
       RCModel.create(%{
         name: name,
         task_lists_id: task_lists_id,
+        user_stories_id: user_stories_id,
+        task_list_tasks_id: task_list_tasks_id,
         is_completed: is_completed
       })
     )

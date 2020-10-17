@@ -2,6 +2,7 @@ defmodule DailyployWeb.TaskListTasksController do
   use DailyployWeb, :controller
   alias Dailyploy.Helper.TaskListTasks
   alias Dailyploy.Model.TaskListTasks, as: TLModel
+  alias Dailyploy.Model.UserStories, as: USModel
   import DailyployWeb.Validators.TaskListTasks
   import DailyployWeb.Helpers
 
@@ -18,7 +19,7 @@ defmodule DailyployWeb.TaskListTasksController do
           {:list,
            TLModel.get_all(
              data,
-             [:owner, :category, :task_lists, :task_status],
+             [:owner, :category, :task_lists, :task_status, :checklist, :comments, :task],
              data.task_lists_id,
              params
            )}
@@ -67,7 +68,14 @@ defmodule DailyployWeb.TaskListTasksController do
           |> render("show.json", %{
             task_list_tasks:
               task_list_tasks
-              |> Dailyploy.Repo.preload([:owner, :category, :task_lists, :task_status])
+              |> Dailyploy.Repo.preload([
+                :owner,
+                :category,
+                :task_lists,
+                :task_status,
+                :comments,
+                :checklist
+              ])
           })
         else
           {:delete, {:error, error}} ->
@@ -90,7 +98,14 @@ defmodule DailyployWeb.TaskListTasksController do
           |> render("show.json", %{
             task_list_tasks:
               task_list_tasks
-              |> Dailyploy.Repo.preload([:owner, :category, :task_lists, :task_status])
+              |> Dailyploy.Repo.preload([
+                :owner,
+                :category,
+                :task_lists,
+                :task_status,
+                :comments,
+                :checklist
+              ])
           })
         else
           {:update, {:error, error}} ->
@@ -113,7 +128,14 @@ defmodule DailyployWeb.TaskListTasksController do
           |> render("show.json", %{
             task_list_tasks:
               conn.assigns.task_list_tasks
-              |> Dailyploy.Repo.preload([:owner, :category, :task_lists, :task_status])
+              |> Dailyploy.Repo.preload([
+                :owner,
+                :category,
+                :task_lists,
+                :task_status,
+                :comments,
+                :checklist
+              ])
           })
         else
           {:create, {:error, error}} ->
@@ -134,7 +156,14 @@ defmodule DailyployWeb.TaskListTasksController do
         |> render("show.json", %{
           task_list_tasks:
             conn.assigns.task_list_tasks
-            |> Dailyploy.Repo.preload([:owner, :category, :task_lists, :task_status])
+            |> Dailyploy.Repo.preload([
+              :owner,
+              :category,
+              :task_lists,
+              :task_status,
+              :comments,
+              :checklist
+            ])
         })
 
       404 ->
@@ -155,4 +184,17 @@ defmodule DailyployWeb.TaskListTasksController do
         |> put_status(404)
     end
   end
+
+  # defp load_task_list(%{params: %{"user_stories_id" => id}} = conn, _params) do
+  #   {id, _} = Integer.parse(id)
+
+  #   case USModel.get(id) do
+  #     {:ok, user_stories} ->
+  #       assign(conn, :user_stories, user_stories)
+
+  #     {:error, _message} ->
+  #       conn
+  #       |> put_status(404)
+  #   end
+  # end
 end

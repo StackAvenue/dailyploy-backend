@@ -8,7 +8,9 @@ defmodule DailyployWeb.TaskCommentController do
   alias Dailyploy.Helper.CommentsAttachment
   alias Dailyploy.Model.Task, as: TaskModel
   alias Dailyploy.Model.User, as: UserModel
+  alias Dailyploy.Model.UserStories, as: USModel
   alias Dailyploy.Model.TaskComment, as: TCModel
+  alias Dailyploy.Model.TaskListTasks, as: TLModel
   alias Dailyploy.Model.CommentsAttachment, as: CAModel
   alias Dailyploy.Model.Notification, as: NotificationModel
   alias Dailyploy.Avatar
@@ -136,6 +138,54 @@ defmodule DailyployWeb.TaskCommentController do
     end
   end
 
+  defp load_task_and_user(
+         %{params: %{"user_stories_id" => user_stories_id, "user_id" => user_id}} = conn,
+         _params
+       ) do
+    {user_stories_id, _} = Integer.parse(user_stories_id)
+    {user_id, _} = Integer.parse(user_id)
+
+    case USModel.get(user_stories_id) do
+      {:ok, user_stories} ->
+        case UserModel.get(user_id) do
+          {:ok, _user} ->
+            assign(conn, :user_stories, user_stories)
+
+          {:error, _message} ->
+            conn
+            |> put_status(404)
+        end
+
+      {:error, _message} ->
+        conn
+        |> put_status(404)
+    end
+  end
+
+  defp load_task_and_user(
+         %{params: %{"task_list_tasks_id" => task_list_tasks_id, "user_id" => user_id}} = conn,
+         _params
+       ) do
+    {task_list_tasks_id, _} = Integer.parse(task_list_tasks_id)
+    {user_id, _} = Integer.parse(user_id)
+
+    case TLModel.get(task_list_tasks_id) do
+      {:ok, task_list_tasks} ->
+        case UserModel.get(user_id) do
+          {:ok, _user} ->
+            assign(conn, :task_list_tasks, task_list_tasks)
+
+          {:error, _message} ->
+            conn
+            |> put_status(404)
+        end
+
+      {:error, _message} ->
+        conn
+        |> put_status(404)
+    end
+  end
+
   defp load_comment(%{params: %{"id" => id}} = conn, _params) do
     {id, _} = Integer.parse(id)
 
@@ -238,9 +288,9 @@ defmodule DailyployWeb.TaskCommentController do
       comment = Map.put_new(comment, :attachment, attachment)
 
       # Task.async(TaskComment.send_activity_mail(comment)) task notification should be send as mail to the one who is responsible for this
-      Task.async(fn ->
-        notification_create(comment, "commented")
-      end)
+      # Task.async(fn ->
+      #   notification_create(comment, "commented")
+      # end)
 
       conn
       |> put_status(200)

@@ -7,7 +7,9 @@ defmodule Dailyploy.Helper.TaskComment do
   def create_comment(params) do
     %{
       task_id: task_id,
+      user_stories_id: user_stories_id,
       user_id: user_id,
+      task_list_tasks_id: task_list_tasks_id,
       comments: comments
     } = params
 
@@ -15,13 +17,23 @@ defmodule Dailyploy.Helper.TaskComment do
       TCModel.create_comment(%{
         task_id: task_id,
         user_id: user_id,
+        user_stories_id: user_stories_id,
+        task_list_tasks_id: task_list_tasks_id,
         comments: comments
       })
     )
   end
 
   defp verify_create({:ok, comment}) do
-    comment = comment |> Dailyploy.Repo.preload([:user, :task, task: [:members, :owner]])
+    comment =
+      comment
+      |> Dailyploy.Repo.preload([
+        :user,
+        :task_list_tasks,
+        :user_stories,
+        :task,
+        task: [:members, :owner]
+      ])
 
     {:ok,
      %{
@@ -31,6 +43,7 @@ defmodule Dailyploy.Helper.TaskComment do
        comments: comment.comments,
        user: comment.user,
        task: comment.task,
+       user_stories: comment.user_stories,
        inserted_at: comment.inserted_at
      }}
   end
@@ -40,7 +53,7 @@ defmodule Dailyploy.Helper.TaskComment do
   end
 
   # def send_activity_mail(comment) do
-  #   email_build = 
+  #   email_build =
   #     Email.build()
   #     |> Map.put
 

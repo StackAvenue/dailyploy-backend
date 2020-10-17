@@ -19,6 +19,7 @@ defmodule DailyployWeb.WorkspaceView do
       name: workspace.name,
       type: workspace.type,
       currency: workspace.currency,
+      timetrack_enabled: workspace.timetrack_enabled,
       company: CompanyView.render("company.json", %{company: workspace.company}),
       owner: UserView.render("user.json", %{user: workspace.users |> List.first()})
     }
