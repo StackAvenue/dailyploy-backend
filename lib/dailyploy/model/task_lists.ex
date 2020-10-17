@@ -52,10 +52,10 @@ defmodule Dailyploy.Model.TaskLists do
   def get_all(%{page_size: page_size, page_number: page_number}, preloads, project_id) do
     query =
       from task_list in TaskLists,
-        where: task_list.project_id == ^project_id
+        where: task_list.project_id == ^project_id,
+        order_by: [desc: task_list.inserted_at]
 
-    task_lists_data =
-      query |> order_by(:id) |> Repo.paginate(page: page_number, page_size: page_size)
+    task_lists_data = query |> Repo.paginate(page: page_number, page_size: page_size)
 
     task_lists_with_preloads = task_lists_data.entries |> Repo.preload(preloads)
     paginated_response(task_lists_with_preloads, task_lists_data)
