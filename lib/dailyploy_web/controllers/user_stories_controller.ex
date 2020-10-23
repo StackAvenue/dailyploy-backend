@@ -2,11 +2,14 @@ defmodule DailyployWeb.UserStoriesController do
   use DailyployWeb, :controller
   alias Dailyploy.Helper.UserStories
   alias Dailyploy.Avatar
+  alias Dailyploy.Helper.ImageDeletion
   import DailyployWeb.Validators.UserStories
   import DailyployWeb.Helpers
 
   plug DailyployWeb.Plug.TaskLists when action in [:create]
-  plug DailyployWeb.Plug.UserStories when action in [:update, :add_attachments, :show]
+
+  plug DailyployWeb.Plug.UserStories
+       when action in [:update, :add_attachments, :show, :delete_attachments]
 
   def create(conn, params) do
     case conn.status do
@@ -79,9 +82,38 @@ defmodule DailyployWeb.UserStoriesController do
 
   def add_attachments(conn, params) do
     with true <- Map.has_key?(params, "attachments") do
-      insert_attachments(conn.assigns.user_stories, params)
+      result = insert_attachments(conn.assigns.user_stories, params)
+
+      conn
+      |> put_status(200)
+      |> render("attachment.json", result)
     else
       false -> send_error(conn, 400, "Attachments are not present")
+    end
+  end
+
+  def delete_attachments(conn, params) do
+    with true <- Map.has_key?(params, "attachment_ids") do
+      result = delete_attachment(conn.assigns.user_stories, params)
+
+      conn
+      |> put_status(200)
+      |> render("attachment.json", result)
+    else
+      false -> send_error(conn, 400, "Attachments are not present")
+    end
+  end
+
+  def delete_attachment(user_stories, %{"attachment_ids" => attachment_ids}) do
+    attachment_ids = attachment_ids |> String.split(",")
+    attachments = UserStories.delete_attachments(attachment_ids, user_stories)
+    delete_attach(attachments)
+  end
+
+  defp delete_attach(attachments) do
+    for attachment <- attachments do
+      ImageDeletion.delete_operation(attachment, "attachments")
+      Dailyploy.Repo.delete(attachment)
     end
   end
 
@@ -106,7 +138,14 @@ defmodule DailyployWeb.UserStoriesController do
   end
 
   defp create_attachment(attachment) do
-    {:ok, changeset} = verify_attachments(attachment) |> extract_changeset_data
+    {:ok, changeset} =
+      verify_attachments(attachment)
+      |> extract_changeset_data
+
+    changeset =
+      Map.from_struct(changeset)
+      |> Map.drop([:_id, :__meta__])
+
     UserStories.create_attachment(changeset)
   end
 end

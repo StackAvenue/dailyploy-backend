@@ -4,6 +4,7 @@ defmodule Dailyploy.Helper.UserStories do
 
   defdelegate update(user_story, params), to: UserStories
   defdelegate create_attachment(changeset), to: UserStories
+  defdelegate delete_attachments(ids, user_stories), to: UserStories
 
   def create(params) do
     params = params_extraction(params)

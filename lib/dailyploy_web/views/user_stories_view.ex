@@ -76,8 +76,17 @@ defmodule DailyployWeb.UserStoriesView do
   end
 
   def render("attachment.json", %{user_stories: attachment}) do
+    user_story = Dailyploy.Repo.preload(attachment, [:attachments])
+
     %{
-      url: attachment.image_url
+      attachments: render_many(user_story.attachments, UserStoriesView, "url.json")
+    }
+  end
+
+  def render("url.json", %{user_stories: params}) do
+    %{
+      id: params.id,
+      image_url: params.image_url
     }
   end
 end
