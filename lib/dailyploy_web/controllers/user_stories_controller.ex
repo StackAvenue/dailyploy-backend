@@ -9,7 +9,7 @@ defmodule DailyployWeb.UserStoriesController do
   plug DailyployWeb.Plug.TaskLists when action in [:create]
 
   plug DailyployWeb.Plug.UserStories
-       when action in [:update, :add_attachments, :show, :delete_attachments]
+       when action in [:update, :add_attachments, :show, :delete_attachments, :delete]
 
   def create(conn, params) do
     case conn.status do
@@ -47,6 +47,27 @@ defmodule DailyployWeb.UserStoriesController do
           })
         else
           {:update, {:error, error}} ->
+            send_error(conn, 400, extract_changeset_error(error))
+        end
+
+      404 ->
+        conn
+        |> send_error(404, "Resource Not Found")
+    end
+  end
+
+  def delete(conn, params) do
+    case conn.status do
+      nil ->
+        with {:delete, {:ok, user_stories}} <-
+               {:delete, UserStories.delete(conn.assigns.user_stories)} do
+          conn
+          |> put_status(200)
+          |> render("delete.json", %{
+            user_stories: user_stories
+          })
+        else
+          {:delete, {:error, error}} ->
             send_error(conn, 400, extract_changeset_error(error))
         end
 

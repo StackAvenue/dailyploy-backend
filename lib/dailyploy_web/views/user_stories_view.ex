@@ -26,6 +26,22 @@ defmodule DailyployWeb.UserStoriesView do
     }
   end
 
+  def render("delete.json", %{user_stories: user_stories}) do
+    require IEx
+    IEx.pry()
+
+    %{
+      id: user_stories.id,
+      name: user_stories.name,
+      description: user_stories.description,
+      is_completed: user_stories.is_completed,
+      owner_id: user_stories.owner_id,
+      priority: user_stories.priority,
+      due_date: user_stories.due_date,
+      task_lists_id: user_stories.task_lists_id
+    }
+  end
+
   def render("task_list_view.json", %{user_stories: user_stories}) do
     %{
       id: user_stories.id,

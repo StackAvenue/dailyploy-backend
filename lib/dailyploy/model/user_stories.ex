@@ -51,4 +51,8 @@ defmodule Dailyploy.Model.UserStories do
 
     Repo.all(query)
   end
+
+  def delete(user_stories) do
+    Repo.delete(user_stories)
+  end
 end
