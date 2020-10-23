@@ -53,6 +53,7 @@ defmodule DailyployWeb.UserStoriesView do
       owner_id: user_stories.owner_id,
       priority: user_stories.priority,
       due_date: user_stories.due_date,
+      attachments: render_many(user_stories.attachments, UserStoriesView, "url.json"),
       task_status: render_one(user_stories.task_status, TaskStatusView, "status.json"),
       owner: render_one(user_stories.owner, UserView, "user.json"),
       roadmap_id: user_stories.task_lists_id,
