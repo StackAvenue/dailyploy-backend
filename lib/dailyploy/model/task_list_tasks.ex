@@ -100,10 +100,15 @@ defmodule Dailyploy.Model.TaskListTasks do
 
   defp filter_where(params) do
     Enum.reduce(params, dynamic(true), fn
-      {"status", status}, dynamic_query ->
+      {"status_ids", status_ids}, dynamic_query ->
+        status_ids =
+          status_ids
+          |> String.split(",")
+          |> Enum.map(fn status_id -> String.trim(status_id) end)
+
         dynamic(
           [task_list_task],
-          ^dynamic_query and task_list_task.status == ^status
+          ^dynamic_query and task_list_task.status in ^status_ids
         )
 
       {"member_ids", member_ids}, dynamic_query ->
