@@ -11,7 +11,7 @@ defmodule Dailyploy.Schema.TaskLists do
     TaskCategory
   }
 
-  @task_status ~w(Completed Running)s
+  @task_status ~w(Completed Running Planned)s
 
   import Ecto.Changeset
 
@@ -20,7 +20,7 @@ defmodule Dailyploy.Schema.TaskLists do
     field :start_date, :date
     field :end_date, :date
     field :description, :string
-    field :status, :string, default: "Not Started"
+    field :status, :string, default: "Planned"
     field :color_code, :string
 
     belongs_to :workspace, Workspace

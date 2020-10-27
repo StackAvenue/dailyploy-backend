@@ -136,13 +136,46 @@ defmodule Dailyploy.Model.TaskLists do
   5. Remaining Hours Vs Assigned Hours
   """
   def summary(task_list) do
-    task_list = Repo.preload(task_list, [:task_list_tasks])
+    task_list_tasks = collect_tasks(task_list)
 
-    task_list.task_list_tasks
-    |> find_total_tasks()
-    |> find_estimate_hours()
-    |> completed_tasks()
-    |> remaining_hours()
+    summary =
+      task_list_tasks
+      |> find_total_tasks()
+      |> find_estimate_hours()
+      |> completed_tasks()
+      |> remaining_hours()
+
+    [total_user_stories, completed_user_stories, user_stories_left] =
+      process_user_story(task_list.user_stories)
+
+    Map.put_new(summary, "total_user_stories", total_user_stories)
+    |> Map.put_new("completed_user_stories", completed_user_stories)
+    |> Map.put_new("user_stories_left", user_stories_left)
+  end
+
+  defp process_user_story(story) do
+    total_user_stories = length(story)
+    completed_user_stories = completed_user_stories(story)
+    user_stories_left = total_user_stories - completed_user_stories
+    [total_user_stories, completed_user_stories, user_stories_left]
+  end
+
+  defp completed_user_stories(stories) do
+    Enum.reduce(stories, 0, fn story, acc ->
+      case story.is_completed do
+        true -> acc + 1
+        false -> acc
+      end
+    end)
+  end
+
+  defp collect_tasks(task_list) do
+    user_stories_task =
+      Enum.reduce(task_list.user_stories, [], fn story, acc ->
+        acc ++ story.task_lists_tasks
+      end)
+
+    task_list.task_list_tasks ++ user_stories_task
   end
 
   defp find_total_tasks(task_list_tasks) do

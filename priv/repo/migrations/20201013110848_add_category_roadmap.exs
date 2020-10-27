@@ -6,7 +6,7 @@ defmodule Dailyploy.Repo.Migrations.AddCategoryRoadmap do
 
     alter table(:task_lists) do
       add :category_id, references(:task_categories, on_delete: :restrict)
-      add :status, :string, default: "Not Started"
+      add :status, :string, default: "Planned"
       remove :task_status_id
     end
   end
