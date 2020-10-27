@@ -114,7 +114,7 @@ defmodule Dailyploy.Model.TaskLists do
 
         dynamic(
           [task_list_task],
-          ^dynamic_query and task_list_task.status in ^status_ids
+          ^dynamic_query and task_list_task.task_status_id in ^status_ids
         )
 
       {"member_ids", member_ids}, dynamic_query ->
