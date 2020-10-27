@@ -11,7 +11,7 @@ defmodule DailyployWeb.Validators.TaskLists do
       workspace_id!: :integer,
       category_id: :integer,
       creator_id!: :integer,
-      status: [field: :string, default: "Not Started"],
+      status: [field: :string, default: "Planned"],
       project_id!: :integer
     })
   )
