@@ -1,7 +1,8 @@
 defmodule Dailyploy.Model.TaskLists do
   import Ecto.Query
   alias Dailyploy.Repo
-  alias Dailyploy.Schema.TaskLists
+  alias Dailyploy.Model.TaskLists, as: PTModel
+  alias Dailyploy.Schema.{TaskLists, UserStories, TaskListTasks}
 
   def create(params) do
     changeset = TaskLists.changeset(%TaskLists{}, params)
@@ -71,6 +72,60 @@ defmodule Dailyploy.Model.TaskLists do
       total_entries: pagination_data.total_entries,
       total_pages: pagination_data.total_pages
     }
+  end
+
+  def load_data(task_list, query, params) do
+    story_ids = PTModel.fetch_user_story_ids(task_list)
+    query2 = PTModel.create_query(story_ids, params)
+
+    task_list
+    |> Repo.preload([
+      :project,
+      :workspace,
+      :creator,
+      :category,
+      task_list_tasks: query,
+      user_stories: [:task_status, :owner, :roadmap_checklist, task_lists_tasks: query2]
+    ])
+  end
+
+  def fetch_user_story_ids(task_list) do
+    query =
+      from story in UserStories,
+        where: story.task_lists_id == ^task_list.id,
+        select: story.id
+
+    Repo.all(query)
+  end
+
+  def create_query(story_ids, filters) do
+    TaskListTasks
+    |> where([task_list_task], task_list_task.user_stories_id in ^story_ids)
+    |> where(^filter_where(filters))
+  end
+
+  defp filter_where(params) do
+    Enum.reduce(params, dynamic(true), fn
+      {"status", status}, dynamic_query ->
+        dynamic(
+          [task_list_task],
+          ^dynamic_query and task_list_task.status == ^status
+        )
+
+      {"member_ids", member_ids}, dynamic_query ->
+        member_ids =
+          member_ids
+          |> String.split(",")
+          |> Enum.map(fn member_id -> String.trim(member_id) end)
+
+        dynamic(
+          [task_list_task],
+          ^dynamic_query and task_list_task.owner_id in ^member_ids
+        )
+
+      {_, _}, dynamic_query ->
+        dynamic_query
+    end)
   end
 
   @doc """

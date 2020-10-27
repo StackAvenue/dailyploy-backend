@@ -27,9 +27,6 @@ defmodule DailyployWeb.UserStoriesView do
   end
 
   def render("delete.json", %{user_stories: user_stories}) do
-    require IEx
-    IEx.pry()
-
     %{
       id: user_stories.id,
       name: user_stories.name,

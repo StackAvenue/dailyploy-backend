@@ -83,10 +83,7 @@ defmodule Dailyploy.Model.TaskListTasks do
   end
 
   def get_all(%{page_size: page_size, page_number: page_number}, preloads, task_lists_id, filters) do
-    query =
-      TaskListTasks
-      |> where([task_list_task], task_list_task.task_lists_id == ^task_lists_id)
-      |> where(^filter_where(filters))
+    query = TLTModel.create_query(task_lists_id, filters)
 
     task_lists_data =
       query |> order_by(:id) |> Repo.paginate(page: page_number, page_size: page_size)
@@ -95,17 +92,18 @@ defmodule Dailyploy.Model.TaskListTasks do
     paginated_response(task_lists_with_preloads, task_lists_data)
   end
 
+  def create_query(task_lists_id, filters) do
+    TaskListTasks
+    |> where([task_list_task], task_list_task.task_lists_id == ^task_lists_id)
+    |> where(^filter_where(filters))
+  end
+
   defp filter_where(params) do
     Enum.reduce(params, dynamic(true), fn
-      {"status_ids", status_ids}, dynamic_query ->
-        status_ids =
-          status_ids
-          |> String.split(",")
-          |> Enum.map(fn status_id -> String.trim(status_id) end)
-
+      {"status", status}, dynamic_query ->
         dynamic(
           [task_list_task],
-          ^dynamic_query and task_list_task.task_status_id in ^status_ids
+          ^dynamic_query and task_list_task.status == ^status
         )
 
       {"member_ids", member_ids}, dynamic_query ->

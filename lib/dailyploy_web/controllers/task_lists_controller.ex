@@ -2,6 +2,7 @@ defmodule DailyployWeb.TaskListsController do
   use DailyployWeb, :controller
   alias Dailyploy.Helper.TaskLists
   alias Dailyploy.Model.TaskLists, as: PTModel
+  alias Dailyploy.Model.TaskListTasks, as: TLTModel
   import DailyployWeb.Validators.TaskLists
   import DailyployWeb.Helpers
 
@@ -82,12 +83,15 @@ defmodule DailyployWeb.TaskListsController do
     end
   end
 
-  def show(conn, _params) do
+  def show(conn, params) do
     case conn.status do
       nil ->
+        query = TLTModel.create_query(conn.assigns.task_list.id, params)
+        task_list = PTModel.load_data(conn.assigns.task_list, query, params)
+
         conn
         |> put_status(200)
-        |> render("show.json", %{project_task_list: conn.assigns.task_list})
+        |> render("show_filter.json", %{project_task_list: task_list})
 
       404 ->
         conn
