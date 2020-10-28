@@ -120,11 +120,12 @@ defmodule DailyployWeb.Router do
           resources "/checklists", RoadmapChecklistController, except: [:new, :edit]
           # resources "/comment", TaskCommentController
         end
-
+        
+        get "total_tasks", AnalysisController, :index
         resources "/milestone", MilestoneController
         resources "/contact", ContactController, only: [:show, :create, :update, :delete, :index]
       end
-
+      
       get "/workspace_projects", WorkspaceProjectController, :index
       get "/workspace_members", WorkspaceMemberController, :index
       post "/project_member", ProjectMemberController, :get_project_member
