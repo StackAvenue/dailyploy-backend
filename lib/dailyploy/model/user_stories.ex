@@ -43,4 +43,16 @@ defmodule Dailyploy.Model.UserStories do
     changeset = StoriesAttachments.changeset(%StoriesAttachments{}, data)
     Repo.insert(changeset)
   end
+
+  def delete_attachments(ids, user_stories) do
+    query =
+      from stories in StoriesAttachments,
+        where: stories.user_stories_id == ^user_stories.id and stories.id in ^ids
+
+    Repo.all(query)
+  end
+
+  def delete(user_stories) do
+    Repo.delete(user_stories)
+  end
 end

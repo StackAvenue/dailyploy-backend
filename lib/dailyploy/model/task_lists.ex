@@ -1,14 +1,15 @@
 defmodule Dailyploy.Model.TaskLists do
   import Ecto.Query
   alias Dailyploy.Repo
-  alias Dailyploy.Schema.TaskLists
+  alias Dailyploy.Model.TaskLists, as: PTModel
+  alias Dailyploy.Schema.{TaskLists, UserStories, TaskListTasks}
 
   def create(params) do
     changeset = TaskLists.changeset(%TaskLists{}, params)
 
     case Repo.insert(changeset) do
       {:ok, task_lists} ->
-        {:ok, task_lists |> Repo.preload([:project, :workspace, :creator, :task_status])}
+        {:ok, task_lists |> Repo.preload([:project, :workspace, :creator, :category])}
 
       {:error, message} ->
         {:error, message}
@@ -18,7 +19,7 @@ defmodule Dailyploy.Model.TaskLists do
   def delete(task_lists) do
     case Repo.delete(task_lists) do
       {:ok, task_lists} ->
-        {:ok, task_lists |> Repo.preload([:project, :workspace, :creator, :task_status])}
+        {:ok, task_lists |> Repo.preload([:project, :workspace, :creator, :category])}
 
       {:error, message} ->
         {:error, message}
@@ -30,7 +31,7 @@ defmodule Dailyploy.Model.TaskLists do
 
     case Repo.update(changeset) do
       {:ok, task_lists} ->
-        {:ok, task_lists |> Repo.preload([:project, :workspace, :creator, :task_status])}
+        {:ok, task_lists |> Repo.preload([:project, :workspace, :creator, :category])}
 
       {:error, message} ->
         {:error, message}
@@ -45,6 +46,8 @@ defmodule Dailyploy.Model.TaskLists do
         {:error, "not found"}
 
       task_lists ->
+        task_lists = task_lists |> Repo.preload([:project, :workspace, :creator, :category])
+
         {:ok, task_lists}
     end
   end
@@ -71,6 +74,65 @@ defmodule Dailyploy.Model.TaskLists do
     }
   end
 
+  def load_data(task_list, query, params) do
+    story_ids = PTModel.fetch_user_story_ids(task_list)
+    query2 = PTModel.create_query(story_ids, params)
+
+    task_list
+    |> Repo.preload([
+      :project,
+      :workspace,
+      :creator,
+      :category,
+      task_list_tasks: query,
+      user_stories: [:task_status, :owner, :roadmap_checklist, task_lists_tasks: query2]
+    ])
+  end
+
+  def fetch_user_story_ids(task_list) do
+    query =
+      from story in UserStories,
+        where: story.task_lists_id == ^task_list.id,
+        select: story.id
+
+    Repo.all(query)
+  end
+
+  def create_query(story_ids, filters) do
+    TaskListTasks
+    |> where([task_list_task], task_list_task.user_stories_id in ^story_ids)
+    |> where(^filter_where(filters))
+  end
+
+  defp filter_where(params) do
+    Enum.reduce(params, dynamic(true), fn
+      {"status_ids", status_ids}, dynamic_query ->
+        status_ids =
+          status_ids
+          |> String.split(",")
+          |> Enum.map(fn status_id -> String.trim(status_id) end)
+
+        dynamic(
+          [task_list_task],
+          ^dynamic_query and task_list_task.task_status_id in ^status_ids
+        )
+
+      {"member_ids", member_ids}, dynamic_query ->
+        member_ids =
+          member_ids
+          |> String.split(",")
+          |> Enum.map(fn member_id -> String.trim(member_id) end)
+
+        dynamic(
+          [task_list_task],
+          ^dynamic_query and task_list_task.owner_id in ^member_ids
+        )
+
+      {_, _}, dynamic_query ->
+        dynamic_query
+    end)
+  end
+
   @doc """
   1. Total Tasks
   2. Total Estimates Hours
@@ -79,13 +141,46 @@ defmodule Dailyploy.Model.TaskLists do
   5. Remaining Hours Vs Assigned Hours
   """
   def summary(task_list) do
-    task_list = Repo.preload(task_list, [:task_list_tasks])
+    task_list_tasks = collect_tasks(task_list)
 
-    task_list.task_list_tasks
-    |> find_total_tasks()
-    |> find_estimate_hours()
-    |> completed_tasks()
-    |> remaining_hours()
+    summary =
+      task_list_tasks
+      |> find_total_tasks()
+      |> find_estimate_hours()
+      |> completed_tasks()
+      |> remaining_hours()
+
+    [total_user_stories, completed_user_stories, user_stories_left] =
+      process_user_story(task_list.user_stories)
+
+    Map.put_new(summary, "total_user_stories", total_user_stories)
+    |> Map.put_new("completed_user_stories", completed_user_stories)
+    |> Map.put_new("user_stories_left", user_stories_left)
+  end
+
+  defp process_user_story(story) do
+    total_user_stories = length(story)
+    completed_user_stories = completed_user_stories(story)
+    user_stories_left = total_user_stories - completed_user_stories
+    [total_user_stories, completed_user_stories, user_stories_left]
+  end
+
+  defp completed_user_stories(stories) do
+    Enum.reduce(stories, 0, fn story, acc ->
+      case story.is_completed do
+        true -> acc + 1
+        false -> acc
+      end
+    end)
+  end
+
+  defp collect_tasks(task_list) do
+    user_stories_task =
+      Enum.reduce(task_list.user_stories, [], fn story, acc ->
+        acc ++ story.task_lists_tasks
+      end)
+
+    task_list.task_list_tasks ++ user_stories_task
   end
 
   defp find_total_tasks(task_list_tasks) do
