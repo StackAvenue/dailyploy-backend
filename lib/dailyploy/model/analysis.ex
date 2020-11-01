@@ -21,41 +21,40 @@ defmodule Dailyploy.Model.Analysis do
         |> Enum.reduce(0, fn y, acc -> acc + y.duration end)
       
         
-      # IO.inspect(task_list) 
+      #totdal dashboard task  
+      dashboard_tasks = Enum.count(tasks)
       
-      # is_complete
-      # time_tracks
-      
-      
-      d_tasks = Enum.count(tasks)
-      c_tasks = Enum.count(tasks, fn task -> task.is_complete == true end)
+      completed_tasks = Enum.count(tasks, fn task -> task.is_complete == true end)
 
-      # c_atasks = Enum.reduce(tasks, fn task, acc -> task   end)
-
-
-      # b = Enum.map(task_lists, fn task_list -> task_list.task_list_tasks |> Enum.map(fn task -> task.id end) end)
-      # c = Enum.map(task_lists, fn task_list -> task_list.user_stories
-      #     |> Enum.map(fn user_story -> user_story.task_lists_tasks
-      #     |> Enum.(fn task -> task end) end) end)
-
-      # IO.inspect() 
-
-      # query1 = 
-      #   from task in TaskListTasks,
-      #   where: task.task_lists_id in ^task_list_ids and task.updated_at > ^start_date and task.updated_at < ^end_date,  
-      #   select: task
-      #   # from tlt in TaskListTasks,
-        #   join: tlt in TaskListTasks,
-        #   on: task.project_id == tlt.project_id,
-         
-      # Repo.all(query1)
-    end
-
-    def get_total_duration(project_id, start_date, end_date) do
-      tasks = get_dashboard_tasks(project_id, start_date, end_date)
-      
-    end
     
+       #roadmap task
+        roadmap_tasks = Enum.map(task_lists, fn task_list -> task_list.task_list_tasks end)  
+          |> Enum.concat() 
+          |> Enum.filter(fn task -> task.task_id == nil end)
+          |> Enum.count()
+
+        #userstory task
+       userstory_tasks = Enum.map(task_lists, fn task_list -> task_list.user_stories  end)
+          |> Enum.concat()
+          |> Enum.map(fn user_story -> user_story.task_lists_tasks  end)
+          |> Enum.concat()
+          |> Enum.filter(fn task -> task.task_id == nil end)
+          |> Enum.count()
+
+      total_task_count = dashboard_tasks + roadmap_tasks + userstory_tasks
+
+      %{"completed_tasks" => completed_tasks, "total_tasks" => total_task_count, "total_time_spent" => total_time_spent}
+    end
+
+    def get_all_members(project_id) do
+      query =
+        from projectuser in UserProject,
+        where: projectuser.project_id == ^project_id,
+        select: projectuser
+      
+      Repo.all(query) |> Enum.count()
+    end
+
     defp get_dashboard_tasks(project_id, start_date, end_date) do 
        query =
         from task in Task,
@@ -101,19 +100,6 @@ defmodule Dailyploy.Model.Analysis do
         from task in TaskListTasks,
         where: task.user_stories_id in ^userstories_ids and task.updated_at > ^start_date and task.updated_at < ^end_date,  
         select: task
-
     end
-    
-    
 
-    def get_all_members(project_id) do
-        # query =
-        # from projectuser in UserProject,
-        #   where: projectuser.project_id == ^project_id,
-        #   select: projectuser
-        
-        # query = 
-        # List.first(Repo.all(query))
-        # Repo.all(query)
-      end
 end
