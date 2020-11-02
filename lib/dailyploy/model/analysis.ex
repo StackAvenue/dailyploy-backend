@@ -18,7 +18,6 @@ defmodule Dailyploy.Model.Analysis do
   
       total_time_spent =
         Enum.map(dashboard_tasks, fn x -> x.time_tracks end)
-        #can use map_jooin
         |> Enum.concat()
         |> Enum.reduce(0, fn y, acc -> acc + y.duration end)
       
@@ -39,43 +38,110 @@ defmodule Dailyploy.Model.Analysis do
       
       Repo.all(query) |> Enum.count()
     end
+    
+    def get_budget(project_id, start_date, end_date) do 
+      query =
+      from project in Project,
+      where: project.id == ^project_id, 
+      select: project.monthly_budget
+     
+      project_budget = Repo.one(query)
+
+      query =
+      from task in Task,
+      where: task.project_id == ^project_id and task.updated_at > ^start_date and task.updated_at < ^end_date, 
+      select: task
+
+      z = Repo.all(query) |> Repo.preload([:time_tracks, :project, owner: [:user_workspace_settings]])
+
+      a = Enum.group_by(z , fn x -> x.owner_id end) 
+
+      member_time = Enum.map(a, fn {x, y} -> {x, y |> Enum.map(fn x -> x.time_tracks end) 
+          |> Enum.concat() |> Enum.reduce(0, fn y, acc -> (acc + y.duration) end)} end) |> Enum.map(fn {x, y} -> {x, y/3600} end)
+      
+      user_details = Enum.map(a, fn {x, y} -> {x, y |> Enum.map(fn x -> x.owner end) |> List.first()} end) 
+               |> Enum.map(fn {x, y} -> {x, y.user_workspace_settings |> Enum.map(fn x -> x.hourly_expense end) |> List.first()} end)
+      
+      Enum.concat(member_time, user_details)  |> Enum.group_by(fn {x, y} -> x end)
+       |> Enum.map(fn {key, value} ->  %{key => value |> Enum.map(fn {x, y} -> y end)} end)
+
+      # IO.inspect(a)
+
+    end
 
     def get_top_5_members(project_id, start_date, end_date) do 
-      # dashboard_tasks = get_dashboard_tasks(project_id, start_date, end_date) |>  Repo.preload(owner: [:tasks] )
+      # dashboard_tasks = get_dashboard_tasks(project_id, start_date, end_date) |>  Repo.preload(owner: [:user_workspace_settings])
+      query =
+      from task in Task,
+      where: task.project_id == ^project_id and task.updated_at > ^start_date and task.updated_at < ^end_date and task.is_complete == true, 
+      select: task
+      
+      Repo.all(query)
+      # dashboard_tasks = Repo.all(query) |> Repo.preload([:time_tracks, owner: [:user_workspace_settings]])
+      # a = Enum.group_by(dashboard_tasks, fn x -> x.owner_id end) 
+      # task_count = Enum.map(a, fn {x, y} -> {x, %{"task_count" => y |> Enum.count()}} end)
+      # member_time = Enum.map(a, fn {x, y} -> {x, %{"time_tracks" => y |> Enum.map(fn x -> x.time_tracks end) 
+      #     |> Enum.concat() |> Enum.reduce(0, fn y, acc -> acc + y.duration end)}} end)
+      #     user_details = Enum.map(a, fn {x, y} -> {x, y |> Enum.map(fn x -> x.owner end) |> List.first()} end) 
+      #      |> Enum.map(fn {x, y} -> {x, %{ "name" => y.name, "profile_photo" => y.provider_img,
+      #      "expense" => y.user_workspace_settings |> Enum.map(fn x -> x.hourly_expense end) |> List.first()}} end)
+
+      #    r =  Enum.concat(task_count, member_time) |> Enum.concat(user_details) |> Enum.group_by(fn {x, y} -> x end)
+      #      |> Enum.map(fn {key, value} ->  %{key => value |> Enum.map(fn {x, y} -> y end)} end)
+
+      
+      # query =
+      #   from projectuser in UserProject,
+      #   where: projectuser.project_id == ^project_id,
+      #   select: projectuser
+      
+      # x = Repo.all(query) |> Repo.preload(:project)
+
+     
+
+
+
+
+
+
+
       # roadmap_tasks = get_roadmap_tasks(project_id, start_date, end_date) |>  Repo.preload(owner: [:tasks] )
        
-      query =
-        from projectuser in UserProject,
-        where: projectuser.project_id == ^project_id,
-        select: projectuser.user_id
+      # query =
+      #   from projectuser in UserProject,
+      #   where: projectuser.project_id == ^project_id,
+      #   select: projectuser.user_id
       
-      x = Repo.all(query)
+      # x = Repo.all(query)
 
-      query1 =
-      from user_tasks in UserTask,
-      where: user_tasks.user_id in ^x,
-      select: user_tasks
+      # query1 =
+      # from user_tasks in UserTask,
+      # where: user_tasks.user_id in ^x and user_tasks.updated_at > ^start_date and user_tasks.updated_at < ^end_date, 
+      # select: user_tasks
 
-      a = Repo.all(query1) |> Repo.preload([user: [:user_workspace_settings], task: [:time_tracks]]) 
-      b = Enum.map(a, fn x -> x.task end) 
-          |> Enum.filter(fn x -> x.is_complete == true end) 
-          |>  Enum.group_by(fn x -> x.owner_id end) 
-          |> Enum.map(fn {user_id, tasks} -> %{user_id => tasks |> Enum.count()} end)
+      # db_data = Repo.all(query1) |> Repo.preload([user: [:user_workspace_settings], task: [:time_tracks]]) 
+      # task_count = Enum.map(db_data, fn x -> x.task end) 
+      #     |> Enum.filter(fn x -> x.is_complete == true end) 
+      #     |>  Enum.group_by(fn x -> x.owner_id end) 
+      #     |> Enum.map(fn {user_id, tasks} ->  {user_id, %{"task_count" => tasks |> Enum.count()}} end)
       
-      member_time = Enum.map(a, fn x -> x.task end) 
-          |> Enum.group_by(fn x -> x.owner_id end) 
-          |> Enum.map(fn {user_id, tasks} -> %{user_id => tasks |> Enum.map(fn x -> x.time_tracks end) 
-          |> Enum.concat() 
-          |> Enum.reduce(0, fn y, acc -> acc + y.duration end)} end) 
+      # member_time = Enum.map(db_data, fn x -> x.task end) 
+      #     |> Enum.group_by(fn x -> x.owner_id end) 
+      #     |> Enum.map(fn {user_id, tasks} -> {user_id, %{"total_time" => tasks |> Enum.map(fn x -> x.time_tracks end) 
+      #     |> Enum.concat() 
+      #     |> Enum.reduce(0, fn y, acc -> acc + y.duration end)}} end) 
       
-      r = Enum.map(a, fn x -> x.user end) 
-          |>  Enum.group_by(fn x -> x.id end)  
-          |> Enum.map(fn {user_id, details} -> %{user_id => [details |> List.first()] 
-          |> Enum.map(fn x -> %{"provider_img" => x.provider_img, "expense" => x.user_workspace_settings |> Enum.map(fn x -> x.hourly_expense end)} end) }  end)
+      # user_details = Enum.map(db_data, fn x -> x.user end) 
+      #       |> Enum.group_by(fn x -> x.id end)  
+      #       |> Enum.map(fn {user_id, details} -> {user_id, [details |> List.first()] 
+      #       |> Enum.map(fn x -> %{"name" => x.name ,"provider_img" => x.provider_img,
+      #            "expense" => x.user_workspace_settings |> Enum.map(fn x -> x.hourly_expense end) |> List.first()} end) |> List.first()} end)
 
-          z = Enum.concat(b, r) |> Enum.concat(member_time)
+      # z = Enum.concat(task_count, member_time) |> Enum.concat(user_details) |> Enum.group_by(fn {x, y} -> x end)
+      #  |> Enum.map(fn {key, value} ->  %{key => value |> Enum.map(fn {x, y} -> y end)} end)
+      
 
-          IO.inspect(z)
+      # IO.inspect(z)
     end
     
     defp get_dashboard_tasks(project_id, start_date, end_date) do 
