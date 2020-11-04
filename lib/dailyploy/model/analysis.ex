@@ -113,9 +113,11 @@ defmodule Dailyploy.Model.Analysis do
         task.is_complete == true,
         group_by: fragment("weekData"),
         select:  [fragment("date_trunc('week',?) as weekData", task.updated_at), fragment("count(?)", task)]
-      Repo.all(query)
+      
+      week_by_task =  Repo.all(query)
+      %{weekly_task: week_by_task, total_tasks: total_task_count}
     end
-    
+
     defp get_dashboard_tasks(project_id, start_date, end_date) do 
        query =
         from task in Task,
