@@ -14,7 +14,7 @@
       Hi,<br/>
     One of your team member <span><%= gettext "%{name}", name: @invitation_details["sender_name"] %></span>  would like you to join the
       <span><%= gettext "%{name}", name: @invitation_details["workspace_name"] %></span> to contribute. <br/>
-    So, whether you are trying to manage your tasks or want to collaborate with your team in real time click <a href= <%= gettext "https://app.dailyploy.com/login/%{name}/", name: @invitation_details["token_id"] %>> here </a> and experience the productivity.<br/>
+    So, whether you are trying to manage your tasks or want to collaborate with your team in real time click <a href= <%= gettext "https://app.dailyploy.com/signup/%{name}/", name: @invitation_details["token_id"] %>> here </a> and experience the productivity.<br/>
 
     <br/>
   Cheers,<br/>

@@ -253,8 +253,8 @@ defmodule Dailyploy.Helper.User do
               id,
               workspace_id,
               working_hours,
-              hourly_expense,
-              role_id
+              role_id,
+              hourly_expense
             )
 
             invitation_details = InvitationModel.pass_user_details(id, workspace_id)
@@ -286,8 +286,8 @@ defmodule Dailyploy.Helper.User do
               workspace_id,
               project_id,
               working_hours,
-              hourly_expense,
-              role_id
+              role_id,
+              hourly_expense
             )
 
             invitation_details = InvitationModel.pass_user_details(id, project_id, workspace_id)

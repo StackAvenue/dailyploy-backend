@@ -10,7 +10,7 @@ defmodule Dailyploy.Schema.StoriesAttachments do
     timestamps()
   end
 
-  @changeset ~w(image_url story_id)a
+  @changeset ~w(image_url user_stories_id)a
 
   def changeset(comment, attrs) do
     comment

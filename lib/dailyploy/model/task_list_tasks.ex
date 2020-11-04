@@ -83,16 +83,19 @@ defmodule Dailyploy.Model.TaskListTasks do
   end
 
   def get_all(%{page_size: page_size, page_number: page_number}, preloads, task_lists_id, filters) do
-    query =
-      TaskListTasks
-      |> where([task_list_task], task_list_task.task_lists_id == ^task_lists_id)
-      |> where(^filter_where(filters))
+    query = TLTModel.create_query(task_lists_id, filters)
 
     task_lists_data =
       query |> order_by(:id) |> Repo.paginate(page: page_number, page_size: page_size)
 
     task_lists_with_preloads = task_lists_data.entries |> Repo.preload(preloads)
     paginated_response(task_lists_with_preloads, task_lists_data)
+  end
+
+  def create_query(task_lists_id, filters) do
+    TaskListTasks
+    |> where([task_list_task], task_list_task.task_lists_id == ^task_lists_id)
+    |> where(^filter_where(filters))
   end
 
   defp filter_where(params) do

@@ -106,6 +106,7 @@ defmodule DailyployWeb.Router do
         scope "/task_lists/:task_lists_id" do
           resources "/user_stories", UserStoriesController, except: [:new, :edit] do
             post "/attachments", UserStoriesController, :add_attachments
+            delete "/attachments", UserStoriesController, :delete_attachments
           end
         end
 
