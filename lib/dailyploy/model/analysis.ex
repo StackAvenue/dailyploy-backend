@@ -21,13 +21,11 @@ defmodule Dailyploy.Model.Analysis do
         |> Enum.concat()
         |> Enum.reduce(0, fn y, acc -> acc + y.duration end)
       
-        
-      # #totdal dashboard task  
       total_task_count = Enum.count(dashboard_tasks) + Enum.count(roadmap_tasks, fn task -> task.task_id == nil end)
   
       completed_tasks = Enum.count(dashboard_tasks, fn task -> task.is_complete == true end)
 
-      %{"completed_tasks" => completed_tasks, "total_tasks" => total_task_count, "total_time_spent" => total_time_spent}
+      %{"completed_tasks" => completed_tasks, "total_tasks" => total_task_count, "total_time_spent" => (total_time_spent/3600)}
     end
 
     def get_all_members(project_id) do
@@ -80,13 +78,11 @@ defmodule Dailyploy.Model.Analysis do
     end
 
     def get_top_5_members(project_id, start_date, end_date) do 
-      # dashboard_tasks = get_dashboard_tasks(project_id, start_date, end_date) |>  Repo.preload(owner: [:user_workspace_settings])
       query =
       from task in Task,
       where: task.project_id == ^project_id and task.updated_at > ^start_date and task.updated_at < ^end_date and task.is_complete == true, 
       select: task
       
-      Repo.all(query)
       dashboard_tasks = Repo.all(query) |> Repo.preload([:time_tracks, owner: [:user_workspace_settings]])
       a = Enum.group_by(dashboard_tasks, fn x -> x.owner_id end) 
       task_count = Enum.map(a, fn {x, y} -> %{:user_id => x, "task_count" => y |> Enum.count()} end)
@@ -98,12 +94,26 @@ defmodule Dailyploy.Model.Analysis do
            "expense" => y.user_workspace_settings |> Enum.map(fn x -> x.hourly_expense end) |> List.first()} end)
 
       r =  Enum.concat(task_count, member_time) |> Enum.concat(user_details) 
+          #  |> Enum.map(fn x -> x |> Map.merge() end) 
           #  |> Enum.group_by(fn x -> x.user_id end)
           #  |> Enum.map(fn {key, value} ->  value  end)
+    end
 
+    def get_weekly_data(project_id, start_date, end_date) do
+      dashboard_tasks = get_dashboard_tasks(project_id, start_date, end_date)
+      roadmap_tasks = get_roadmap_tasks(project_id, start_date, end_date)
 
-
-
+      total_task_count = Enum.count(dashboard_tasks) + Enum.count(roadmap_tasks, fn task -> task.task_id == nil end)
+      
+      query =
+        from task in Task,
+        where: task.project_id == ^project_id and 
+        task.updated_at > ^start_date and 
+        task.updated_at < ^end_date and  
+        task.is_complete == true,
+        group_by: fragment("weekData"),
+        select:  [fragment("date_trunc('week',?) as weekData", task.updated_at), fragment("count(?)", task)]
+      Repo.all(query)
     end
     
     defp get_dashboard_tasks(project_id, start_date, end_date) do 
@@ -162,5 +172,4 @@ defmodule Dailyploy.Model.Analysis do
         where: task.user_stories_id in ^userstories_ids and task.updated_at > ^start_date and task.updated_at < ^end_date,  
         select: task
     end
-
 end
