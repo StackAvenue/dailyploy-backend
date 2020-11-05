@@ -124,11 +124,54 @@ defmodule Dailyploy.Model.Analysis do
         where: task_list.project_id == ^project_id and 
         task_list.updated_at > ^start_date and
         task_list.updated_at < ^end_date,
+        order_by: task_list.inserted_at,
         select: task_list
         
-      task_lists = Repo.all(query)
+      task_lists = Repo.all(query) |> Repo.preload(:checklists)
 
-      Enum.map(task_lists, fn task_list -> %{"id" => task_list.id, "name" => task_list.name, "status" => task_list.status}   end)
+      planned_map = Enum.filter(task_lists, fn x -> x.status == "Planned" end) 
+      |> List.first()
+      |> Map.from_struct()
+      
+      planned = %{"id" => Map.get(planned_map, :id),
+       "name" => Map.get(planned_map, :name), 
+       "start_date" => Map.get(planned_map, :start_date),
+       "end_date" => Map.get(planned_map, :end_date)} 
+
+      completed_map = Enum.filter(task_lists, fn task_list -> task_list.status == "Completed" end)  
+       |> List.last() 
+       |> Map.from_struct()
+      
+      checklists = Map.get(completed_map, :checklists)
+      
+      total_checklists = Enum.map(checklists, fn x -> x end) 
+      |> Enum.count()
+      
+      complete_checklists = Enum.filter(checklists, fn x -> x.is_completed == true end) 
+      |> Enum.count()
+      
+      progress = (complete_checklists/total_checklists)*100
+      
+      completed = %{"id" => Map.get(completed_map, :id),
+        "name" => Map.get(completed_map, :name), 
+        "progress" => progress,
+        "start_date" => Map.get(completed_map, :start_date),
+        "end_date" => Map.get(completed_map, :end_date)}
+
+      
+      %{"planned" => planned, "completed" => completed}
+      # running_task_lists = Enum.filter(task_lists, fn x -> x.status == "Running" end) 
+      # Enum.count(running_task_lists)
+
+      # a = Enum.map(running_task_lists, fn x -> {x.id,  x.checklists |> Enum.count()} end)
+      # z = Enum.map(running_task_lists,
+      #  fn x -> {x.id, x.checklists |> Enum.filter(fn x -> x.is_completed == true end) |> Enum.count()} end)
+      
+      # x =  Enum.concat(z,a) 
+      #  |> Enum.group_by(fn {x, y} -> x end) 
+      #  |> Enum.map(fn {key, value} ->  {key, value |> Enum.map(fn {x, y} -> y end)} end)
+      #  |> Enum.map(fn { _ , y} -> y |> Enum.reduce(fn x, acc -> (x / acc) end)end) 
+      
     end
 
     defp get_dashboard_tasks(project_id, start_date, end_date) do 
