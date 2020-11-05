@@ -118,14 +118,17 @@ defmodule Dailyploy.Model.Analysis do
       %{weekly_task: week_by_task, total_tasks: total_task_count}
     end
 
-    def get_roadmap_status(project_id) do
+    def get_roadmap_status(project_id, start_date, end_date) do
       query =
         from task_list in TaskLists,
-        where: task_list.project_id == ^project_id, 
+        where: task_list.project_id == ^project_id and 
+        task_list.updated_at > ^start_date and
+        task_list.updated_at < ^end_date,
         select: task_list
         
-        a = Repo.all(query) |> Repo.preload(:task_status)
-        IO.inspect(a)
+      task_lists = Repo.all(query)
+
+      Enum.map(task_lists, fn task_list -> %{"id" => task_list.id, "name" => task_list.name, "status" => task_list.status}   end)
     end
 
     defp get_dashboard_tasks(project_id, start_date, end_date) do 
