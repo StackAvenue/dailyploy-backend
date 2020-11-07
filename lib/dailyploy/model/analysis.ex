@@ -7,9 +7,6 @@ defmodule Dailyploy.Model.Analysis do
     alias Dailyploy.Schema.TaskListTasks
     alias Dailyploy.Schema.TaskLists
     alias Dailyploy.Schema.UserProject
-    alias Dailyploy.Schema.UserTask
-    alias Dailyploy.Model.Task, as: TaskModel
-    alias Dailyploy.Model.TaskListTasks, as: TLTModel
     
     def get_all_tasks(project_id, start_date, end_date) do
      
@@ -89,7 +86,7 @@ defmodule Dailyploy.Model.Analysis do
       task_count = Enum.map(group_by_user_data, fn {x, y} -> %{"user_id" => x, "task_count" => y |> Enum.count()} end)
       member_time = Enum.map(group_by_user_data, fn {x, y} -> %{"user_id" => x, "total_time" => y |> Enum.map(fn x -> x.time_tracks end) 
           |> Enum.concat() 
-          |> Enum.reduce(0, fn y, acc -> acc + y.duration end)} end)
+          |> Enum.reduce(0, fn y, acc -> acc + y.duration end) |> div(3600)} end)
       
       user_details = Enum.map(group_by_user_data, fn {x, y} -> {x, y |> Enum.map(fn x -> x.owner end) |> List.first()} end) 
           |> Enum.map(fn {x, y} -> %{"user_id" => x, "name" => y.name, "profile_photo" => y.provider_img,
@@ -115,11 +112,6 @@ defmodule Dailyploy.Model.Analysis do
       roadmap_tasks = get_roadmap_tasks(project_id, start_date, end_date)
 
       total_task_count = Enum.count(dashboard_tasks) + Enum.count(roadmap_tasks, fn task -> task.task_id == nil end)
-      
-      # query =
-      #   from task in Task,
-      #   where: task.project_id == ^project_id and task.updated_at > ^start_date and task.updated_at < ^end_date, 
-      #   select: task
 
       query =
         from task in Task,
@@ -145,23 +137,36 @@ defmodule Dailyploy.Model.Analysis do
         
       task_lists = Repo.all(query) |> Repo.preload(:checklists)
 
-      planned_map = Enum.filter(task_lists, fn x -> x.status == "Planned" end) 
+      planned_task_lists = Enum.filter(task_lists, fn x -> x.status == "Planned" end) 
       |> List.first()
-      |> Map.from_struct()
+
+      planned = 
+      case planned_task_lists do
+        nil -> 
+          "No Roadmap Planned"
+        _ ->
+          planned_map = Map.from_struct(planned_task_lists)
+           %{"id" => Map.get(planned_map, :id),
+            "name" => Map.get(planned_map, :name), 
+            "start_date" => Map.get(planned_map, :start_date),
+            "end_date" => Map.get(planned_map, :end_date)} 
+      end
       
-      planned = %{"id" => Map.get(planned_map, :id),
-       "name" => Map.get(planned_map, :name), 
-       "start_date" => Map.get(planned_map, :start_date),
-       "end_date" => Map.get(planned_map, :end_date)} 
-
-      completed_map = Enum.filter(task_lists, fn task_list -> task_list.status == "Completed" end)  
+      completed_task_lists = Enum.filter(task_lists, fn task_list -> task_list.status == "Completed" end)  
        |> List.last() 
-       |> Map.from_struct()
+      
+      completed =  
+      case completed_task_lists do
+        nil -> 
+          "No Roadmap Completed"
+        _ ->
+          completed_map = Map.from_struct(completed_task_lists)
+          %{"id" => Map.get(completed_map, :id),
+          "name" => Map.get(completed_map, :name), 
+          "start_date" => Map.get(completed_map, :start_date),
+          "end_date" => Map.get(completed_map, :end_date)}
+      end
 
-      completed = %{"id" => Map.get(completed_map, :id),
-      "name" => Map.get(completed_map, :name), 
-      "start_date" => Map.get(completed_map, :start_date),
-      "end_date" => Map.get(completed_map, :end_date)}
 
       running_task_lists = Enum.filter(task_lists, fn x -> x.status == "Running" end)
       running = Enum.map(running_task_lists, fn task_list -> {task_list.id,
