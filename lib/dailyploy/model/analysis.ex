@@ -84,19 +84,30 @@ defmodule Dailyploy.Model.Analysis do
       select: task
       
       dashboard_tasks = Repo.all(query) |> Repo.preload([:time_tracks, owner: [:user_workspace_settings]])
-      a = Enum.group_by(dashboard_tasks, fn x -> x.owner_id end) 
-      task_count = Enum.map(a, fn {x, y} -> %{:user_id => x, "task_count" => y |> Enum.count()} end)
-      member_time = Enum.map(a, fn {x, y} -> %{:user_id => x, "time_tracks" => y |> Enum.map(fn x -> x.time_tracks end) 
-          |> Enum.concat() |> Enum.reduce(0, fn y, acc -> acc + y.duration end)} end)
+      group_by_user_data = Enum.group_by(dashboard_tasks, fn x -> x.owner_id end) 
+
+      task_count = Enum.map(group_by_user_data, fn {x, y} -> %{"user_id" => x, "task_count" => y |> Enum.count()} end)
+      member_time = Enum.map(group_by_user_data, fn {x, y} -> %{"user_id" => x, "total_time" => y |> Enum.map(fn x -> x.time_tracks end) 
+          |> Enum.concat() 
+          |> Enum.reduce(0, fn y, acc -> acc + y.duration end)} end)
       
-      user_details = Enum.map(a, fn {x, y} -> {x, y |> Enum.map(fn x -> x.owner end) |> List.first()} end) 
-          |> Enum.map(fn {x, y} -> %{:user_id => x, "name" => y.name, "profile_photo" => y.provider_img,
+      user_details = Enum.map(group_by_user_data, fn {x, y} -> {x, y |> Enum.map(fn x -> x.owner end) |> List.first()} end) 
+          |> Enum.map(fn {x, y} -> %{"user_id" => x, "name" => y.name, "profile_photo" => y.provider_img,
            "expense" => y.user_workspace_settings |> Enum.map(fn x -> x.hourly_expense end) |> List.first()} end)
 
-      r =  Enum.concat(task_count, member_time) |> Enum.concat(user_details) 
-          #  |> Enum.map(fn x -> x |> Map.merge() end) 
-          #  |> Enum.group_by(fn x -> x.user_id end)
-          #  |> Enum.map(fn {key, value} ->  value  end)
+      top_five_members =  Enum.concat(task_count, member_time) |> Enum.concat(user_details) 
+           |> Enum.reduce( %{}, fn a, acc ->
+            acc =
+        case Map.has_key?(acc, a["user_id"]) do
+          true ->
+            temp = Map.merge(acc[a["user_id"]], a)
+            Map.replace(acc, a["user_id"], temp)
+          false -> Map.put_new(acc, a["user_id"], a)
+        end
+      end) 
+      |> Enum.to_list()
+      |> Enum.sort(fn({key1, value1}, {key2, value2}) -> value1["task_count"] > value2["task_count"] end) 
+      |> Enum.map(fn {key, value} -> value end)
     end
 
     def get_weekly_data(project_id, start_date, end_date) do
@@ -105,6 +116,11 @@ defmodule Dailyploy.Model.Analysis do
 
       total_task_count = Enum.count(dashboard_tasks) + Enum.count(roadmap_tasks, fn task -> task.task_id == nil end)
       
+      # query =
+      #   from task in Task,
+      #   where: task.project_id == ^project_id and task.updated_at > ^start_date and task.updated_at < ^end_date, 
+      #   select: task
+
       query =
         from task in Task,
         where: task.project_id == ^project_id and 
@@ -127,7 +143,7 @@ defmodule Dailyploy.Model.Analysis do
         order_by: task_list.inserted_at,
         select: task_list
         
-      task_lists = Repo.all(query)
+      task_lists = Repo.all(query) |> Repo.preload(:checklists)
 
       planned_map = Enum.filter(task_lists, fn x -> x.status == "Planned" end) 
       |> List.first()
@@ -148,14 +164,14 @@ defmodule Dailyploy.Model.Analysis do
       "end_date" => Map.get(completed_map, :end_date)}
 
       running_task_lists = Enum.filter(task_lists, fn x -> x.status == "Running" end)
-      |> Enum.map(fn x -> 
-        %{"id" => x.id,
-        "name" => x.name, 
-        "start_date" => x.start_date,
-        "end_date" => x.end_date} 
-      end)
+      # |> Enum.map(fn x -> 
+      #   %{"id" => x.id,
+      #   "name" => x.name, 
+      #   "start_date" => x.start_date,
+      #   "end_date" => x.end_date} 
+      # end)
       
-      %{"planned" => planned, "completed" => completed, "running" => running_task_lists}
+      # %{"planned" => planned, "completed" => completed, "running" => running_task_lists}
       # checklists = Map.get(completed_map, :checklists)
       
       # total_checklists = Enum.map(checklists, fn x -> x end) 
@@ -175,7 +191,7 @@ defmodule Dailyploy.Model.Analysis do
      
       # Enum.count(running_task_lists)
 
-      # a = Enum.map(running_task_lists, fn x -> {x.id,  x.checklists |> Enum.count()} end)
+      a = Enum.map(running_task_lists, fn x -> {x.id,  x.checklists |> Enum.count(), x.checklists |> Enum.filter(fn x -> x.is_completed == true end) |> Enum.count()} end)
       # z = Enum.map(running_task_lists,
       #  fn x -> {x.id, x.checklists |> Enum.filter(fn x -> x.is_completed == true end) |> Enum.count()} end)
       
