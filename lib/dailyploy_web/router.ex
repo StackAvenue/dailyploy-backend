@@ -122,8 +122,7 @@ defmodule DailyployWeb.Router do
           # resources "/comment", TaskCommentController
         end
         
-        get "total_tasks", AnalysisController, :get_all_tasks
-        # post "total_time", AnalysisController, :get_total_time
+        get "analysis", AnalysisController, :get_analysis_details
         resources "/milestone", MilestoneController
         resources "/contact", ContactController, only: [:show, :create, :update, :delete, :index]
       end
