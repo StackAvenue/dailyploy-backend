@@ -161,8 +161,21 @@ defmodule Dailyploy.Model.Analysis do
           "No Roadmap Completed"
         _ ->
           completed_map = Map.from_struct(completed_task_lists)
+          checklists = Map.get(completed_map, :checklists)
+          total_checklists = Enum.map(checklists, fn x -> x end) |> Enum.count()
+            
+          complete_checklists = Enum.filter(checklists, fn x -> x.is_completed == true end) |> Enum.count()
+          progress =  
+          case total_checklists > 0 do
+            true ->
+              (complete_checklists/total_checklists)*100
+            false -> 
+              0
+          end
+          
           %{"id" => Map.get(completed_map, :id),
           "name" => Map.get(completed_map, :name), 
+          "progress" => progress, 
           "start_date" => Map.get(completed_map, :start_date),
           "end_date" => Map.get(completed_map, :end_date)}
       end
