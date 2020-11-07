@@ -69,7 +69,7 @@ defmodule Dailyploy.Model.Analysis do
         |> Enum.map(fn { _ , y} -> y |> Enum.reduce(fn x, acc -> x * acc end)end) 
         |> Enum.sum()
       
-      case member_expense_total > project_budget do 
+      case member_expense_total > project_budget and project_budget > 0 do 
         false -> 
           ((project_budget - member_expense_total)/project_budget) * 100 
         true -> 
@@ -127,7 +127,7 @@ defmodule Dailyploy.Model.Analysis do
         order_by: task_list.inserted_at,
         select: task_list
         
-      task_lists = Repo.all(query) |> Repo.preload(:checklists)
+      task_lists = Repo.all(query)
 
       planned_map = Enum.filter(task_lists, fn x -> x.status == "Planned" end) 
       |> List.first()
@@ -141,26 +141,38 @@ defmodule Dailyploy.Model.Analysis do
       completed_map = Enum.filter(task_lists, fn task_list -> task_list.status == "Completed" end)  
        |> List.last() 
        |> Map.from_struct()
-      
-      checklists = Map.get(completed_map, :checklists)
-      
-      total_checklists = Enum.map(checklists, fn x -> x end) 
-      |> Enum.count()
-      
-      complete_checklists = Enum.filter(checklists, fn x -> x.is_completed == true end) 
-      |> Enum.count()
-      
-      progress = (complete_checklists/total_checklists)*100
-      
-      completed = %{"id" => Map.get(completed_map, :id),
-        "name" => Map.get(completed_map, :name), 
-        "progress" => progress,
-        "start_date" => Map.get(completed_map, :start_date),
-        "end_date" => Map.get(completed_map, :end_date)}
 
+      completed = %{"id" => Map.get(completed_map, :id),
+      "name" => Map.get(completed_map, :name), 
+      "start_date" => Map.get(completed_map, :start_date),
+      "end_date" => Map.get(completed_map, :end_date)}
+
+      running_task_lists = Enum.filter(task_lists, fn x -> x.status == "Running" end)
+      |> Enum.map(fn x -> 
+        %{"id" => x.id,
+        "name" => x.name, 
+        "start_date" => x.start_date,
+        "end_date" => x.end_date} 
+      end)
       
-      %{"planned" => planned, "completed" => completed}
-      # running_task_lists = Enum.filter(task_lists, fn x -> x.status == "Running" end) 
+      %{"planned" => planned, "completed" => completed, "running" => running_task_lists}
+      # checklists = Map.get(completed_map, :checklists)
+      
+      # total_checklists = Enum.map(checklists, fn x -> x end) 
+      # |> Enum.count()
+      
+      # complete_checklists = Enum.filter(checklists, fn x -> x.is_completed == true end) 
+      # |> Enum.count()
+      
+      # case total_checklists > 0 do
+      #   true ->
+          # progress = (complete_checklists/total_checklists)*100
+      #   false -> 
+      #     progress  =""
+      # end
+      
+      
+     
       # Enum.count(running_task_lists)
 
       # a = Enum.map(running_task_lists, fn x -> {x.id,  x.checklists |> Enum.count()} end)
