@@ -82,9 +82,26 @@ defmodule Dailyploy.Model.Analysis do
       
       dashboard_tasks = Repo.all(query) |> Repo.preload([:time_tracks, owner: [:user_workspace_settings]])
       group_by_user_data = Enum.group_by(dashboard_tasks, fn x -> x.owner_id end) 
+      
+      high_priority_task_count = Enum.map(group_by_user_data, fn {x, y} -> %{"user_id" => x, "velocity" => y 
+          |> Enum.map(fn task -> 
+           case task.priority do  
+             "low" -> 1
+             "medium" -> 2
+             "high" -> 3
+           end 
+          end) |> Enum.sum()} end) 
 
       task_count = Enum.map(group_by_user_data, fn {x, y} -> %{"user_id" => x, "task_count" => y |> Enum.count()} end)
-      member_time = Enum.map(group_by_user_data, fn {x, y} -> %{"user_id" => x, "total_time" => y |> Enum.map(fn x -> x.time_tracks end) 
+
+      priority_count = top_members(group_by_user_data, high_priority_task_count, "velocity")
+      task_count = top_members(group_by_user_data, task_count, "task_count")
+      
+      %{ "priority_count" => priority_count, "task_count" => task_count}
+    end
+
+    defp top_members(group_by_user_data, task_count, x) do
+     member_time = Enum.map(group_by_user_data, fn {x, y} -> %{"user_id" => x, "total_time" => y |> Enum.map(fn x -> x.time_tracks end) 
           |> Enum.concat() 
           |> Enum.reduce(0, fn y, acc -> acc + y.duration end) |> div(3600)} end)
       
@@ -103,7 +120,7 @@ defmodule Dailyploy.Model.Analysis do
         end
       end) 
       |> Enum.to_list()
-      |> Enum.sort(fn({key1, value1}, {key2, value2}) -> value1["task_count"] > value2["task_count"] end) 
+      |> Enum.sort(fn({key1, value1}, {key2, value2}) -> value1[x] > value2[x] end) 
       |> Enum.map(fn {key, value} -> value end)
     end
 
