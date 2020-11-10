@@ -55,4 +55,16 @@ defmodule Dailyploy.Model.UserStories do
   def delete(user_stories) do
     Repo.delete(user_stories)
   end
+
+  def load_data(user_story, query) do
+    user_story
+    |> Repo.preload([
+      :owner,
+      :task_status,
+      :comments,
+      :attachments,
+      :roadmap_checklist,
+      task_lists_tasks: query
+    ])
+  end
 end
