@@ -98,6 +98,12 @@ defmodule Dailyploy.Model.TaskListTasks do
     |> where(^filter_where(filters))
   end
 
+  def create_query_user_story(user_story_id, filters) do
+    TaskListTasks
+    |> where([task_list_task], task_list_task.user_stories_id == ^user_story_id)
+    |> where(^filter_where(filters))
+  end
+
   defp filter_where(params) do
     Enum.reduce(params, dynamic(true), fn
       {"status_ids", status_ids}, dynamic_query ->
