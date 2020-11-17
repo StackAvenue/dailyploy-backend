@@ -65,12 +65,13 @@ defmodule Dailyploy.Model.Analysis do
         |> Enum.map(fn {key, value} ->  {key, value |> Enum.map(fn {x, y} -> y end)} end)
         |> Enum.map(fn { _ , y} -> y |> Enum.reduce(fn x, acc -> x * acc end)end) 
         |> Enum.sum()
-      
+
       case member_expense_total > project_budget and project_budget > 0 do 
         false -> 
-          ((project_budget - member_expense_total)/project_budget) * 100 
+          0
         true -> 
-          "Budget is less than members expense"
+          ((project_budget - member_expense_total)/project_budget) * 100 
+         
       end   
     end
 
