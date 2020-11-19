@@ -7,6 +7,7 @@ defmodule Dailyploy.Model.Analysis do
   alias Dailyploy.Schema.TaskListTasks
   alias Dailyploy.Schema.TaskLists
   alias Dailyploy.Schema.UserProject
+  alias Dailyploy.Schema.TimeTracking
 
   def get_all_tasks(project_id, start_date, end_date) do
     dashboard_tasks = get_dashboard_tasks(project_id, start_date, end_date)
@@ -16,6 +17,7 @@ defmodule Dailyploy.Model.Analysis do
       Enum.map(dashboard_tasks, fn x -> x.time_tracks end)
       |> Enum.concat()
       |> Enum.reduce(0, fn y, acc -> acc + y.duration end)
+      |> div(3600)
 
     total_task_count =
       Enum.count(dashboard_tasks) + Enum.count(roadmap_tasks, fn task -> task.task_id == nil end)
@@ -25,7 +27,7 @@ defmodule Dailyploy.Model.Analysis do
     %{
       "completed_tasks" => completed_tasks,
       "total_tasks" => total_task_count,
-      "total_time_spent" => total_time_spent / 3600
+      "total_time_spent" => total_time_spent
     }
   end
 
@@ -187,17 +189,17 @@ defmodule Dailyploy.Model.Analysis do
 
     total_task_count =
       Enum.count(dashboard_tasks) + Enum.count(roadmap_tasks, fn task -> task.task_id == nil end)
-
+    
     query =
       from task in Task,
         where:
           task.project_id == ^project_id and
-            task.updated_at > ^start_date and
-            task.updated_at < ^end_date and
+            task.start_datetime > ^start_date and
+            task.start_datetime < ^end_date and
             task.is_complete == true,
         group_by: fragment("weekData"),
         select: [
-          fragment("date_trunc('week',?) as weekData", task.updated_at),
+          fragment("date_trunc('week',?) as weekData", task.start_datetime),
           fragment("count(?)", task)
         ]
 
@@ -307,13 +309,17 @@ defmodule Dailyploy.Model.Analysis do
     %{"planned" => planned, "completed" => completed, "running" => running}
   end
 
-  defp get_dashboard_tasks(project_id, start_date, end_date) do
+  defp get_dashboard_tasks(project_id, start_date, end_date) do 
     query =
       from task in Task,
-        where:
-          task.project_id == ^project_id and task.updated_at > ^start_date and
-            task.updated_at < ^end_date,
-        select: task
+      join: time_tracks in TimeTracking,
+      on: task.id == time_tracks.task_id,
+      where: task.project_id == ^project_id and 
+             time_tracks.start_time > ^start_date and
+             time_tracks.start_time < ^end_date,
+      distinct: true,
+      select: task
+      
 
     Repo.all(query) |> Repo.preload(:time_tracks)
   end
@@ -376,5 +382,9 @@ defmodule Dailyploy.Model.Analysis do
           task.user_stories_id in ^userstories_ids and task.updated_at > ^start_date and
             task.updated_at < ^end_date,
         select: task
+  end
+
+  defp calculate_total_time(time_tracks) do
+    Enum.map(time_tracks, fn x -> x end) 
   end
 end
