@@ -48,16 +48,11 @@ defmodule Dailyploy.Model.Analysis do
 
     project_budget = Repo.one(project_query)
 
-    task_query =
-      from task in Task,
-        where:
-          task.project_id == ^project_id and task.updated_at > ^start_date and
-            task.updated_at < ^end_date,
-        select: task
+    dashboard_tasks = get_dashboard_tasks(project_id, start_date, end_date)
 
     preloaded_data =
-      Repo.all(task_query)
-      |> Repo.preload([:time_tracks, :project, owner: [:user_workspace_settings]])
+      dashboard_tasks
+      |> Repo.preload([:project, owner: [:user_workspace_settings]])
 
     user_tasks = Enum.group_by(preloaded_data, fn x -> x.owner_id end)
 
@@ -86,7 +81,7 @@ defmodule Dailyploy.Model.Analysis do
       |> Enum.map(fn {_, y} -> y |> Enum.reduce(fn x, acc -> x * acc end) end)
       |> Enum.sum()
 
-    case member_expense_total > project_budget and project_budget > 0 do
+    case member_expense_total < project_budget and project_budget > 0 do
       false ->
         0
 
