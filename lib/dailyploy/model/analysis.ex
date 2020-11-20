@@ -96,7 +96,7 @@ defmodule Dailyploy.Model.Analysis do
       join: time_tracks in TimeTracking,
       on: task.id == time_tracks.task_id,
       where: task.project_id == ^project_id and 
-      task.is_complete == true and 
+            task.is_complete == true and 
             time_tracks.start_time > ^start_date and
             time_tracks.start_time < ^end_date,
       distinct: true,
@@ -197,24 +197,11 @@ defmodule Dailyploy.Model.Analysis do
               task.is_complete == true and
               time_tracks.start_time > ^start_date and
               time_tracks.start_time < ^end_date,
-        distinct: true,
         group_by: fragment("weekData"),
         select: [
           fragment("date_trunc('week',?) as weekData", time_tracks.start_time),
-          fragment("count(?)", task)
+          fragment("COUNT(DISTINCT(?))", task.id)
         ]
-    # query =
-    #   from task in Task,
-    #     where:
-    #       task.project_id == ^project_id and
-    #         task.start_datetime > ^start_date and
-    #         task.start_datetime < ^end_date and
-    #         task.is_complete == true,
-    #     group_by: fragment("weekData"),
-    #     select: [
-    #       fragment("date_trunc('week',?) as weekData", task.start_datetime),
-    #       fragment("count(?)", task)
-    #     ]
 
     week_by_task = Repo.all(query)
     %{weekly_task: week_by_task, total_tasks: total_task_count}
