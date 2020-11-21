@@ -219,8 +219,7 @@ defmodule Dailyploy.Model.Analysis do
 
     week_by_total_task = Repo.all(query)
     %{weekly_completed_tasks: week_by_completed_task, 
-    total_weekly_tasks: week_by_total_task,
-    total_tasks: total_task_count}
+    total_weekly_tasks: week_by_total_task,total_tasks: total_task_count}
   end
 
   def get_roadmap_status(project_id, start_date, end_date) do
