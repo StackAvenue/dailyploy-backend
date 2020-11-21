@@ -3,6 +3,7 @@ defmodule DailyployWeb.UserStoriesController do
   alias Dailyploy.Helper.UserStories
   alias Dailyploy.Avatar
   alias Dailyploy.Helper.ImageDeletion
+  alias Dailyploy.Model.TaskListTasks, as: TLTModel
   import DailyployWeb.Validators.UserStories
   import DailyployWeb.Helpers
 
@@ -80,19 +81,13 @@ defmodule DailyployWeb.UserStoriesController do
   def show(conn, params) do
     case conn.status do
       nil ->
+        query = TLTModel.create_query_user_story(conn.assigns.user_stories.id, params)
+        user_stories = UserStories.load_data(conn.assigns.user_stories, query)
+
         conn
         |> put_status(200)
         |> render("user_show.json", %{
-          user_stories:
-            conn.assigns.user_stories
-            |> Dailyploy.Repo.preload([
-              :owner,
-              :task_status,
-              :comments,
-              :task_lists_tasks,
-              :attachments,
-              :roadmap_checklist
-            ])
+          user_stories: user_stories
         })
 
       404 ->

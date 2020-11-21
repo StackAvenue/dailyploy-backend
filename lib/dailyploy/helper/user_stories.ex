@@ -7,6 +7,8 @@ defmodule Dailyploy.Helper.UserStories do
   defdelegate delete_attachments(ids, user_stories), to: UserStories
   defdelegate delete(user_stories), to: UserStories
 
+  defdelegate load_data(user_stories, query), to: UserStories
+
   def create(params) do
     params = params_extraction(params)
     verify_user_stories(UserStories.create(params))
