@@ -203,8 +203,24 @@ defmodule Dailyploy.Model.Analysis do
           fragment("COUNT(DISTINCT(?))", task.id)
         ]
 
-    week_by_task = Repo.all(query)
-    %{weekly_task: week_by_task, total_tasks: total_task_count}
+      week_by_completed_task = Repo.all(query)
+      query =
+        from task in Task,
+        join: time_tracks in TimeTracking,
+        on: task.id == time_tracks.task_id,
+        where: task.project_id == ^project_id and 
+              time_tracks.start_time > ^start_date and
+              time_tracks.start_time < ^end_date,
+        group_by: fragment("weekData"),
+        select: [
+          fragment("date_trunc('week',?) as weekData", time_tracks.start_time),
+          fragment("COUNT(DISTINCT(?))", task.id)
+        ]
+
+    week_by_total_task = Repo.all(query)
+    %{weekly_completed_tasks: week_by_completed_task, 
+    total_weekly_tasks: week_by_total_task,
+    total_tasks: total_task_count}
   end
 
   def get_roadmap_status(project_id, start_date, end_date) do
