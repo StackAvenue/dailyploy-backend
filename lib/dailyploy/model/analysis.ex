@@ -93,14 +93,15 @@ defmodule Dailyploy.Model.Analysis do
   def get_top_5_members(project_id, start_date, end_date) do
     query =
       from task in Task,
-      join: time_tracks in TimeTracking,
-      on: task.id == time_tracks.task_id,
-      where: task.project_id == ^project_id and 
-            task.is_complete == true and 
+        join: time_tracks in TimeTracking,
+        on: task.id == time_tracks.task_id,
+        where:
+          task.project_id == ^project_id and
+            task.is_complete == true and
             time_tracks.start_time > ^start_date and
             time_tracks.start_time < ^end_date,
-      distinct: true,
-      select: task
+        distinct: true,
+        select: task
 
     dashboard_tasks =
       Repo.all(query) |> Repo.preload([:time_tracks, owner: [:user_workspace_settings]])
@@ -188,29 +189,32 @@ defmodule Dailyploy.Model.Analysis do
 
     total_task_count =
       Enum.count(dashboard_tasks) + Enum.count(roadmap_tasks, fn task -> task.task_id == nil end)
-    
-      query =
-        from task in Task,
+
+    query =
+      from task in Task,
         join: time_tracks in TimeTracking,
         on: task.id == time_tracks.task_id,
-        where: task.project_id == ^project_id and 
-              task.is_complete == true and
-              time_tracks.start_time > ^start_date and
-              time_tracks.start_time < ^end_date,
+        where:
+          task.project_id == ^project_id and
+            task.is_complete == true and
+            time_tracks.start_time > ^start_date and
+            time_tracks.start_time < ^end_date,
         group_by: fragment("weekData"),
         select: [
           fragment("date_trunc('week',?) as weekData", time_tracks.start_time),
           fragment("COUNT(DISTINCT(?))", task.id)
         ]
 
-      week_by_completed_task = Repo.all(query)
-      query =
-        from task in Task,
+    week_by_completed_task = Repo.all(query)
+
+    query =
+      from task in Task,
         join: time_tracks in TimeTracking,
         on: task.id == time_tracks.task_id,
-        where: task.project_id == ^project_id and 
-              time_tracks.start_time > ^start_date and
-              time_tracks.start_time < ^end_date,
+        where:
+          task.project_id == ^project_id and
+            time_tracks.start_time > ^start_date and
+            time_tracks.start_time < ^end_date,
         group_by: fragment("weekData"),
         select: [
           fragment("date_trunc('week',?) as weekData", time_tracks.start_time),
@@ -218,8 +222,12 @@ defmodule Dailyploy.Model.Analysis do
         ]
 
     week_by_total_task = Repo.all(query)
-    %{weekly_completed_tasks: week_by_completed_task, 
-    total_weekly_tasks: week_by_total_task,total_tasks: total_task_count}
+
+    %{
+      weekly_completed_tasks: week_by_completed_task,
+      total_weekly_tasks: week_by_total_task,
+      total_tasks: total_task_count
+    }
   end
 
   def get_roadmap_status(project_id, start_date, end_date) do
@@ -324,17 +332,17 @@ defmodule Dailyploy.Model.Analysis do
     %{"planned" => planned, "completed" => completed, "running" => running}
   end
 
-  defp get_dashboard_tasks(project_id, start_date, end_date) do 
+  defp get_dashboard_tasks(project_id, start_date, end_date) do
     query =
       from task in Task,
-      join: time_tracks in TimeTracking,
-      on: task.id == time_tracks.task_id,
-      where: task.project_id == ^project_id and 
-             time_tracks.start_time > ^start_date and
-             time_tracks.start_time < ^end_date,
-      distinct: true,
-      select: task
-      
+        join: time_tracks in TimeTracking,
+        on: task.id == time_tracks.task_id,
+        where:
+          task.project_id == ^project_id and
+            time_tracks.start_time > ^start_date and
+            time_tracks.start_time < ^end_date,
+        distinct: true,
+        select: task
 
     Repo.all(query) |> Repo.preload(:time_tracks)
   end
@@ -400,6 +408,6 @@ defmodule Dailyploy.Model.Analysis do
   end
 
   defp calculate_total_time(time_tracks) do
-    Enum.map(time_tracks, fn x -> x end) 
+    Enum.map(time_tracks, fn x -> x end)
   end
 end
