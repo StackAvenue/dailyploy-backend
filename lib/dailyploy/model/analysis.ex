@@ -21,7 +21,7 @@ defmodule Dailyploy.Model.Analysis do
        
       total_time_spent =
       case total_time > 0 do
-        true -> div(total_time, 3600) |> Decimal.new() |> Decimal.round(1) |> Decimal.to_float()
+        true -> div(total_time, 3600) |> Decimal.cast() |> Decimal.round(1) |> Decimal.to_float()
         false -> 0
       end
 
@@ -264,7 +264,7 @@ defmodule Dailyploy.Model.Analysis do
             %{
               "id" => id,
               "name" => name,
-              "progress" => completed / total * 100 |> Decimal.new() |> Decimal.round(1) |> Decimal.to_float(),
+              "progress" => completed / total * 100 |> Decimal.from_float() |> Decimal.round(1) |> Decimal.to_float(),
               "start_date" => start_date,
               "end_date" => end_date
             }
