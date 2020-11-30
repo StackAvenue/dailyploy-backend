@@ -253,13 +253,13 @@ defmodule Dailyploy.Model.Analysis do
 
     roadmaps_progress =
       Enum.map(latest_task_lists, fn task_list ->
-        {task_list.id, task_list.name, task_list.start_date, task_list.end_date,
+        {task_list.id, task_list.name, task_list.start_date, task_list.end_date, task_list.status,
          task_list.checklists |> Enum.count(),
          task_list.checklists
          |> Enum.filter(fn task_list -> task_list.is_completed == true end)
          |> Enum.count()}
       end)
-      |> Enum.map(fn {id, name, start_date, end_date, total, completed} ->
+      |> Enum.map(fn {id, name, start_date, end_date, status, total, completed} ->
         case total > 0 do
           true ->
             %{
@@ -271,7 +271,8 @@ defmodule Dailyploy.Model.Analysis do
                 |> Decimal.round(1)
                 |> Decimal.to_float(),
               "start_date" => start_date,
-              "end_date" => end_date
+              "end_date" => end_date,
+              "status" => status
             }
 
           false ->
@@ -280,12 +281,11 @@ defmodule Dailyploy.Model.Analysis do
               "name" => name,
               "progress" => 0,
               "start_date" => start_date,
-              "end_date" => end_date
+              "end_date" => end_date,
+              "status" => status
             }
         end
       end)
-
-    %{"roadmaps_progress" => roadmaps_progress}
   end
 
   defp get_dashboard_tasks(project_id, start_date, end_date) do
