@@ -13,11 +13,17 @@ defmodule Dailyploy.Model.Analysis do
     dashboard_tasks = get_dashboard_tasks(project_id, start_date, end_date)
     roadmap_tasks = get_roadmap_tasks(project_id, start_date, end_date)
 
-    total_time_spent =
+    total_time =
       Enum.map(dashboard_tasks, fn x -> x.time_tracks end)
       |> Enum.concat()
+      |> Enum.filter(fn time_track -> time_track.status == "stopped" end)
       |> Enum.reduce(0, fn y, acc -> acc + y.duration end)
-      |> div(3600)
+       
+      total_time_spent =
+      case total_time > 0 do
+        true -> div(total_time, 3600) |> Decimal.new() |> Decimal.round(1) |> Decimal.to_float()
+        false -> 0
+      end
 
     total_task_count =
       Enum.count(dashboard_tasks) + Enum.count(roadmap_tasks, fn task -> task.task_id == nil end)
