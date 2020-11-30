@@ -68,9 +68,9 @@ defmodule Dailyploy.Model.Analysis do
          y
          |> Enum.map(fn x -> x.time_tracks end)
          |> Enum.concat()
-         |> Enum.reduce(0, fn y, acc -> acc + y.duration end)}
-      end)
-      |> Enum.map(fn {x, y} -> {x, y / 3600} end)
+         |> Enum.filter(fn time_track -> time_track.status == "stopped" end)
+         |> Enum.reduce(0, fn y, acc -> acc + y.duration end)}end)
+         |> Enum.map(fn {x, y} -> {x, y / 3600} end)
 
     user_details =
       Enum.map(user_tasks, fn {x, y} ->
