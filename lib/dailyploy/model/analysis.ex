@@ -13,11 +13,17 @@ defmodule Dailyploy.Model.Analysis do
     dashboard_tasks = get_dashboard_tasks(project_id, start_date, end_date)
     roadmap_tasks = get_roadmap_tasks(project_id, start_date, end_date)
 
-    total_time_spent =
+    total_time =
       Enum.map(dashboard_tasks, fn x -> x.time_tracks end)
       |> Enum.concat()
+      |> Enum.filter(fn time_track -> time_track.status == "stopped" end)
       |> Enum.reduce(0, fn y, acc -> acc + y.duration end)
-      |> div(3600)
+
+    total_time_spent =
+      case total_time > 0 do
+        true -> div(total_time, 3600) |> Decimal.cast() |> Decimal.round(1) |> Decimal.to_float()
+        false -> 0
+      end
 
     total_task_count =
       Enum.count(dashboard_tasks) + Enum.count(roadmap_tasks, fn task -> task.task_id == nil end)
@@ -62,6 +68,7 @@ defmodule Dailyploy.Model.Analysis do
          y
          |> Enum.map(fn x -> x.time_tracks end)
          |> Enum.concat()
+         |> Enum.filter(fn time_track -> time_track.status == "stopped" end)
          |> Enum.reduce(0, fn y, acc -> acc + y.duration end)}
       end)
       |> Enum.map(fn {x, y} -> {x, y / 3600} end)
@@ -237,85 +244,35 @@ defmodule Dailyploy.Model.Analysis do
           task_list.project_id == ^project_id and
             task_list.updated_at > ^start_date and
             task_list.updated_at < ^end_date,
-        order_by: task_list.inserted_at,
+        order_by: [desc: task_list.updated_at],
         select: task_list
 
     task_lists = Repo.all(query) |> Repo.preload(:checklists)
 
-    planned_task_lists =
-      Enum.filter(task_lists, fn x -> x.status == "Planned" end)
-      |> List.first()
+    latest_task_lists = Enum.take(task_lists, 10) |> Enum.map(fn x -> x end)
 
-    planned =
-      case planned_task_lists do
-        nil ->
-          "No Roadmap Planned"
-
-        _ ->
-          planned_map = Map.from_struct(planned_task_lists)
-
-          %{
-            "id" => Map.get(planned_map, :id),
-            "name" => Map.get(planned_map, :name),
-            "start_date" => Map.get(planned_map, :start_date),
-            "end_date" => Map.get(planned_map, :end_date)
-          }
-      end
-
-    completed_task_lists =
-      Enum.filter(task_lists, fn task_list -> task_list.status == "Completed" end)
-      |> List.last()
-
-    completed =
-      case completed_task_lists do
-        nil ->
-          "No Roadmap Completed"
-
-        _ ->
-          completed_map = Map.from_struct(completed_task_lists)
-          checklists = Map.get(completed_map, :checklists)
-          total_checklists = Enum.map(checklists, fn x -> x end) |> Enum.count()
-
-          complete_checklists =
-            Enum.filter(checklists, fn x -> x.is_completed == true end) |> Enum.count()
-
-          progress =
-            case total_checklists > 0 do
-              true ->
-                complete_checklists / total_checklists * 100
-
-              false ->
-                0
-            end
-
-          %{
-            "id" => Map.get(completed_map, :id),
-            "name" => Map.get(completed_map, :name),
-            "progress" => progress,
-            "start_date" => Map.get(completed_map, :start_date),
-            "end_date" => Map.get(completed_map, :end_date)
-          }
-      end
-
-    running_task_lists = Enum.filter(task_lists, fn x -> x.status == "Running" end)
-
-    running =
-      Enum.map(running_task_lists, fn task_list ->
-        {task_list.id, task_list.name, task_list.start_date, task_list.end_date,
+    roadmaps_progress =
+      Enum.map(latest_task_lists, fn task_list ->
+        {task_list.id, task_list.name, task_list.start_date, task_list.end_date, task_list.status,
          task_list.checklists |> Enum.count(),
          task_list.checklists
          |> Enum.filter(fn task_list -> task_list.is_completed == true end)
          |> Enum.count()}
       end)
-      |> Enum.map(fn {id, name, start_date, end_date, total, completed} ->
+      |> Enum.map(fn {id, name, start_date, end_date, status, total, completed} ->
         case total > 0 do
           true ->
             %{
               "id" => id,
               "name" => name,
-              "progress" => completed / total * 100,
+              "progress" =>
+                (completed / total * 100)
+                |> Decimal.from_float()
+                |> Decimal.round(1)
+                |> Decimal.to_float(),
               "start_date" => start_date,
-              "end_date" => end_date
+              "end_date" => end_date,
+              "status" => status
             }
 
           false ->
@@ -324,12 +281,11 @@ defmodule Dailyploy.Model.Analysis do
               "name" => name,
               "progress" => 0,
               "start_date" => start_date,
-              "end_date" => end_date
+              "end_date" => end_date,
+              "status" => status
             }
         end
       end)
-
-    %{"planned" => planned, "completed" => completed, "running" => running}
   end
 
   defp get_dashboard_tasks(project_id, start_date, end_date) do
