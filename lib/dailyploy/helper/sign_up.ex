@@ -21,7 +21,7 @@ defmodule Dailyploy.Helper.SignUp do
       |> Email.to_personalization()
 
     Email.build()
-    |> Email.put_from("contact@stack-avenue.com")
+    |> Email.put_from("Dailyploy@stack-avenue.com")
     |> Email.put_subject("Welcome Onboard
     ")
     |> Email.put_phoenix_view(DailyployWeb.EmailView)
@@ -31,7 +31,7 @@ defmodule Dailyploy.Helper.SignUp do
     |> Mail.send()
 
     Email.build()
-    |> Email.put_from("contact@stack-avenue.com")
+    |> Email.put_from("Dailyploy@stack-avenue.com")
     |> Email.put_subject("New inquiry received for a demo")
     |> Email.put_phoenix_view(DailyployWeb.EmailView)
     |> Email.put_phoenix_template("sign_up_self_enquiry.html", user: enquiry)

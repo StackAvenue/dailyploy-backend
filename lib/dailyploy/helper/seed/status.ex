@@ -33,7 +33,7 @@ defmodule Dailyploy.Helper.Seed.Status do
   end
 
   def seed_status_in_project(project) do
-    Enum.each(@project_status, fn task_status -> insert_status(task_status, project) end)
+    Enum.each(["Not Started"], fn task_status -> insert_status(task_status, project) end)
   end
 
   def seed_sequence() do
@@ -73,5 +73,18 @@ defmodule Dailyploy.Helper.Seed.Status do
 
       sequence_no
     end)
+  end
+
+  def change_not_started() do
+    status = Repo.all(TSchema)
+    Enum.each(status, fn task_status -> update(task_status) end)
+  end
+
+  defp update(task_status) do
+    if task_status.name == "not_started" do
+      TaskStatus.update(task_status, %{name: "Not Started"})
+    else
+      :no_reply
+    end
   end
 end

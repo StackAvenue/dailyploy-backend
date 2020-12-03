@@ -20,7 +20,7 @@ defmodule Dailyploy.Helper.Enquiry do
       |> Email.to_personalization()
 
     Email.build()
-    |> Email.put_from("contact@stack-avenue.com")
+    |> Email.put_from("Dailyploy@stack-avenue.com")
     |> Email.put_subject("Thanks for Enquiring !")
     |> Email.put_phoenix_view(DailyployWeb.EmailView)
     |> Email.put_phoenix_template("enquiry_email.html", user: enquiry)
@@ -29,7 +29,7 @@ defmodule Dailyploy.Helper.Enquiry do
     |> Mail.send()
 
     Email.build()
-    |> Email.put_from("contact@stack-avenue.com")
+    |> Email.put_from("Dailyploy@stack-avenue.com")
     |> Email.put_subject("New inquiry received for a demo")
     |> Email.put_phoenix_view(DailyployWeb.EmailView)
     |> Email.put_phoenix_template("self_enquiry.html", user: enquiry)

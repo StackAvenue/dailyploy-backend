@@ -82,7 +82,7 @@ defmodule Dailyploy.Helper.ReportConfigStatus do
         csv_link = RContro.csv_helper_for_mail(params)
 
         email_build
-        |> Email.put_from("contact@stack-avenue.com")
+        |> Email.put_from("Dailyploy@stack-avenue.com")
         |> Email.put_subject("Here’s Your Weekly Report")
         |> Email.put_phoenix_view(DailyployWeb.EmailView)
         |> Email.put_phoenix_template("weekly_reports.html",

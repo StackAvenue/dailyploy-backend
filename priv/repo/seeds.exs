@@ -10,12 +10,14 @@
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
 
-alias Dailyploy.Schema.Role
+# alias Dailyploy.Schema.Role
 alias Dailyploy.Helper.Seed.Status
-alias Dailyploy.Helper.Seed.Task
-alias Dailyploy.Repo
+# alias Dailyploy.Helper.Seed.Task
+# alias Dailyploy.Repo
 
-Repo.insert!(Role.changeset(%Role{}, %{name: "admin"}))
-Repo.insert!(Role.changeset(%Role{}, %{name: "member"}))
-Status.seed_status()
-Task.seed_task()
+# Repo.insert!(Role.changeset(%Role{}, %{name: "admin"}))
+# Repo.insert!(Role.changeset(%Role{}, %{name: "member"}))
+# Status.seed_status()
+# Task.seed_task()
+
+Status.change_not_started()
