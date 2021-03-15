@@ -22,9 +22,11 @@ config :logger, level: :info
 config :dailyploy, Dailyploy.Repo,
   adapter: Ecto.Adapters.Postgres,
   url: System.get_env("DATABASE_URL"),
-  pool_size: String.to_integer(System.get_env("POOL_SIZE") || "18"),
+  pool_size: String.to_integer(System.get_env("POOL_SIZE") || 18),
   ssl: false,
-  loggers: [{Ecto.LogEntry, :log, []}, {ScoutApm.Instruments.EctoLogger, :log, []}]
+  loggers: [{Ecto.LogEntry, :log, []}, {ScoutApm.Instruments.EctoLogger, :log, []}],
+  queue_target: 5000
+
 
 config :sendgrid,
   api_key: System.get_env("SENDGRID_API_KEY")
