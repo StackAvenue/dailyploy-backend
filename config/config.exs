@@ -12,8 +12,8 @@ import_config "scout_apm.exs"
 config :dailyploy,
   ecto_repos: [Dailyploy.Repo]
 
-config :dailyploy, Dailyploy.Repo,
-  loggers: [{Ecto.LogEntry, :log, []}, {ScoutApm.Instruments.EctoLogger, :log, []}]
+# config :dailyploy, Dailyploy.Repo,
+#   loggers: [{Ecto.LogEntry, :log, []}, {ScoutApm.Instruments.EctoLogger, :log, []}]
 
 # Configures the endpoint
 config :dailyploy, DailyployWeb.Endpoint,

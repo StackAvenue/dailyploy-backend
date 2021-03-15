@@ -12,9 +12,12 @@ database_url =
     """
 
 config :dailyploy, Dailyploy.Repo,
-  ssl: true,
-  url: database_url,
-  pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10")
+  adapter: Ecto.Adapters.Postgres,
+  url: System.get_env("DATABASE_URL"),
+  pool_size: 18,
+  ssl: false,
+  loggers: [{Ecto.LogEntry, :log, []}, {ScoutApm.Instruments.EctoLogger, :log, []}],
+  queue_target: 10000
 
 secret_key_base =
   System.get_env("SECRET_KEY_BASE") ||

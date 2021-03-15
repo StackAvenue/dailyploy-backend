@@ -18,14 +18,15 @@ config :dailyploy, DailyployWeb.Endpoint,
 # Do not print debug messages in production
 config :logger, level: :info
 
+# pool_size: String.to_integer(System.get_env("POOL_SIZE") || 18),
 # Configure your database
 config :dailyploy, Dailyploy.Repo,
   adapter: Ecto.Adapters.Postgres,
   url: System.get_env("DATABASE_URL"),
-  pool_size: String.to_integer(System.get_env("POOL_SIZE") || 18),
+  pool_size: 18,
   ssl: false,
   loggers: [{Ecto.LogEntry, :log, []}, {ScoutApm.Instruments.EctoLogger, :log, []}],
-  queue_target: 5000
+  queue_target: 10000
 
 
 config :sendgrid,
