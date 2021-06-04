@@ -23,6 +23,10 @@ defmodule Dailyploy.Model.Task do
     Repo.all(query)
   end
 
+  def get_all() do
+    Repo.all(Task)
+  end
+
   def list_workspace_tasks(workspace_id) do
     project_query =
       from(project in Project, where: project.workspace_id == ^workspace_id, select: project.id)
