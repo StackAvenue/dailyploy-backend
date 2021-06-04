@@ -26,6 +26,7 @@ defmodule DailyployWeb.TaskView do
     %{
       id: task.id,
       name: task.name,
+      identifier: task.identifier || "",
       estimation: task.estimation,
       start_datetime: task.start_datetime,
       end_datetime: task.end_datetime,
@@ -101,6 +102,7 @@ defmodule DailyployWeb.TaskView do
     %{
       id: task.id,
       name: task.name,
+      identifier: task.identifier || "",
       start_datetime: task.start_datetime,
       end_datetime: task.end_datetime,
       estimation: task.estimation,
@@ -127,6 +129,7 @@ defmodule DailyployWeb.TaskView do
     %{
       id: task.id,
       name: task.name,
+      identifier: task.identifier || "",
       start_datetime: task.start_datetime,
       end_datetime: task.end_datetime,
       comments: task.comments,
@@ -155,6 +158,7 @@ defmodule DailyployWeb.TaskView do
     %{
       id: task.id,
       name: task.name,
+      identifier: task.identifier || "",
       start_datetime: task.start_datetime,
       end_datetime: task.end_datetime,
       estimation: task.estimation,
@@ -181,6 +185,7 @@ defmodule DailyployWeb.TaskView do
     %{
       id: task.id,
       name: task.name,
+      identifier: task.identifier || "",
       start_datetime: task.start_datetime,
       end_datetime: task.end_datetime,
       estimation: task.estimation,
@@ -216,6 +221,7 @@ defmodule DailyployWeb.TaskView do
     %{
       id: task.id,
       name: task.name,
+      identifier: task.identifier || "",
       start_datetime: task.start_datetime,
       end_datetime: task.end_datetime,
       comments: task.comments,

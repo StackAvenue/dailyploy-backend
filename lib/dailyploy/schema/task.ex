@@ -23,6 +23,7 @@ defmodule Dailyploy.Schema.Task do
     field :status, :string, default: "not_started"
     field :priority, :string
     field :is_complete, :boolean, default: false, null: false
+    field :identifier, :string
 
     belongs_to :task_status, TaskStatus
     belongs_to :owner, User
@@ -50,7 +51,8 @@ defmodule Dailyploy.Schema.Task do
         :category_id,
         :task_status_id,
         :estimation,
-        :priority
+        :priority,
+        :identifier
       ])
       |> validate_required([
         :name,
@@ -124,7 +126,8 @@ defmodule Dailyploy.Schema.Task do
         :task_status_id,
         :is_complete,
         :estimation,
-        :priority
+        :priority,
+        :identifier
       ])
       |> assoc_constraint(:project)
       |> assoc_constraint(:task_list_tasks)

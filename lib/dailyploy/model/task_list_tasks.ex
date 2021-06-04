@@ -52,6 +52,7 @@ defmodule Dailyploy.Model.TaskListTasks do
 
     case Task.create_task_list(Map.from_struct(task_list) |> extract_params(params)) do
       {:ok, task} ->
+        Task.update_task(task, %{identifier: "RT-#{task.task_list_tasks_id}"})
         insert_into_user_tasks(task_list.owner_id, task.id)
         TLTModel.update(task_list, %{task_id: task.id})
 

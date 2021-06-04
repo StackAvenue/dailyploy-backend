@@ -47,35 +47,6 @@ defmodule DailyployWeb.TaskController do
     end
   end
 
-  defp params_extraction(params) do
-    member_ids =
-      Enum.reduce(params.members, [], fn members, acc ->
-        acc ++ [members.id]
-      end)
-
-    Map.from_struct(params)
-    |> Map.put_new(:member_ids, member_ids)
-    |> Map.drop([
-      :_id,
-      :__meta__,
-      :category,
-      :comments,
-      :inserted_at,
-      :updated_at,
-      :time_tracks,
-      :task_status,
-      :task_list_tasks,
-      :task_comments,
-      :project,
-      :owner
-    ])
-    |> map_to_atom()
-  end
-
-  defp map_to_atom(params) do
-    for {key, value} <- params, into: %{}, do: {Atom.to_string(key), value}
-  end
-
   def create(conn, %{"project_id" => project_id, "task" => task_params}) do
     user = Guardian.Plug.current_resource(conn)
 
@@ -84,39 +55,37 @@ defmodule DailyployWeb.TaskController do
       |> Map.put("project_id", project_id)
       |> Map.put("owner_id", user.id)
 
-    case TaskModel.create_task(task_params) do
-      {:ok, %TaskSchema{} = task} ->
-        task =
-          task
-          |> Repo.preload([:members, :project, :owner, :category, :time_tracks, :task_status])
+    with {:create, {:ok, created_task}} <- {:create, TaskModel.create_task(task_params)},
+         {:update, {:ok, task}} <- {:update, add_identifier(created_task)} do
+      task =
+        task
+        |> Repo.preload([:members, :project, :owner, :category, :time_tracks, :task_status])
 
-        # Task.async(fn ->
-        #   Firebase.insert_operation(
-        #     Poison.encode(task),
-        #     "task_created/#{conn.params["workspace_id"]}/#{task.id}"
-        #   )
-        # end)
+      Task.async(fn ->
+        notification_create(task, "created")
+      end)
 
-        Task.async(fn ->
-          notification_create(task, "created")
-        end)
+      params = %{
+        task_id: task.id,
+        user_id: user.id,
+        user_stories_id: nil,
+        task_list_tasks_id: nil,
+        comments: "#{user.name} has created #{task.name} task."
+      }
 
-        params = %{
-          task_id: task.id,
-          user_id: user.id,
-          user_stories_id: nil,
-          task_list_tasks_id: nil,
-          comments: "#{user.name} has created #{task.name} task."
-        }
+      TCHelper.create_comment(params)
 
-        TCHelper.create_comment(params)
+      date_formatted_time_tracks = date_wise_orientation(task.time_tracks)
+      task = Map.put(task, :date_formatted_time_tracks, date_formatted_time_tracks)
 
-        date_formatted_time_tracks = date_wise_orientation(task.time_tracks)
-        task = Map.put(task, :date_formatted_time_tracks, date_formatted_time_tracks)
+      render(conn, "show.json", task: task)
+    else
+      {:create, {:error, task}} ->
+        conn
+        |> put_status(422)
+        |> render("changeset_error.json", %{errors: task.errors})
 
-        render(conn, "show.json", task: task)
-
-      {:error, task} ->
+      {:update, {:error, task}} ->
         conn
         |> put_status(422)
         |> render("changeset_error.json", %{errors: task.errors})
@@ -328,5 +297,38 @@ defmodule DailyployWeb.TaskController do
         source: "task"
       }
     }
+  end
+
+  defp params_extraction(params) do
+    member_ids =
+      Enum.reduce(params.members, [], fn members, acc ->
+        acc ++ [members.id]
+      end)
+
+    Map.from_struct(params)
+    |> Map.put_new(:member_ids, member_ids)
+    |> Map.drop([
+      :_id,
+      :__meta__,
+      :category,
+      :comments,
+      :inserted_at,
+      :updated_at,
+      :time_tracks,
+      :task_status,
+      :task_list_tasks,
+      :task_comments,
+      :project,
+      :owner
+    ])
+    |> map_to_atom()
+  end
+
+  defp map_to_atom(params) do
+    for {key, value} <- params, into: %{}, do: {Atom.to_string(key), value}
+  end
+
+  defp add_identifier(task) do
+    TaskModel.update_task(task, %{identifier: "T-#{task.id}"})
   end
 end
