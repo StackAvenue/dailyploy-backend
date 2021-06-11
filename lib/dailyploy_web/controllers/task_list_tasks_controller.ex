@@ -2,7 +2,7 @@ defmodule DailyployWeb.TaskListTasksController do
   use DailyployWeb, :controller
   alias Dailyploy.Helper.TaskListTasks
   alias Dailyploy.Model.TaskListTasks, as: TLModel
-  alias Dailyploy.Model.UserStories, as: USModel
+  # alias Dailyploy.Model.UserStories, as: USModel
   import DailyployWeb.Validators.TaskListTasks
   import DailyployWeb.Helpers
 
@@ -41,8 +41,7 @@ defmodule DailyployWeb.TaskListTasksController do
 
         with {:extract, {:ok, data}} <- {:extract, extract_changeset_data(changeset)},
              {:create, {:ok, task}} <- {:create, TaskListTasks.create(data)},
-             {:update, {:ok, task_list_tasks}} <- {:update, add_identifier(task)}
-             do
+             {:ok, task_list_tasks} <- add_identifier(task) do
           conn
           |> put_status(200)
           |> render("show.json", %{task_list_tasks: task_list_tasks})
@@ -199,7 +198,7 @@ defmodule DailyployWeb.TaskListTasksController do
   #       |> put_status(404)
   #   end
   # end
-  defp add_identifier(task_list_tasks) do
+  def add_identifier(task_list_tasks) do
     TLModel.update_task_list(task_list_tasks, %{identifier: "T-#{task_list_tasks.id}"})
   end
 end

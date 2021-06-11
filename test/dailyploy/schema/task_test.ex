@@ -12,8 +12,7 @@ defmodule Dailyploy.Schema.TaskTest do
     is_complete: true
   }
 
-  @invalid_attrs %{name: 1
-  }
+  @invalid_attrs %{name: 1}
 
   test "changeset with valid data" do
     changeset = Task.changeset(%Task{}, @valid_attrs)

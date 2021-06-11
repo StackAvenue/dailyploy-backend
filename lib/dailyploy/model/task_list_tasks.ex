@@ -29,7 +29,7 @@ defmodule Dailyploy.Model.TaskListTasks do
     end
   end
 
-  def update_task_list(%TaskListTasks{} = task_list_tasks, params) do
+  def update_task_list(task_list_tasks, params) do
     changeset = TaskListTasks.changeset(task_list_tasks, params)
     Repo.update(changeset)
   end

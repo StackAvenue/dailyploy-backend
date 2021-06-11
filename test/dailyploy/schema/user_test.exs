@@ -11,7 +11,6 @@ defmodule Dailyploy.Schema.UserTest do
 
   @invalid_attrs %{name: 12, email: 12}
 
-
   test "changeset with valid data" do
     changeset = User.changeset(%User{}, @valid_attrs)
     assert changeset.valid?

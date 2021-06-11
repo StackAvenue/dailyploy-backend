@@ -27,7 +27,6 @@ config :dailyploy, Dailyploy.Repo,
   loggers: [{Ecto.LogEntry, :log, []}, {ScoutApm.Instruments.EctoLogger, :log, []}],
   queue_target: 10000
 
-
 config :sendgrid,
   api_key: System.get_env("SENDGRID_API_KEY")
 
