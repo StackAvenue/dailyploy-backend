@@ -40,7 +40,9 @@ defmodule DailyployWeb.TaskListTasksController do
         changeset = verify_task_list(params)
 
         with {:extract, {:ok, data}} <- {:extract, extract_changeset_data(changeset)},
-             {:create, {:ok, task_list_tasks}} <- {:create, TaskListTasks.create(data)} do
+             {:create, {:ok, task}} <- {:create, TaskListTasks.create(data)},
+             {:update, {:ok, task_list_tasks}} <- {:update, add_identifier(task)}
+             do
           conn
           |> put_status(200)
           |> render("show.json", %{task_list_tasks: task_list_tasks})
@@ -197,4 +199,7 @@ defmodule DailyployWeb.TaskListTasksController do
   #       |> put_status(404)
   #   end
   # end
+  defp add_identifier(task_list_tasks) do
+    TLModel.update_task_list(task_list_tasks, %{identifier: "T-#{task_list_tasks.id}"})
+  end
 end
