@@ -2,7 +2,6 @@
 #   use Dailyploy.ModelCase
 #   alias Dailyploy.Schema.Label
 
-
 #   test "changeset with valid data" do
 #     changeset = Label.changeset(%Label{}, @valid_attrs)
 #     assert changeset.valid?

@@ -4,6 +4,7 @@ defmodule DailyployWeb.TaskListTasksController do
   alias Dailyploy.Model.TaskListTasks, as: TLModel
   # alias Dailyploy.Model.UserStories, as: USModel
   import DailyployWeb.Validators.TaskListTasks
+  alias Dailyploy.Helper.TaskListTasks, as: HTask
   import DailyployWeb.Helpers
 
   plug :load_task_list when action in [:update, :delete, :show, :move_task]
@@ -41,7 +42,7 @@ defmodule DailyployWeb.TaskListTasksController do
 
         with {:extract, {:ok, data}} <- {:extract, extract_changeset_data(changeset)},
              {:create, {:ok, task}} <- {:create, TaskListTasks.create(data)},
-             {:ok, task_list_tasks} <- add_identifier(task) do
+             {:update, {:ok, task_list_tasks}} <- {:update, HTask.add_identifier(task)} do
           conn
           |> put_status(200)
           |> render("show.json", %{task_list_tasks: task_list_tasks})
@@ -50,6 +51,9 @@ defmodule DailyployWeb.TaskListTasksController do
             send_error(conn, 400, error)
 
           {:create, {:error, message}} ->
+            send_error(conn, 400, message)
+
+          {:update, {:error, message}} ->
             send_error(conn, 400, message)
         end
 
@@ -198,7 +202,4 @@ defmodule DailyployWeb.TaskListTasksController do
   #       |> put_status(404)
   #   end
   # end
-  def add_identifier(task_list_tasks) do
-    TLModel.update_task_list(task_list_tasks, %{identifier: "T-#{task_list_tasks.id}"})
-  end
 end

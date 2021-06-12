@@ -4,7 +4,7 @@ defmodule Dailyploy.Schema.TaskStatusTest do
 
   @valid_attrs %{
     name: "user",
-    sequence_no: 123456,
+    sequence_no: 123_456,
     is_default: true,
     workspace_id: 1,
     project_id: 2
