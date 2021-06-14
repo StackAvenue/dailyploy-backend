@@ -11,7 +11,7 @@ defmodule Dailyploy.MixProject do
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps(),
-      #Coveralls
+      # Coveralls
       app: :excoveralls,
       version: "1.0.0",
       elixir: "~> 1.0.0",

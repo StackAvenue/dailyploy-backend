@@ -13,6 +13,7 @@ defmodule DailyployWeb.TaskListTasksView do
   alias Dailyploy.Repo
 
   def render("show.json", %{task_list_tasks: task_list_tasks}) do
+    require IEx; IEx.pry
     task =
       case task_list_tasks.task_id do
         nil ->
@@ -34,7 +35,7 @@ defmodule DailyployWeb.TaskListTasksView do
     %{
       id: task_list_tasks.id,
       name: task_list_tasks.name,
-      identifier: task.identifier,
+      identifier: task_list_tasks.identifier,
       task: render_one(task_list_tasks.task, TaskListTasksView, "task.json"),
       description: task_list_tasks.description,
       task_id: task_list_tasks.task_id,
