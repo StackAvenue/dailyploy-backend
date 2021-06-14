@@ -1,6 +1,7 @@
 defmodule Dailyploy.Helper.TaskListTasks do
   alias Dailyploy.Repo
   alias Dailyploy.Model.TaskListTasks, as: TLModel
+  alias Dailyploy.Schema.TaskListTasks, as: TLSchema
   import DailyployWeb.Helpers
 
   def create(params) do
@@ -68,5 +69,10 @@ defmodule Dailyploy.Helper.TaskListTasks do
 
   defp verify_create({:error, task_list_tasks}) do
     {:error, extract_changeset_error(task_list_tasks)}
+  end
+
+  def add_identifier(task_list_tasks) do
+    task_list_tasks = struct!(TLSchema, task_list_tasks)
+    TLModel.update_task_list(task_list_tasks, %{identifier: "RT-#{task_list_tasks.id}"})
   end
 end

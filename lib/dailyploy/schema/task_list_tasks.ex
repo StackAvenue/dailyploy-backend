@@ -23,6 +23,7 @@ defmodule Dailyploy.Schema.TaskListTasks do
     field :estimation, :integer
     field :status, :string, default: "not_started"
     field :priority, :string, default: "no_priority"
+    field :identifier, :string
 
     belongs_to :task_status, TaskStatus
     belongs_to :owner, User
@@ -38,7 +39,7 @@ defmodule Dailyploy.Schema.TaskListTasks do
   end
 
   @required_params ~w(name)a
-  @optional_params ~w(description task_lists_id user_stories_id owner_id estimation status priority category_id task_status_id task_id)a
+  @optional_params ~w(description task_lists_id user_stories_id owner_id estimation status priority category_id task_status_id task_id identifier)a
 
   @permitted_params @required_params ++ @optional_params
 

@@ -28,7 +28,7 @@ config :dailyploy, DailyployWeb.Endpoint,
 #   api_keyID: "nYWCtRLIRxC3BtlkZ3u01A"
 
 config :sendgrid,
-  api_key: System.get_env("SENDGRID_API_KEY")
+    api_key: System.get_env("SENDGRID_API_KEY")
 
 # ## SSL Support
 #

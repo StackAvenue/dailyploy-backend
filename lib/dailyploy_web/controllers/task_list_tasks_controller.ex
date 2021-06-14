@@ -2,8 +2,9 @@ defmodule DailyployWeb.TaskListTasksController do
   use DailyployWeb, :controller
   alias Dailyploy.Helper.TaskListTasks
   alias Dailyploy.Model.TaskListTasks, as: TLModel
-  alias Dailyploy.Model.UserStories, as: USModel
+  # alias Dailyploy.Model.UserStories, as: USModel
   import DailyployWeb.Validators.TaskListTasks
+  alias Dailyploy.Helper.TaskListTasks, as: HTask
   import DailyployWeb.Helpers
 
   plug :load_task_list when action in [:update, :delete, :show, :move_task]
@@ -40,7 +41,8 @@ defmodule DailyployWeb.TaskListTasksController do
         changeset = verify_task_list(params)
 
         with {:extract, {:ok, data}} <- {:extract, extract_changeset_data(changeset)},
-             {:create, {:ok, task_list_tasks}} <- {:create, TaskListTasks.create(data)} do
+             {:create, {:ok, task}} <- {:create, TaskListTasks.create(data)},
+             {:update, {:ok, task_list_tasks}} <- {:update, HTask.add_identifier(task)} do
           conn
           |> put_status(200)
           |> render("show.json", %{task_list_tasks: task_list_tasks})
@@ -49,6 +51,9 @@ defmodule DailyployWeb.TaskListTasksController do
             send_error(conn, 400, error)
 
           {:create, {:error, message}} ->
+            send_error(conn, 400, message)
+
+          {:update, {:error, message}} ->
             send_error(conn, 400, message)
         end
 
