@@ -2,10 +2,7 @@ defmodule DailyployWeb.InvitationController do
   use DailyployWeb, :controller
   import Plug.Conn
   alias Dailyploy.Schema.Invitation
-  alias Dailyploy.Schema.User
-  alias Dailyploy.Model.User, as: UserModel
   alias Dailyploy.Model.Invitation, as: InvitationModel
-  alias Dailyploy.Model.UserWorkspace, as: UserWorkspaceModel
   alias Dailyploy.Helper.User, as: UserHelper
   alias Dailyploy.Helper.Invitation, as: InvitationHelper
 
