@@ -1,5 +1,4 @@
 defmodule Dailyploy.Model.CommentsAttachment do
-  import Ecto.Query
   alias Dailyploy.Repo
   alias Dailyploy.Schema.CommentsAttachment
 

@@ -23,10 +23,6 @@ config :dailyploy, DailyployWeb.Endpoint,
   check_origin: false,
   watchers: []
 
-# config :dailyploy, DailyployWeb.EmailConfig,
-#   api_key: "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",
-#   api_keyID: "nYWCtRLIRxC3BtlkZ3u01A"
-
 config :sendgrid,
   api_key: System.get_env("SENDGRID_API_KEY")
 
