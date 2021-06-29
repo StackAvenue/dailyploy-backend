@@ -6,6 +6,7 @@ defmodule DailyployWeb.TaskListTasksController do
   import DailyployWeb.Validators.TaskListTasks
   alias Dailyploy.Helper.TaskListTasks, as: HTask
   import DailyployWeb.Helpers
+  alias Dailyploy.Repo
 
   plug :load_task_list when action in [:update, :delete, :show, :move_task]
 
