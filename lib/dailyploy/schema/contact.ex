@@ -19,12 +19,11 @@ defmodule Dailyploy.Schema.Contact do
   @params @required_params ++ @optional_params
 
   def changeset(contact, attrs) do
-    asd =
-      contact
-      |> cast(attrs, @params)
-      |> validate_required(@required_params)
-      |> common_changeset
-      |> validate_inclusion(@optional_required_params)
+    contact
+    |> cast(attrs, @params)
+    |> validate_required(@required_params)
+    |> common_changeset
+    |> validate_inclusion(@optional_required_params)
   end
 
   def update_changeset(contact, attrs) do

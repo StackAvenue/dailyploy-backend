@@ -56,7 +56,6 @@ defmodule Dailyploy.MixProject do
   defp deps do
     [
       # pagination
-      {:scrivener_ecto, "~> 2.0"},
       {:phoenix, "~> 1.4.9"},
       {:phoenix_pubsub, "~> 1.1"},
       {:phoenix_ecto, "~> 4.0"},
@@ -94,7 +93,11 @@ defmodule Dailyploy.MixProject do
 
       # Testing Library
       {:ex_machina, "~> 2.7.0", only: :test},
-      {:excoveralls, "~> 0.10", only: :test}
+      {:excoveralls, "~> 0.10", only: :test},
+
+      # Pagination
+      {:scrivener_ecto, "~> 2.3"},
+      {:scrivener_list, "~> 2.0"}
     ]
   end
 

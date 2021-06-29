@@ -1,15 +1,10 @@
 defmodule DailyployWeb.UserWorkspaceSettingsController do
   use DailyployWeb, :controller
   import Plug.Conn
-  # alias Dailyploy.Schema.WorkspaceS
   alias Dailyploy.Schema.Role
-  # alias Dailyploy.Schema.DailyStatusMailSetting
-  alias Dailyploy.Schema.UserWorkspaceSetting
-  # alias Dailyploy.Model.User, as: UserModel
   alias Dailyploy.Model.Workspace, as: WorkspaceModel
   alias Dailyploy.Model.UserWorkspaceSetting, as: UserWorkspaceSettingsModel
   alias Dailyploy.Model.AdminshipRemoval, as: AdminshipRemovalModel
-  # alias Dailyploy.Model.UserWorkspace, as: UserWorkspaceModel
   alias Dailyploy.Model.Role, as: RoleModel
   alias Dailyploy.Model.DailyStatusMailSetting, as: DailyStatusMailSettingsModel
 
@@ -66,7 +61,7 @@ defmodule DailyployWeb.UserWorkspaceSettingsController do
   def daily_status_mail_settings(conn, user_params) do
     case conn.status do
       nil ->
-        %{"workspace_id" => workspace_id} = user_params
+        %{"workspace_id" => _workspace_id} = user_params
         user = Guardian.Plug.current_resource(conn)
 
         params =
@@ -92,7 +87,7 @@ defmodule DailyployWeb.UserWorkspaceSettingsController do
     end
   end
 
-  def show_daily_status_mail(conn, params) do
+  def show_daily_status_mail(conn, _params) do
     case conn.status do
       nil ->
         %{assigns: %{daily_status_mail: daily_status_mail}} = conn

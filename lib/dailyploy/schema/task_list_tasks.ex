@@ -24,6 +24,8 @@ defmodule Dailyploy.Schema.TaskListTasks do
     field :status, :string, default: "not_started"
     field :priority, :string, default: "no_priority"
     field :identifier, :string
+    field :start_datetime, :utc_datetime
+    field :end_datetime, :utc_datetime
 
     belongs_to :task_status, TaskStatus
     belongs_to :owner, User
@@ -39,7 +41,7 @@ defmodule Dailyploy.Schema.TaskListTasks do
   end
 
   @required_params ~w(name)a
-  @optional_params ~w(description task_lists_id user_stories_id owner_id estimation status priority category_id task_status_id task_id identifier)a
+  @optional_params ~w(description task_lists_id user_stories_id owner_id estimation status priority category_id task_status_id task_id identifier start_datetime end_datetime)a
 
   @permitted_params @required_params ++ @optional_params
 

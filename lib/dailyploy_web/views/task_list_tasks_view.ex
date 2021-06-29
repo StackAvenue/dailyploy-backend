@@ -39,6 +39,8 @@ defmodule DailyployWeb.TaskListTasksView do
       description: task_list_tasks.description,
       task_id: task_list_tasks.task_id,
       estimation: task_list_tasks.estimation,
+      start_datetime: task_list_tasks.start_datetime,
+      end_datetime: task_list_tasks.end_datetime,
       tracked_time: tracked_time,
       status: task_list_tasks.status,
       priority: task_list_tasks.priority,
