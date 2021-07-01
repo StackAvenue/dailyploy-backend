@@ -20,7 +20,7 @@ defmodule Dailyploy.Schema.TaskListTasks do
   schema "task_list_tasks" do
     field :name, :string
     field :description, :string
-    field :estimation, :integer
+    field :estimation, :float
     field :status, :string, default: "not_started"
     field :priority, :string, default: "no_priority"
     field :identifier, :string
