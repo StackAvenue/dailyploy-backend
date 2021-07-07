@@ -87,7 +87,7 @@ defmodule Dailyploy.Model.TaskListTasks do
     query = TLTModel.create_query(task_lists_id, filters)
 
     task_lists_data =
-      query |> order_by(:id) |> Repo.paginate(page: page_number, page_size: page_size)
+      query |> order_by(:inserted_at) |> Repo.paginate(page: page_number, page_size: page_size)
 
     task_lists_with_preloads = task_lists_data.entries |> Repo.preload(preloads)
     paginated_response(task_lists_with_preloads, task_lists_data)
