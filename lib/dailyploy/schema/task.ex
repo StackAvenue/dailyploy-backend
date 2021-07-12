@@ -19,7 +19,7 @@ defmodule Dailyploy.Schema.Task do
     field :start_datetime, :utc_datetime
     field :end_datetime, :utc_datetime
     field :comments, :string
-    field :estimation, :float
+    field :estimation, :integer
     field :status, :string, default: "not_started"
     field :priority, :string
     field :is_complete, :boolean, default: false, null: false
