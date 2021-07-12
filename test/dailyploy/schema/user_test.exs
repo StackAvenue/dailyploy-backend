@@ -11,7 +11,6 @@ defmodule Dailyploy.Schema.UserTest do
 
   @invalid_attrs %{name: 12, email: 12}
 
-
   test "changeset with valid data" do
     changeset = User.changeset(%User{}, @valid_attrs)
     assert changeset.valid?
@@ -26,12 +25,6 @@ defmodule Dailyploy.Schema.UserTest do
     attrs = Map.put(@valid_attrs, :email, "wrongemail#mail.com")
     changeset = User.changeset(%User{}, attrs)
     assert "has invalid format" in errors_on(changeset, :email)
-  end
-
-  test "changeset does not accept names with special characters" do
-    attrs = Map.put(@valid_attrs, :name, "wrong/name?!")
-    changeset = User.changeset(%User{}, attrs)
-    assert "has invalid format" in errors_on(changeset, :name)
   end
 
   test "changeset does not accept taken email address" do

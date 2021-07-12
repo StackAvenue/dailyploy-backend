@@ -29,7 +29,7 @@ defmodule Dailyploy.Model.TaskListTasks do
     end
   end
 
-  def update_task_list(%TaskListTasks{} = task_list_tasks, params) do
+  def update_task_list(task_list_tasks, params) do
     changeset = TaskListTasks.changeset(task_list_tasks, params)
     Repo.update(changeset)
   end
@@ -94,9 +94,12 @@ defmodule Dailyploy.Model.TaskListTasks do
   end
 
   def create_query(task_lists_id, filters) do
+    order_by = [desc: :updated_at]
+
     TaskListTasks
     |> where([task_list_task], task_list_task.task_lists_id == ^task_lists_id)
     |> where(^filter_where(filters))
+    |> order_by(^order_by)
   end
 
   def create_query_user_story(user_story_id, filters) do

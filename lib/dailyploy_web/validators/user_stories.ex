@@ -6,7 +6,7 @@ defmodule DailyployWeb.Validators.UserStories do
       name!: :string,
       description: :string,
       task_status_id!: :integer,
-      is_completed!: [field: :string, default: false],
+      is_completed!: [field: :string],
       owner_id: :integer,
       task_lists_id!: :integer,
       priority: :string,

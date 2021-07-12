@@ -19,11 +19,12 @@ defmodule Dailyploy.Schema.Task do
     field :start_datetime, :utc_datetime
     field :end_datetime, :utc_datetime
     field :comments, :string
-    field :estimation, :integer
+    field :estimation, :float
     field :status, :string, default: "not_started"
     field :priority, :string
     field :is_complete, :boolean, default: false, null: false
     field :identifier, :string
+    field :description, :string
 
     belongs_to :task_status, TaskStatus
     belongs_to :owner, User
@@ -38,37 +39,37 @@ defmodule Dailyploy.Schema.Task do
 
   @doc false
   def changeset(task, attrs) do
-    task =
-      task
-      |> cast(attrs, [
-        :name,
-        :start_datetime,
-        :end_datetime,
-        :task_list_tasks_id,
-        :comments,
-        :project_id,
-        :owner_id,
-        :category_id,
-        :task_status_id,
-        :estimation,
-        :priority,
-        :identifier
-      ])
-      |> validate_required([
-        :name,
-        :start_datetime,
-        :end_datetime,
-        :project_id,
-        :owner_id,
-        :task_status_id,
-        :is_complete
-      ])
-      |> assoc_constraint(:owner)
-      |> assoc_constraint(:project)
-      |> assoc_constraint(:task_list_tasks)
-      |> assoc_constraint(:task_status)
-      |> validate_inclusion(:priority, @task_priority)
-      |> put_task_members(attrs["member_ids"])
+    task
+    |> cast(attrs, [
+      :name,
+      :start_datetime,
+      :end_datetime,
+      :task_list_tasks_id,
+      :comments,
+      :project_id,
+      :owner_id,
+      :category_id,
+      :task_status_id,
+      :estimation,
+      :priority,
+      :identifier,
+      :description
+    ])
+    |> validate_required([
+      :name,
+      :start_datetime,
+      :end_datetime,
+      :project_id,
+      :owner_id,
+      :task_status_id,
+      :is_complete
+    ])
+    |> assoc_constraint(:owner)
+    |> assoc_constraint(:project)
+    |> assoc_constraint(:task_list_tasks)
+    |> assoc_constraint(:task_status)
+    |> validate_inclusion(:priority, @task_priority)
+    |> put_task_members(attrs["member_ids"])
   end
 
   def task_list_changeset(task, attrs) do
@@ -85,7 +86,8 @@ defmodule Dailyploy.Schema.Task do
         :category_id,
         :task_status_id,
         :estimation,
-        :priority
+        :priority,
+        :description
       ])
       |> validate_required([
         :name,
@@ -127,7 +129,8 @@ defmodule Dailyploy.Schema.Task do
         :is_complete,
         :estimation,
         :priority,
-        :identifier
+        :identifier,
+        :description
       ])
       |> assoc_constraint(:project)
       |> assoc_constraint(:task_list_tasks)
@@ -156,7 +159,8 @@ defmodule Dailyploy.Schema.Task do
         :task_status_id,
         :is_complete,
         :estimation,
-        :priority
+        :priority,
+        :description
       ])
       |> assoc_constraint(:project)
       |> assoc_constraint(:task_list_tasks)

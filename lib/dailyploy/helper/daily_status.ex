@@ -22,6 +22,7 @@ defmodule Dailyploy.Helper.DailyStatus do
   @divisor [@week, @day, @hour, @minute, 1]
 
   def schedule_daily_status_mails() do
+
     daily_status_mails = DailyStatusMailSettingsModel.list_daily_status_mail()
 
     Enum.each(daily_status_mails, fn daily_status_mail ->
@@ -127,7 +128,7 @@ defmodule Dailyploy.Helper.DailyStatus do
           |> sec_to_str
 
         email_build
-        |> Email.put_from("Dailyploy@stack-avenue.com")
+        |> Email.put_from("contact@stack-avenue.com")
         |> Email.put_subject("#{todays_day} Status Update
         ")
         |> Email.put_phoenix_view(DailyployWeb.EmailView)

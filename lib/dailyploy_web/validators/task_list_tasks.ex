@@ -13,7 +13,8 @@ defmodule DailyployWeb.Validators.TaskListTasks do
       task_status_id: :integer,
       category_id: :integer,
       task_lists_id: :integer,
-      user_stories_id: :integer
+      user_stories_id: :integer,
+      identifier: :string
     })
   )
 

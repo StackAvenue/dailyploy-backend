@@ -10,7 +10,19 @@ defmodule Dailyploy.MixProject do
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps()
+      deps: deps(),
+      # Coveralls
+      app: :excoveralls,
+      version: "1.0.0",
+      elixir: "~> 1.0.0",
+      deps: deps(),
+      test_coverage: [tool: ExCoveralls],
+      preferred_cli_env: [
+        coveralls: :test,
+        "coveralls.detail": :test,
+        "coveralls.post": :test,
+        "coveralls.html": :test
+      ]
     ]
   end
 
@@ -44,7 +56,6 @@ defmodule Dailyploy.MixProject do
   defp deps do
     [
       # pagination
-      {:scrivener_ecto, "~> 2.0"},
       {:phoenix, "~> 1.4.9"},
       {:phoenix_pubsub, "~> 1.1"},
       {:phoenix_ecto, "~> 4.0"},
@@ -78,7 +89,15 @@ defmodule Dailyploy.MixProject do
       {:poison, "~> 3.1"},
       {:tesla, "~> 1.3.0"},
       {:google_api_firestore, "~> 0.14"},
-      {:httpotion, "~> 3.1.0"}
+      {:httpotion, "~> 3.1.0"},
+
+      # Testing Library
+      {:ex_machina, "~> 2.7.0", only: :test},
+      {:excoveralls, "~> 0.10", only: :test},
+
+      # Pagination
+      {:scrivener_ecto, "~> 2.3"},
+      {:scrivener_list, "~> 2.0"}
     ]
   end
 

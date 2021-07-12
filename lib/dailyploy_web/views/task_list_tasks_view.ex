@@ -34,10 +34,13 @@ defmodule DailyployWeb.TaskListTasksView do
     %{
       id: task_list_tasks.id,
       name: task_list_tasks.name,
-      task: render_one(task_list_tasks.task, TaskListTasksView, "task.json"),
+      identifier: task_list_tasks.identifier,
+      # task: render_one(task_list_tasks.task, TaskListTasksView, "task.json"),
       description: task_list_tasks.description,
       task_id: task_list_tasks.task_id,
       estimation: task_list_tasks.estimation,
+      start_datetime: task_list_tasks.start_datetime,
+      end_datetime: task_list_tasks.end_datetime,
       tracked_time: tracked_time,
       status: task_list_tasks.status,
       priority: task_list_tasks.priority,
@@ -110,6 +113,8 @@ defmodule DailyployWeb.TaskListTasksView do
       description: task_list_tasks.description,
       task_id: task_list_tasks.task_id,
       estimation: task_list_tasks.estimation,
+      start_datetime: task_list_tasks.start_datetime,
+      end_datetime: task_list_tasks.end_datetime,
       status: task_list_tasks.status,
       priority: task_list_tasks.priority,
       comments: render_many(task_list_tasks.comments, TaskListTasksView, "comment.json"),
@@ -120,7 +125,9 @@ defmodule DailyployWeb.TaskListTasksView do
       owner: render_one(task_list_tasks.owner, UserView, "user.json"),
       checklist: render_many(task_list_tasks.checklist, RoadmapChecklistView, "user_show.json"),
       category: render_one(task_list_tasks.category, TaskCategoryView, "task_category.json"),
-      task_lists: render_one(task_list_tasks.task_lists, TaskListsView, "show_project_list.json")
+      task_lists: render_one(task_list_tasks.task_lists, TaskListsView, "show_project_list.json"),
+      inserted_at: task_list_tasks.inserted_at,
+      updated_at: task_list_tasks.updated_at
     }
   end
 

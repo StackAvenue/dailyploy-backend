@@ -78,6 +78,8 @@ defmodule DailyployWeb.TaskListsView do
   end
 
   def render("show_filter.json", %{project_task_list: project_task_list}) do
+    Enum.sort_by(project_task_list.task_list_tasks, & &1.updated_at)
+
     %{
       id: project_task_list.id,
       name: project_task_list.name,

@@ -3,8 +3,8 @@ defmodule Dailyploy.Schema.UserProjectTest do
   alias Dailyploy.Schema.UserProject
 
   @valid_attrs %{
-   user_id: "1",
-   project_id: "2"
+    user_id: "1",
+    project_id: "2"
   }
 
   @invalid_attrs %{user_id: nil, task_status_id: nil}
