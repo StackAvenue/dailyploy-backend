@@ -22,7 +22,6 @@ defmodule Dailyploy.Helper.DailyStatus do
   @divisor [@week, @day, @hour, @minute, 1]
 
   def schedule_daily_status_mails() do
-
     daily_status_mails = DailyStatusMailSettingsModel.list_daily_status_mail()
 
     Enum.each(daily_status_mails, fn daily_status_mail ->

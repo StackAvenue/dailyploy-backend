@@ -46,7 +46,7 @@ defmodule Dailyploy.Helper.Contact do
   defp user_email(task, contact) do
     Email.build()
     |> Email.add_to(contact.email)
-    |> Email.put_from("Dailyploy@stack-avenue.com")
+    |> Email.put_from("contact@stack-avenue.com")
     |> Email.put_subject("Task Completed")
     |> Email.put_phoenix_view(DailyployWeb.EmailView)
     |> Email.put_phoenix_template("contact.html", task: task)
